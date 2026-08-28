@@ -23,7 +23,7 @@
             <a href="#" class="brand" data-target="home">
 
                 <div class="brand-logo">
-                    M1
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShXhrRpTRCk090TGbv5PtRjYvF_B__pLE_w6q9YFifJ9IJrbn5nPPC_A&s=10" alt="Logo MTsN 1 Wonosobo">
                 </div>
 
                 <div class="brand-text">
@@ -97,15 +97,19 @@
 
                 <button
                     type="button"
-                    class="theme-button"
-                    title="Mode tampilan">
-                    ◐
+                    class="login-btn"
+                    id="loginTrigger">
+                    Login
                 </button>
 
                 <button
                     type="button"
-                    class="login-btn">
-                    Login Siswa
+                    class="profile-btn"
+                    id="profileTrigger"
+                    data-target="profil"
+                    title="Profil Siswa"
+                    hidden>
+                    <span class="profile-avatar">AS</span>
                 </button>
 
             </div>
@@ -178,7 +182,7 @@
                     </div>
 
                     <div class="hero-card-icon">
-                        M1
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShXhrRpTRCk090TGbv5PtRjYvF_B__pLE_w6q9YFifJ9IJrbn5nPPC_A&s=10" alt="Logo MTsN 1 Wonosobo">
                     </div>
 
                     <h3>
@@ -366,7 +370,7 @@
             class="page"
             data-page="konseling">
 
-            <div class="page-hero">
+            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1758273241086-f3585ef8c2f8?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
 
                 <div class="container">
 
@@ -524,7 +528,7 @@
             class="page"
             data-page="ekstra">
 
-            <div class="page-hero">
+            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1676444920926-c8a084ec4003?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
 
                 <div class="container">
 
@@ -585,177 +589,7 @@
                 </div>
 
 
-                <div class="extra-grid">
-
-
-                    <article
-                        class="extra-card"
-                        data-category="olahraga">
-
-                        <div class="extra-icon">
-                            ⚽
-                        </div>
-
-                        <span class="extra-category">
-                            OLAHRAGA
-                        </span>
-
-                        <h3>
-                            Futsal
-                        </h3>
-
-                        <p>
-                            Melatih kemampuan bermain,
-                            kerja sama, dan sportivitas.
-                        </p>
-
-                        <span class="extra-link">
-                            Lihat kegiatan →
-                        </span>
-
-                    </article>
-
-
-                    <article
-                        class="extra-card"
-                        data-category="olahraga">
-
-                        <div class="extra-icon">
-                            🏀
-                        </div>
-
-                        <span class="extra-category">
-                            OLAHRAGA
-                        </span>
-
-                        <h3>
-                            Basket
-                        </h3>
-
-                        <p>
-                            Mengembangkan kemampuan teknik
-                            dan kerja sama tim.
-                        </p>
-
-                        <span class="extra-link">
-                            Lihat kegiatan →
-                        </span>
-
-                    </article>
-
-
-                    <article
-                        class="extra-card"
-                        data-category="seni">
-
-                        <div class="extra-icon">
-                            🎨
-                        </div>
-
-                        <span class="extra-category">
-                            SENI
-                        </span>
-
-                        <h3>
-                            Seni
-                        </h3>
-
-                        <p>
-                            Wadah untuk mengekspresikan
-                            kreativitas dan bakat.
-                        </p>
-
-                        <span class="extra-link">
-                            Lihat kegiatan →
-                        </span>
-
-                    </article>
-
-
-                    <article
-                        class="extra-card"
-                        data-category="organisasi">
-
-                        <div class="extra-icon">
-                            ★
-                        </div>
-
-                        <span class="extra-category">
-                            ORGANISASI
-                        </span>
-
-                        <h3>
-                            OSIM
-                        </h3>
-
-                        <p>
-                            Belajar kepemimpinan, organisasi,
-                            dan tanggung jawab.
-                        </p>
-
-                        <span class="extra-link">
-                            Lihat kegiatan →
-                        </span>
-
-                    </article>
-
-
-                    <article
-                        class="extra-card"
-                        data-category="seni">
-
-                        <div class="extra-icon">
-                            🎵
-                        </div>
-
-                        <span class="extra-category">
-                            SENI
-                        </span>
-
-                        <h3>
-                            Musik
-                        </h3>
-
-                        <p>
-                            Mengembangkan kemampuan musik
-                            dan kreativitas siswa.
-                        </p>
-
-                        <span class="extra-link">
-                            Lihat kegiatan →
-                        </span>
-
-                    </article>
-
-
-                    <article
-                        class="extra-card"
-                        data-category="organisasi">
-
-                        <div class="extra-icon">
-                            📚
-                        </div>
-
-                        <span class="extra-category">
-                            ORGANISASI
-                        </span>
-
-                        <h3>
-                            PMR
-                        </h3>
-
-                        <p>
-                            Belajar kepedulian, kesehatan,
-                            dan kegiatan sosial.
-                        </p>
-
-                        <span class="extra-link">
-                            Lihat kegiatan →
-                        </span>
-
-                    </article>
-
-                </div>
+                <div class="extra-grid" id="extraGrid"></div>
 
             </div>
 
@@ -771,7 +605,7 @@
             class="page"
             data-page="kesiswaan">
 
-            <div class="page-hero">
+            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1758270705482-cee87ea98738?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
 
                 <div class="container">
 
@@ -884,7 +718,7 @@
             class="page"
             data-page="akademik">
 
-            <div class="page-hero">
+            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
 
                 <div class="container">
 
@@ -910,7 +744,7 @@
 
                 <div class="academic-list">
 
-                    <div class="academic-item">
+                    <div class="academic-item" data-target="jadwal">
 
                         <div class="academic-icon">
                             📅
@@ -1009,7 +843,7 @@
             class="page"
             data-page="pengumuman">
 
-            <div class="page-hero">
+            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1580656449194-30bb3dfb0b76?q=80&w=1476&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
 
                 <div class="container">
 
@@ -1033,108 +867,495 @@
 
             <div class="container page-content">
 
-                <div class="announcement-list">
+                <div class="announcement-list" id="announcementList"></div>
 
-                    <article class="announcement-card">
+            </div>
 
-                        <div class="announcement-date">
+        </section>
 
-                            <strong>
-                                20
-                            </strong>
 
-                            <span>
-                                AGU
-                            </span>
+
+        <!-- =================================================
+             PROFIL (Dashboard Siswa — muncul setelah login)
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="profil">
+
+            <div class="page-hero">
+
+                <div class="container profile-hero-row">
+
+                    <div class="profile-hero-avatar">
+                        AS
+                    </div>
+
+                    <div>
+                        <span class="section-label">
+                            DASHBOARD SISWA
+                        </span>
+
+                        <h1 id="profileGreeting">
+                            Halo, Ahmad Setiawan
+                        </h1>
+
+                        <p>
+                            Kelas IX A · NIS 2425xxxx
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="profile-stats-grid">
+
+                    <div class="profile-stat-card">
+                        <span class="profile-stat-label">Kehadiran</span>
+                        <strong class="profile-stat-value">96%</strong>
+                        <span class="profile-stat-note">Bulan ini</span>
+                    </div>
+
+                    <div class="profile-stat-card">
+                        <span class="profile-stat-label">Rata-rata Nilai</span>
+                        <strong class="profile-stat-value">87</strong>
+                        <span class="profile-stat-note">Semester ini</span>
+                    </div>
+
+                    <div class="profile-stat-card">
+                        <span class="profile-stat-label">Ekstrakurikuler</span>
+                        <strong class="profile-stat-value">2</strong>
+                        <span class="profile-stat-note">Aktif diikuti</span>
+                    </div>
+
+                    <div class="profile-stat-card">
+                        <span class="profile-stat-label">Poin Prestasi</span>
+                        <strong class="profile-stat-value">120</strong>
+                        <span class="profile-stat-note">Total terkumpul</span>
+                    </div>
+
+                </div>
+
+
+                <div class="two-column">
+
+                    <div class="content-card">
+
+                        <span class="card-label">
+                            DATA SISWA
+                        </span>
+
+                        <h2>
+                            Informasi Pribadi
+                        </h2>
+
+                        <ul class="profile-detail-list">
+
+                            <li>
+                                <span>Nama Lengkap</span>
+                                <strong>Ahmad Setiawan</strong>
+                            </li>
+
+                            <li>
+                                <span>NIS</span>
+                                <strong id="profileNis">2425xxxx</strong>
+                            </li>
+
+                            <li>
+                                <span>Kelas</span>
+                                <strong>IX A</strong>
+                            </li>
+
+                            <li>
+                                <span>Wali Kelas</span>
+                                <strong>Ibu Siti Rahmawati, S.Pd.</strong>
+                            </li>
+
+                            <li>
+                                <span>Status</span>
+                                <strong>Aktif</strong>
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                    <div class="content-card">
+
+                        <span class="card-label">
+                            AKTIVITAS TERBARU
+                        </span>
+
+                        <h2>
+                            Ringkasan
+                        </h2>
+
+                        <ul class="check-list">
+
+                            <li>
+                                <span>✓</span>
+                                Mengikuti latihan Futsal — 2 hari lalu
+                            </li>
+
+                            <li>
+                                <span>✓</span>
+                                Nilai Matematika diperbarui — 4 hari lalu
+                            </li>
+
+                            <li>
+                                <span>✓</span>
+                                Pengajuan konseling diterima — 1 minggu lalu
+                            </li>
+
+                        </ul>
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary full profile-logout-btn"
+                            id="logoutBtn"
+                            style="margin-top: 24px;">
+                            Keluar Akun
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             JADWAL PELAJARAN (publik)
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="jadwal">
+
+            <div class="page-hero">
+
+                <div class="container">
+
+                    <span class="section-label">
+                        AKADEMIK
+                    </span>
+
+                    <h1>
+                        Jadwal Pelajaran
+                    </h1>
+
+                    <p>
+                        Jadwal pelajaran terbaru yang dikelola
+                        oleh guru dan staf sekolah.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="schedule-table-wrap">
+
+                    <table class="schedule-table">
+
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>Jam</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Kelas</th>
+                                <th>Guru</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="scheduleTableBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             DASHBOARD GURU (admin — kelola konten portal)
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="guru-dashboard">
+
+            <div class="page-hero">
+
+                <div class="container profile-hero-row">
+
+                    <div class="profile-hero-avatar">
+                        GR
+                    </div>
+
+                    <div>
+                        <span class="section-label">
+                            DASHBOARD GURU
+                        </span>
+
+                        <h1>
+                            Panel Pengelolaan Portal
+                        </h1>
+
+                        <p>
+                            Kelola pengumuman, jadwal pelajaran,
+                            dan ekstrakurikuler.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="admin-tabs">
+
+                    <button
+                        type="button"
+                        class="admin-tab active"
+                        data-admin-tab="pengumuman">
+                        Pengumuman
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="jadwal">
+                        Jadwal Pelajaran
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="ekstra">
+                        Ekstrakurikuler
+                    </button>
+
+                </div>
+
+
+                <!-- PANEL: PENGUMUMAN -->
+                <div class="admin-panel active" data-admin-panel="pengumuman">
+
+                    <div class="two-column">
+
+                        <div class="form-card">
+
+                            <div class="form-header">
+                                <span class="section-label">FORM PENGUMUMAN</span>
+                                <h2 id="pengumumanFormTitle">Tambah Pengumuman</h2>
+                            </div>
+
+                            <form id="pengumumanForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Tanggal</label>
+                                        <input type="text" name="tanggal" placeholder="Contoh: 25" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Bulan</label>
+                                        <input type="text" name="bulan" placeholder="Contoh: AGU" required maxlength="3">
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Kategori</label>
+                                    <input type="text" name="kategori" placeholder="Contoh: SEKOLAH" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Judul</label>
+                                    <input type="text" name="judul" placeholder="Judul pengumuman" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Deskripsi</label>
+                                    <textarea name="deskripsi" rows="3" placeholder="Isi pengumuman singkat" required></textarea>
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="button" class="btn btn-secondary" id="pengumumanCancelEdit" hidden>Batal Edit</button>
+                                </div>
+
+                            </form>
 
                         </div>
 
-                        <div>
 
-                            <span class="announcement-label">
-                                SEKOLAH
-                            </span>
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR PENGUMUMAN</span>
+                            <h2>Semua Pengumuman</h2>
+                            <ul class="admin-list" id="pengumumanAdminList"></ul>
+                        </div>
 
-                            <h3>
-                                Informasi kegiatan siswa
-                            </h3>
+                    </div>
 
-                            <p>
-                                Pantau informasi kegiatan sekolah
-                                melalui portal kesiswaan.
-                            </p>
+                </div>
+
+
+                <!-- PANEL: JADWAL -->
+                <div class="admin-panel" data-admin-panel="jadwal">
+
+                    <div class="two-column">
+
+                        <div class="form-card">
+
+                            <div class="form-header">
+                                <span class="section-label">FORM JADWAL</span>
+                                <h2 id="jadwalFormTitle">Tambah Jadwal</h2>
+                            </div>
+
+                            <form id="jadwalForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="form-group">
+                                    <label>Hari</label>
+                                    <select name="hari" required>
+                                        <option value="">Pilih hari</option>
+                                        <option>Senin</option>
+                                        <option>Selasa</option>
+                                        <option>Rabu</option>
+                                        <option>Kamis</option>
+                                        <option>Jumat</option>
+                                        <option>Sabtu</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Jam</label>
+                                    <input type="text" name="jam" placeholder="Contoh: 07:00 - 08:30" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Mata Pelajaran</label>
+                                    <input type="text" name="mapel" placeholder="Contoh: Matematika" required>
+                                </div>
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Kelas</label>
+                                        <input type="text" name="kelas" placeholder="Contoh: IX A" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Guru Pengampu</label>
+                                        <input type="text" name="guru" placeholder="Nama guru" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="button" class="btn btn-secondary" id="jadwalCancelEdit" hidden>Batal Edit</button>
+                                </div>
+
+                            </form>
 
                         </div>
 
-                    </article>
+
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR JADWAL</span>
+                            <h2>Semua Jadwal</h2>
+                            <ul class="admin-list" id="jadwalAdminList"></ul>
+                        </div>
+
+                    </div>
+
+                </div>
 
 
-                    <article class="announcement-card">
+                <!-- PANEL: EKSTRAKURIKULER -->
+                <div class="admin-panel" data-admin-panel="ekstra">
 
-                        <div class="announcement-date">
+                    <div class="two-column">
 
-                            <strong>
-                                18
-                            </strong>
+                        <div class="form-card">
 
-                            <span>
-                                AGU
-                            </span>
+                            <div class="form-header">
+                                <span class="section-label">FORM EKSTRAKURIKULER</span>
+                                <h2 id="ekstraFormTitle">Tambah Ekstrakurikuler</h2>
+                            </div>
+
+                            <form id="ekstraForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Ikon (emoji)</label>
+                                        <input type="text" name="icon" placeholder="Contoh: ⚽" maxlength="4" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Kategori</label>
+                                        <select name="kategori" required>
+                                            <option value="olahraga">Olahraga</option>
+                                            <option value="seni">Seni</option>
+                                            <option value="organisasi">Organisasi</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nama Kegiatan</label>
+                                    <input type="text" name="judul" placeholder="Contoh: Futsal" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Deskripsi</label>
+                                    <textarea name="deskripsi" rows="3" placeholder="Deskripsi singkat kegiatan" required></textarea>
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="button" class="btn btn-secondary" id="ekstraCancelEdit" hidden>Batal Edit</button>
+                                </div>
+
+                            </form>
 
                         </div>
 
-                        <div>
 
-                            <span class="announcement-label">
-                                AKADEMIK
-                            </span>
-
-                            <h3>
-                                Informasi pembelajaran
-                            </h3>
-
-                            <p>
-                                Siswa diharapkan memperhatikan
-                                informasi akademik terbaru.
-                            </p>
-
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR EKSTRAKURIKULER</span>
+                            <h2>Semua Kegiatan</h2>
+                            <ul class="admin-list" id="ekstraAdminList"></ul>
                         </div>
 
-                    </article>
-
-
-                    <article class="announcement-card">
-
-                        <div class="announcement-date">
-
-                            <strong>
-                                15
-                            </strong>
-
-                            <span>
-                                AGU
-                            </span>
-
-                        </div>
-
-                        <div>
-
-                            <span class="announcement-label">
-                                KESISWAAN
-                            </span>
-
-                            <h3>
-                                Pengumuman kegiatan ekstrakurikuler
-                            </h3>
-
-                            <p>
-                                Informasi mengenai kegiatan
-                                ekstrakurikuler tersedia di portal.
-                            </p>
-
-                        </div>
-
-                    </article>
+                    </div>
 
                 </div>
 
@@ -1143,6 +1364,7 @@
         </section>
 
     </main>
+
 
 
 
@@ -1155,6 +1377,10 @@
         <div class="container footer-grid">
 
             <div>
+
+                <h4>
+                    Tentang
+                </h4>
 
                 <div class="footer-brand">
                     MTsN 1 Wonosobo
@@ -1247,7 +1473,7 @@
 
 
             <div class="modal-logo">
-                M1
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShXhrRpTRCk090TGbv5PtRjYvF_B__pLE_w6q9YFifJ9IJrbn5nPPC_A&s=10" alt="Logo MTsN 1 Wonosobo">
             </div>
 
             <span class="section-label">
@@ -1255,26 +1481,26 @@
             </span>
 
             <h2>
-                Login Siswa
+                Login
             </h2>
 
             <p>
                 Masuk untuk mengakses layanan siswa.
             </p>
-
+    
 
             <form id="loginForm">
 
                 <div class="form-group">
 
                     <label>
-                        NIS
+                        NIS / NIP
                     </label>
 
                     <input
                         type="text"
                         name="nis"
-                        placeholder="Masukkan NIS"
+                        placeholder="Masukkan NIS (siswa) atau NIP (guru)"
                         required>
 
                 </div>
