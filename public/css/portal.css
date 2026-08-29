@@ -143,7 +143,6 @@ textarea:focus-visible {
     width: 42px;
     height: 42px;
     border-radius: 10px;
-    background: var(--primary);
     color: #fff;
     font-family: var(--font-mono);
     font-weight: 500;
@@ -158,7 +157,7 @@ textarea:focus-visible {
 .brand-logo img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .brand-text {
@@ -503,12 +502,26 @@ textarea:focus-visible {
    PAGE SWITCHING (SPA-style tabs)
 ========================================================= */
 
-.page { display: none; animation: fadeSlideIn 0.35s ease; }
-.page.active { display: block; }
+.page { display: none; }
 
-@keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(8px); }
+.page.active {
+    display: block;
+    animation: pageEnter 0.3s ease;
+}
+
+.page.leaving {
+    display: block;
+    animation: pageLeave 0.22s ease forwards;
+}
+
+@keyframes pageEnter {
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageLeave {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
 }
 
 /* =========================================================
@@ -578,103 +591,21 @@ textarea:focus-visible {
 
 .btn.full { width: 100%; justify-content: center; }
 
-/* --- Signature element: hero card styled like a student ID card --- */
+/* --- Signature element: hero visual, kini murni foto --- */
 
 .hero-card {
     position: relative;
-    background: var(--primary);
-    color: #fff;
     border-radius: var(--radius-lg);
-    padding: 32px 28px 28px;
+    overflow: hidden;
     box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    isolation: isolate;
+    aspect-ratio: 4 / 3;
 }
 
-.hero-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.14) 1px, transparent 1.4px);
-    background-size: 20px 20px;
-    z-index: -1;
-}
-
-/* perforated edge, like a torn ID card stub */
-.hero-card::after {
-    content: "";
-    position: absolute;
-    left: -10px; right: -10px; bottom: 76px;
-    height: 1px;
-    background-image: repeating-linear-gradient(to right, rgba(255,255,255,0.45) 0 8px, transparent 8px 16px);
-}
-
-.hero-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: rgba(255,255,255,0.75);
-}
-
-.status-dot {
-    width: 8px; height: 8px;
-    border-radius: 999px;
-    background: #7BE1A8;
-    box-shadow: 0 0 0 3px rgba(123,225,168,0.25);
-}
-
-.hero-card-icon {
-    width: 56px; height: 56px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.22);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-mono);
-    font-size: 18px;
-    margin: 22px 0 18px;
-    overflow: hidden;
-}
-
-.hero-card-icon img {
+.hero-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.hero-card h3 {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.hero-card > p {
-    color: rgba(255,255,255,0.72);
-    font-size: 14px;
-}
-
-.hero-card-stats {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-    padding-top: 18px;
-}
-
-.hero-card-stats div { display: flex; flex-direction: column; gap: 2px; }
-
-.hero-card-stats strong {
-    font-family: var(--font-mono);
-    font-size: 20px;
-    color: #fff;
-}
-
-.hero-card-stats span {
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    color: rgba(255,255,255,0.6);
+    display: block;
 }
 
 /* =========================================================
@@ -1233,7 +1164,6 @@ textarea:focus-visible {
 .modal-logo {
     width: 48px; height: 48px;
     border-radius: 12px;
-    background: var(--primary);
     color: #fff;
     font-family: var(--font-mono);
     font-size: 15px;
@@ -1245,13 +1175,61 @@ textarea:focus-visible {
 .modal-logo img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .modal-box .section-label { display: block; }
 .modal-box h2 { font-size: 22px; margin: 8px 0 8px; }
 .modal-box > p { color: var(--ink-soft); font-size: 13px; margin-bottom: 24px; }
 .modal-box form { text-align: left; }
+
+.extra-detail-box { text-align: center; max-width: 420px; }
+
+.extra-detail-icon {
+    width: 64px; height: 64px;
+    border-radius: var(--radius-md);
+    background: var(--primary-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 16px;
+}
+
+#extraDetailDesc {
+    text-align: left;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+.extra-detail-meta {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.extra-detail-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.extra-detail-meta-icon {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: var(--primary-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
 
 /* =========================================================
    RESPONSIVE
@@ -1300,8 +1278,7 @@ textarea:focus-visible {
     .hero-content p { font-size: 14px; max-width: none; }
     .hero-buttons { flex-direction: column; }
     .hero-buttons .btn { width: 100%; justify-content: center; }
-    .hero-card { padding: 24px 20px 22px; }
-    .hero-card-stats { flex-wrap: wrap; gap: 14px; }
+    .hero-card { aspect-ratio: 4 / 3; }
 
     /* SECTION HEADING */
     .section-heading { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 24px; }

@@ -23,7 +23,7 @@
             <a href="#" class="brand" data-target="home">
 
                 <div class="brand-logo">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShXhrRpTRCk090TGbv5PtRjYvF_B__pLE_w6q9YFifJ9IJrbn5nPPC_A&s=10" alt="Logo MTsN 1 Wonosobo">
+                    <img src="{{ asset('images/logo-sekolah.png') }}" alt="Logo MTsN 1 Wonosobo">
                 </div>
 
                 <div class="brand-text">
@@ -176,42 +176,9 @@
 
                 <div class="hero-card">
 
-                    <div class="hero-card-top">
-                        <span>PORTAL SISWA</span>
-                        <span class="status-dot"></span>
-                    </div>
-
-                    <div class="hero-card-icon">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShXhrRpTRCk090TGbv5PtRjYvF_B__pLE_w6q9YFifJ9IJrbn5nPPC_A&s=10" alt="Logo MTsN 1 Wonosobo">
-                    </div>
-
-                    <h3>
-                        MTsN 1 Wonosobo
-                    </h3>
-
-                    <p>
-                        Belajar, berkembang,
-                        dan berprestasi bersama.
-                    </p>
-
-                    <div class="hero-card-stats">
-
-                        <div>
-                            <strong>24/7</strong>
-                            <span>Akses</span>
-                        </div>
-
-                        <div>
-                            <strong>6</strong>
-                            <span>Layanan</span>
-                        </div>
-
-                        <div>
-                            <strong>1</strong>
-                            <span>Portal</span>
-                        </div>
-
-                    </div>
+                    <img
+                        src="https://images.unsplash.com/photo-1758270704524-596810e891b5?fm=jpg&q=80&w=900&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt="Siswa MTsN 1 Wonosobo">
 
                 </div>
 
@@ -1334,6 +1301,20 @@
                                     <input type="text" name="judul" placeholder="Contoh: Futsal" required>
                                 </div>
 
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Jadwal</label>
+                                        <input type="text" name="jadwal" placeholder="Contoh: Selasa, 15.30 - 17.00" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Lokasi</label>
+                                        <input type="text" name="lokasi" placeholder="Contoh: Lapangan Sekolah" required>
+                                    </div>
+
+                                </div>
+
                                 <div class="form-group">
                                     <label>Deskripsi</label>
                                     <textarea name="deskripsi" rows="3" placeholder="Deskripsi singkat kegiatan" required></textarea>
@@ -1473,7 +1454,7 @@
 
 
             <div class="modal-logo">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShXhrRpTRCk090TGbv5PtRjYvF_B__pLE_w6q9YFifJ9IJrbn5nPPC_A&s=10" alt="Logo MTsN 1 Wonosobo">
+                <img src="{{ asset('images/logo-sekolah.png') }}" alt="Logo MTsN 1 Wonosobo">
             </div>
 
             <span class="section-label">
@@ -1528,6 +1509,54 @@
                 </button>
 
             </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL DETAIL EKSTRAKURIKULER
+    ====================================================== -->
+
+    <div
+        class="modal"
+        id="extraDetailModal">
+
+        <div class="modal-box extra-detail-box">
+
+            <button
+                type="button"
+                class="modal-close"
+                aria-label="Tutup">
+                ×
+            </button>
+
+            <div class="extra-detail-icon" id="extraDetailIcon"></div>
+
+            <span class="section-label" id="extraDetailCategory">
+            </span>
+
+            <h2 id="extraDetailTitle">
+            </h2>
+
+            <p id="extraDetailDesc">
+            </p>
+
+            <div class="extra-detail-meta">
+
+                <div class="extra-detail-meta-row">
+                    <span class="extra-detail-meta-icon">🕐</span>
+                    <span id="extraDetailJadwal"></span>
+                </div>
+
+                <div class="extra-detail-meta-row">
+                    <span class="extra-detail-meta-icon">📍</span>
+                    <span id="extraDetailLokasi"></span>
+                </div>
+
+            </div>
 
         </div>
 

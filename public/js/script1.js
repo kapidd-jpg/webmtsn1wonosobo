@@ -6,21 +6,57 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     /* -----------------------------------------------------
-       1. NAVIGASI ANTAR HALAMAN (SPA-style, data-target)
+       1. MOBILE MENU
+       (didefinisikan lebih dulu karena dipanggil oleh
+       goToPage() di bagian navigasi di bawah)
+    ----------------------------------------------------- */
+
+    const mobileMenuBtn = document.querySelector('.mobile-menu');
+    const mainNav = document.querySelector('.main-nav');
+
+    function closeMobileMenu() {
+        if (!mainNav) return;
+        mainNav.classList.remove('open');
+        if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    if (mobileMenuBtn && mainNav) {
+        mobileMenuBtn.addEventListener('click', function () {
+            const isOpen = mainNav.classList.toggle('open');
+            mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+        });
+    }
+
+    /* -----------------------------------------------------
+       2. NAVIGASI ANTAR HALAMAN (SPA-style, data-target)
        Semua elemen dengan [data-target] — nav, hero button,
        quick-card, footer — berbagi logika yang sama.
     ----------------------------------------------------- */
 
-    const pages = document.querySelectorAll('.page');
     const navLinks = document.querySelectorAll('.nav-link');
     const targetTriggers = document.querySelectorAll('[data-target]');
 
     function goToPage(pageName) {
         if (!pageName) return;
 
-        pages.forEach(function (page) {
-            page.classList.toggle('active', page.dataset.page === pageName);
-        });
+        const nextPage = document.querySelector('.page[data-page="' + pageName + '"]');
+        if (!nextPage) return;
+
+        const currentPage = document.querySelector('.page.active');
+
+        // halaman lama: fade-out dulu, baru disembunyikan setelah animasinya kelar
+        if (currentPage && currentPage !== nextPage) {
+            currentPage.classList.remove('active');
+            currentPage.classList.add('leaving');
+
+            currentPage.addEventListener('animationend', function onLeaveEnd() {
+                currentPage.classList.remove('leaving');
+                currentPage.removeEventListener('animationend', onLeaveEnd);
+            });
+        }
+
+        // halaman baru: fade-in (animasi jalan otomatis lewat CSS .page.active)
+        nextPage.classList.add('active');
 
         navLinks.forEach(function (link) {
             link.classList.toggle('active', link.dataset.target === pageName);
@@ -47,63 +83,86 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* -----------------------------------------------------
-       2. MOBILE MENU
+       3. MODAL (generik — dipakai login & detail ekstrakurikuler)
+       Semua elemen .modal dibuka/ditutup lewat fungsi yang sama,
+       supaya nambah modal baru gak perlu duplikat logic.
     ----------------------------------------------------- */
 
-    const mobileMenuBtn = document.querySelector('.mobile-menu');
-    const mainNav = document.querySelector('.main-nav');
-
-    function closeMobileMenu() {
-        if (!mainNav) return;
-        mainNav.classList.remove('open');
-        if (mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    function openModal(modalEl) {
+        if (!modalEl) return;
+        modalEl.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        const firstInput = modalEl.querySelector('input');
+        if (firstInput) firstInput.focus();
     }
 
-    if (mobileMenuBtn && mainNav) {
-        mobileMenuBtn.addEventListener('click', function () {
-            const isOpen = mainNav.classList.toggle('open');
-            mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+    function closeModal(modalEl) {
+        if (!modalEl) return;
+        modalEl.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function closeAllModals() {
+        document.querySelectorAll('.modal.open').forEach(closeModal);
+    }
+
+    // tombol × di semua modal
+    document.querySelectorAll('.modal-close').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            closeModal(btn.closest('.modal'));
         });
-    }
+    });
+
+    // klik di luar modal-box menutup modal yang bersangkutan
+    document.querySelectorAll('.modal').forEach(function (modalEl) {
+        modalEl.addEventListener('click', function (e) {
+            if (e.target === modalEl) closeModal(modalEl);
+        });
+    });
+
+    // Escape menutup modal manapun yang lagi kebuka
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAllModals();
+    });
 
     /* -----------------------------------------------------
-       3. MODAL LOGIN
+       3a. MODAL LOGIN
     ----------------------------------------------------- */
 
     const loginBtn = document.getElementById('loginTrigger');
     const profileBtn = document.getElementById('profileTrigger');
     const loginModal = document.getElementById('loginModal');
-    const modalClose = document.querySelector('.modal-close');
 
-    function openModal() {
-        if (!loginModal) return;
-        loginModal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-        const firstInput = loginModal.querySelector('input');
-        if (firstInput) firstInput.focus();
-    }
-
-    function closeModal() {
-        if (!loginModal) return;
-        loginModal.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    if (loginBtn) loginBtn.addEventListener('click', openModal);
-    if (modalClose) modalClose.addEventListener('click', closeModal);
-
-    if (loginModal) {
-        // klik di luar modal-box menutup modal
-        loginModal.addEventListener('click', function (e) {
-            if (e.target === loginModal) closeModal();
+    if (loginBtn) {
+        loginBtn.addEventListener('click', function () {
+            openModal(loginModal);
         });
     }
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && loginModal && loginModal.classList.contains('open')) {
-            closeModal();
-        }
-    });
+    /* -----------------------------------------------------
+       3b. MODAL DETAIL EKSTRAKURIKULER
+    ----------------------------------------------------- */
+
+    const extraDetailModal = document.getElementById('extraDetailModal');
+    const extraDetailIcon = document.getElementById('extraDetailIcon');
+    const extraDetailCategory = document.getElementById('extraDetailCategory');
+    const extraDetailTitle = document.getElementById('extraDetailTitle');
+    const extraDetailDesc = document.getElementById('extraDetailDesc');
+    const extraDetailJadwal = document.getElementById('extraDetailJadwal');
+    const extraDetailLokasi = document.getElementById('extraDetailLokasi');
+
+    function openExtraDetail(item) {
+        if (!extraDetailModal || !item) return;
+
+        if (extraDetailIcon) extraDetailIcon.textContent = item.icon;
+        if (extraDetailCategory) extraDetailCategory.textContent = item.kategori.toUpperCase();
+        if (extraDetailTitle) extraDetailTitle.textContent = item.judul;
+        if (extraDetailDesc) extraDetailDesc.textContent = item.deskripsi;
+        if (extraDetailJadwal) extraDetailJadwal.textContent = item.jadwal || 'Jadwal belum diatur';
+        if (extraDetailLokasi) extraDetailLokasi.textContent = item.lokasi || 'Lokasi belum diatur';
+
+        openModal(extraDetailModal);
+    }
 
     /* -----------------------------------------------------
        4. FORM SUBMIT — Konseling & Login
@@ -174,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setUserSignedIn(role, nis);
 
             setTimeout(function () {
-                closeModal();
+                closeModal(loginModal);
                 loginForm.reset();
                 goToPage(role === 'guru' ? 'guru-dashboard' : 'profil');
             }, 700);
@@ -214,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* -----------------------------------------------------
-       5. EKSTRAKURIKULER — filter kategori + pencarian
+       5. EKSTRAKURIKULER — filter kategori + pencarian + detail
     ----------------------------------------------------- */
 
     const filterButtons = document.querySelectorAll('.filter');
@@ -266,6 +325,18 @@ document.addEventListener('DOMContentLoaded', function () {
         searchInput.addEventListener('input', applyExtraFilters);
     }
 
+    // klik "Lihat kegiatan →" (atau kartunya) buka modal detail
+    if (extraGrid) {
+        extraGrid.addEventListener('click', function (e) {
+            const card = e.target.closest('.extra-card');
+            if (!card) return;
+
+            const id = card.dataset.id;
+            const item = extracurricularsData.find(function (x) { return String(x.id) === id; });
+            if (item) openExtraDetail(item);
+        });
+    }
+
     /* -----------------------------------------------------
        6. DATA PORTAL — pengumuman, jadwal, ekstrakurikuler
        Catatan: array di bawah ini adalah data dummy yang
@@ -285,12 +356,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let nextExtraId = 7;
     let extracurricularsData = [
-        { id: 1, icon: '⚽', kategori: 'olahraga', judul: 'Futsal', deskripsi: 'Melatih kemampuan bermain, kerja sama, dan sportivitas.' },
-        { id: 2, icon: '🏀', kategori: 'olahraga', judul: 'Basket', deskripsi: 'Mengembangkan kemampuan teknik dan kerja sama tim.' },
-        { id: 3, icon: '🎨', kategori: 'seni', judul: 'Seni', deskripsi: 'Wadah untuk mengekspresikan kreativitas dan bakat.' },
-        { id: 4, icon: '★', kategori: 'organisasi', judul: 'OSIM', deskripsi: 'Belajar kepemimpinan, organisasi, dan tanggung jawab.' },
-        { id: 5, icon: '🎵', kategori: 'seni', judul: 'Musik', deskripsi: 'Mengembangkan kemampuan musik dan kreativitas siswa.' },
-        { id: 6, icon: '📚', kategori: 'organisasi', judul: 'PMR', deskripsi: 'Belajar kepedulian, kesehatan, dan kegiatan sosial.' }
+        { id: 1, icon: '⚽', kategori: 'olahraga', judul: 'Futsal', jadwal: 'Selasa, 15.30 - 17.00', lokasi: 'Lapangan Futsal Sekolah', deskripsi: 'Melatih kemampuan bermain, kerja sama, dan sportivitas.' },
+        { id: 2, icon: '🏀', kategori: 'olahraga', judul: 'Basket', jadwal: 'Kamis, 15.30 - 17.00', lokasi: 'Lapangan Basket Sekolah', deskripsi: 'Mengembangkan kemampuan teknik dan kerja sama tim.' },
+        { id: 3, icon: '🎨', kategori: 'seni', judul: 'Seni', jadwal: 'Rabu, 14.00 - 15.30', lokasi: 'Ruang Kesenian', deskripsi: 'Wadah untuk mengekspresikan kreativitas dan bakat.' },
+        { id: 4, icon: '★', kategori: 'organisasi', judul: 'OSIM', jadwal: 'Jumat, 14.00 - 15.30', lokasi: 'Aula Sekolah', deskripsi: 'Belajar kepemimpinan, organisasi, dan tanggung jawab.' },
+        { id: 5, icon: '🎵', kategori: 'seni', judul: 'Musik', jadwal: 'Senin, 15.30 - 17.00', lokasi: 'Ruang Musik', deskripsi: 'Mengembangkan kemampuan musik dan kreativitas siswa.' },
+        { id: 6, icon: '📚', kategori: 'organisasi', judul: 'PMR', jadwal: 'Sabtu, 08.00 - 10.00', lokasi: 'Ruang UKS', deskripsi: 'Belajar kepedulian, kesehatan, dan kegiatan sosial.' }
     ];
 
     let nextScheduleId = 5;
@@ -344,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         extraGrid.innerHTML = extracurricularsData.map(function (item) {
             return (
-                '<article class="extra-card" data-category="' + escapeHtml(item.kategori) + '">' +
+                '<article class="extra-card" data-category="' + escapeHtml(item.kategori) + '" data-id="' + item.id + '">' +
                     '<div class="extra-icon">' + escapeHtml(item.icon) + '</div>' +
                     '<span class="extra-category">' + escapeHtml(item.kategori.toUpperCase()) + '</span>' +
                     '<h3>' + escapeHtml(item.judul) + '</h3>' +
@@ -654,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<li class="admin-list-item" data-id="' + item.id + '">' +
                     '<div class="admin-list-item-info">' +
                         '<strong>' + escapeHtml(item.icon) + ' ' + escapeHtml(item.judul) + '</strong>' +
-                        '<span>' + escapeHtml(item.kategori) + '</span>' +
+                        '<span>' + escapeHtml(item.kategori) + ' · ' + escapeHtml(item.jadwal || '-') + ' · ' + escapeHtml(item.lokasi || '-') + '</span>' +
                     '</div>' +
                     '<div class="admin-list-item-actions">' +
                         '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
@@ -674,10 +745,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 icon: ekstraForm.icon.value.trim(),
                 kategori: ekstraForm.kategori.value,
                 judul: ekstraForm.judul.value.trim(),
+                jadwal: ekstraForm.jadwal.value.trim(),
+                lokasi: ekstraForm.lokasi.value.trim(),
                 deskripsi: ekstraForm.deskripsi.value.trim()
             };
 
-            if (!payload.icon || !payload.kategori || !payload.judul || !payload.deskripsi) {
+            if (!payload.icon || !payload.kategori || !payload.judul || !payload.jadwal || !payload.lokasi || !payload.deskripsi) {
                 showFormNote(ekstraForm, 'Semua kolom wajib diisi.', 'error');
                 return;
             }
@@ -737,6 +810,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 ekstraForm.icon.value = item.icon;
                 ekstraForm.kategori.value = item.kategori;
                 ekstraForm.judul.value = item.judul;
+                ekstraForm.jadwal.value = item.jadwal || '';
+                ekstraForm.lokasi.value = item.lokasi || '';
                 ekstraForm.deskripsi.value = item.deskripsi;
 
                 if (ekstraFormTitle) ekstraFormTitle.textContent = 'Edit Ekstrakurikuler';
