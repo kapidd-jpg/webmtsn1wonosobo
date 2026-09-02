@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Portal Kesiswaan — MTsN 1 Wonosobo</title>
 
@@ -92,25 +93,24 @@
             </nav>
 
 
-            <!-- RIGHT ACTION -->
-            <div class="nav-actions">
+          <div class="nav-actions">
 
-                <button
-                    type="button"
-                    class="login-btn"
-                    id="loginTrigger">
-                    Login
-                </button>
+                @guest
+                    <button type="button" class="login-btn" id="loginTrigger">
+                        Login
+                    </button>
+                @endguest
 
-                <button
-                    type="button"
-                    class="profile-btn"
-                    id="profileTrigger"
-                    data-target="profil"
-                    title="Profil Siswa"
-                    hidden>
-                    <span class="profile-avatar">AS</span>
-                </button>
+                @auth
+                    <button
+                        type="button"
+                        class="profile-btn"
+                        id="profileTrigger"
+                        data-target="{{ auth()->user()->role === 'guru' ? 'guru-dashboard' : 'profil' }}"
+                        title="Profil">
+                        <span class="profile-avatar">{{ auth()->user()->role === 'guru' ? 'GR' : 'AS' }}</span>
+                    </button>
+                @endauth
 
             </div>
 
@@ -846,9 +846,12 @@
              PROFIL (Dashboard Siswa — muncul setelah login)
         ================================================== -->
 
-        <section
+                <section
             class="page"
             data-page="profil">
+
+@auth
+@if (auth()->user()->role === 'siswa')
 
             <div class="page-hero">
 
@@ -864,11 +867,11 @@
                         </span>
 
                         <h1 id="profileGreeting">
-                            Halo, Ahmad Setiawan
+                            Halo, {{ auth()->user()->name }}
                         </h1>
 
                         <p>
-                            Kelas IX A · NIS 2425xxxx
+                            Kelas {{ auth()->user()->kelas ?? '-' }} · NIS {{ auth()->user()->nis_nip }}
                         </p>
                     </div>
 
@@ -922,24 +925,24 @@
 
                         <ul class="profile-detail-list">
 
-                            <li>
+                          <li>
                                 <span>Nama Lengkap</span>
-                                <strong>Ahmad Setiawan</strong>
+                                <strong>{{ auth()->user()->name }}</strong>
                             </li>
 
                             <li>
                                 <span>NIS</span>
-                                <strong id="profileNis">2425xxxx</strong>
+                                <strong id="profileNis">{{ auth()->user()->nis_nip }}</strong>
                             </li>
 
                             <li>
                                 <span>Kelas</span>
-                                <strong>IX A</strong>
+                                <strong>{{ auth()->user()->kelas ?? '-' }}</strong>
                             </li>
 
                             <li>
                                 <span>Wali Kelas</span>
-                                <strong>Ibu Siti Rahmawati, S.Pd.</strong>
+                                <strong>{{ auth()->user()->wali_kelas ?? '-' }}</strong>
                             </li>
 
                             <li>
@@ -981,21 +984,31 @@
 
                         </ul>
 
-                        <button
-                            type="button"
-                            class="btn btn-secondary full profile-logout-btn"
-                            id="logoutBtn"
-                            style="margin-top: 24px;">
-                            Keluar Akun
-                        </button>
+                        <form method="POST" action="{{ route('logout') }}" style="margin-top: 24px;">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="btn btn-secondary full profile-logout-btn">
+                                Keluar Akun
+                            </button>
+                        </form>
 
                     </div>
 
-                </div>
+                        </div>
 
-            </div>
+                        </div>
 
-        </section>
+                    @endif
+                    @endauth
+
+                    </section>
+
+
+
+<!-- =================================================
+     JADWAL PELAJARAN (publik)
+================================================== -->
 
 
 
@@ -1062,6 +1075,8 @@
              DASHBOARD GURU (admin — kelola konten portal)
         ================================================== -->
 
+        @auth
+        @if (auth()->user()->role === 'guru')
         <section
             class="page"
             data-page="guru-dashboard">
@@ -1343,6 +1358,9 @@
             </div>
 
         </section>
+        
+        @endif
+        @endauth
 
     </main>
 
@@ -1440,8 +1458,8 @@
     ====================================================== -->
 
     <div
-        class="modal"
-        id="loginModal">
+    class="modal {{ $errors->has('nis_nip') ? 'open' : '' }}"
+    id="loginModal">
 
         <div class="modal-box">
 
@@ -1470,7 +1488,8 @@
             </p>
     
 
-            <form id="loginForm">
+                    <form id="loginForm" method="POST" action="{{ route('login') }}">
+                @csrf
 
                 <div class="form-group">
 
@@ -1480,7 +1499,8 @@
 
                     <input
                         type="text"
-                        name="nis"
+                        name="nis_nip"
+                        value="{{ old('nis_nip') }}"
                         placeholder="Masukkan NIS (siswa) atau NIP (guru)"
                         required>
 
@@ -1501,6 +1521,9 @@
 
                 </div>
 
+                @error('nis_nip')
+                    <div class="form-note show error">{{ $message }}</div>
+                @enderror
 
                 <button
                     type="submit"

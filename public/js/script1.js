@@ -205,73 +205,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const nis = loginForm.nis.value.trim();
-            const password = loginForm.password.value.trim();
-
-            if (!nis || !password) {
-                showFormNote(loginForm, 'NIS/NIP dan password wajib diisi.', 'error');
-                return;
-            }
-
-            // TODO: ganti dengan request ke route Laravel, contoh:
-            // fetch('/login', { method: 'POST', body: new FormData(loginForm), headers: { 'X-CSRF-TOKEN': token } })
-            // Role (siswa/guru) dan data profil di dashboard saat ini masih dummy —
-            // sambungkan ke response backend supaya menampilkan data & role asli.
-            //
-            // Aturan role sementara (dummy): NIP guru format aslinya 18 digit,
-            // sedangkan NIS siswa jauh lebih pendek. Ganti logic ini dengan
-            // status role yang dikirim backend saat sudah terhubung.
-            const digitsOnly = nis.replace(/\D/g, '');
-            const role = digitsOnly.length >= 15 ? 'guru' : 'siswa';
-
-            showFormNote(loginForm, 'Login berhasil. Mengalihkan ke dashboard...', 'success');
-            setUserSignedIn(role, nis);
-
-            setTimeout(function () {
-                closeModal(loginModal);
-                loginForm.reset();
-                goToPage(role === 'guru' ? 'guru-dashboard' : 'profil');
-            }, 700);
-        });
-    }
-
-    function setUserSignedIn(role, id) {
-        if (loginBtn) loginBtn.hidden = true;
-
-        if (profileBtn) {
-            profileBtn.hidden = false;
-            profileBtn.dataset.target = role === 'guru' ? 'guru-dashboard' : 'profil';
-
-            const avatarEl = profileBtn.querySelector('.profile-avatar');
-            if (avatarEl) avatarEl.textContent = role === 'guru' ? 'GR' : 'AS';
-        }
-
-        if (role === 'siswa') {
-            const profileNis = document.getElementById('profileNis');
-            if (profileNis && id) profileNis.textContent = id;
-        }
-    }
-
-    function setUserSignedOut() {
-        if (loginBtn) loginBtn.hidden = false;
-        if (profileBtn) profileBtn.hidden = true;
-        goToPage('home');
-    }
-
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function () {
-            // TODO: ganti dengan request logout ke route Laravel, contoh:
-            // fetch('/logout', { method: 'POST', headers: { 'X-CSRF-TOKEN': token } })
-            setUserSignedOut();
-        });
-    }
-
     /* -----------------------------------------------------
        5. EKSTRAKURIKULER — filter kategori + pencarian + detail
     ----------------------------------------------------- */
@@ -339,38 +272,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* -----------------------------------------------------
        6. DATA PORTAL — pengumuman, jadwal, ekstrakurikuler
-       Catatan: array di bawah ini adalah data dummy yang
-       hidup di memori browser (hilang saat refresh). Untuk
-       produksi, ganti setiap render*()/simpan di bawah dengan
-       fetch() ke endpoint Laravel (GET untuk render, POST/PUT/
-       DELETE untuk aksi guru), supaya data tersimpan permanen
-       di database dan sinkron ke semua pengguna.
+       Catatan: pengumuman & ekstrakurikuler & jadwal diambil
+       lewat apiRequest() dari endpoint Laravel. Untuk
+       jadwal/ekstrakurikuler, aksi tambah/edit/hapus di
+       dashboard guru masih memakai array lokal (lihat TODO
+       di bagian 7) — ganti dengan apiRequest() begitu route
+       Laravel-nya tersedia, seperti pola pengumuman.
     ----------------------------------------------------- */
 
-    let nextAnnouncementId = 4;
-    let announcementsData = [
-        { id: 1, tanggal: '20', bulan: 'AGU', kategori: 'SEKOLAH', judul: 'Informasi kegiatan siswa', deskripsi: 'Pantau informasi kegiatan sekolah melalui portal kesiswaan.' },
-        { id: 2, tanggal: '18', bulan: 'AGU', kategori: 'AKADEMIK', judul: 'Informasi pembelajaran', deskripsi: 'Siswa diharapkan memperhatikan informasi akademik terbaru.' },
-        { id: 3, tanggal: '15', bulan: 'AGU', kategori: 'KESISWAAN', judul: 'Pengumuman kegiatan ekstrakurikuler', deskripsi: 'Informasi mengenai kegiatan ekstrakurikuler tersedia di portal.' }
-    ];
+    let announcementsData = [];
+    let extracurricularsData = [];
+    let scheduleData = [];
 
-    let nextExtraId = 7;
-    let extracurricularsData = [
-        { id: 1, icon: '⚽', kategori: 'olahraga', judul: 'Futsal', jadwal: 'Selasa, 15.30 - 17.00', lokasi: 'Lapangan Futsal Sekolah', deskripsi: 'Melatih kemampuan bermain, kerja sama, dan sportivitas.' },
-        { id: 2, icon: '🏀', kategori: 'olahraga', judul: 'Basket', jadwal: 'Kamis, 15.30 - 17.00', lokasi: 'Lapangan Basket Sekolah', deskripsi: 'Mengembangkan kemampuan teknik dan kerja sama tim.' },
-        { id: 3, icon: '🎨', kategori: 'seni', judul: 'Seni', jadwal: 'Rabu, 14.00 - 15.30', lokasi: 'Ruang Kesenian', deskripsi: 'Wadah untuk mengekspresikan kreativitas dan bakat.' },
-        { id: 4, icon: '★', kategori: 'organisasi', judul: 'OSIM', jadwal: 'Jumat, 14.00 - 15.30', lokasi: 'Aula Sekolah', deskripsi: 'Belajar kepemimpinan, organisasi, dan tanggung jawab.' },
-        { id: 5, icon: '🎵', kategori: 'seni', judul: 'Musik', jadwal: 'Senin, 15.30 - 17.00', lokasi: 'Ruang Musik', deskripsi: 'Mengembangkan kemampuan musik dan kreativitas siswa.' },
-        { id: 6, icon: '📚', kategori: 'organisasi', judul: 'PMR', jadwal: 'Sabtu, 08.00 - 10.00', lokasi: 'Ruang UKS', deskripsi: 'Belajar kepedulian, kesehatan, dan kegiatan sosial.' }
-    ];
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-    let nextScheduleId = 5;
-    let scheduleData = [
-        { id: 1, hari: 'Senin', jam: '07:00 - 08:30', mapel: 'Matematika', kelas: 'IX A', guru: 'Bpk. Arif Rahman' },
-        { id: 2, hari: 'Senin', jam: '08:30 - 10:00', mapel: 'Bahasa Indonesia', kelas: 'IX A', guru: 'Ibu Siti Rahmawati' },
-        { id: 3, hari: 'Selasa', jam: '07:00 - 08:30', mapel: 'IPA', kelas: 'IX A', guru: 'Bpk. Dedi Kurniawan' },
-        { id: 4, hari: 'Rabu', jam: '09:00 - 10:30', mapel: 'Bahasa Inggris', kelas: 'IX A', guru: 'Ibu Nurul Hidayah' }
-    ];
+    async function apiRequest(url, options = {}) {
+        const headers = Object.assign(
+            { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            options.headers || {}
+        );
+
+        if (csrfToken && options.method && options.method !== 'GET') {
+            headers['X-CSRF-TOKEN'] = csrfToken;
+        }
+
+        const response = await fetch(url, Object.assign({}, options, { headers }));
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(function () { return {}; });
+            throw new Error(errorBody.message || 'Terjadi kesalahan pada server.');
+        }
+
+        if (response.status === 204) return null;
+        return response.json();
+    }
+
+    // Menghasilkan id baru yang aman dipakai untuk data lokal
+    // (jadwal & ekstrakurikuler) tanpa bentrok dengan id yang
+    // sudah datang dari API.
+    function getNextId(list) {
+        return list.reduce(function (max, item) {
+            const n = Number(item.id);
+            return Number.isFinite(n) && n > max ? n : max;
+        }, 0) + 1;
+    }
 
     const dayOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
@@ -382,10 +327,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = String(value == null ? '' : value);
+        return div.innerHTML;
+    }
+
     /* ---------- RENDER: halaman publik ---------- */
 
+    async function loadAnnouncements() {
+        try {
+            announcementsData = await apiRequest('/api/pengumuman');
+        } catch (err) {
+            announcementsData = [];
+        }
+        renderAnnouncements();
+        renderPengumumanAdmin();
+    }
+
     function renderAnnouncements() {
-        const list = document.getElementById('announcementList');
+        const list = document.getElementById('pengumumanList');
         if (!list) return;
 
         if (announcementsData.length === 0) {
@@ -396,18 +357,23 @@ document.addEventListener('DOMContentLoaded', function () {
         list.innerHTML = announcementsData.map(function (item) {
             return (
                 '<article class="announcement-card">' +
-                    '<div class="announcement-date">' +
-                        '<strong>' + escapeHtml(item.tanggal) + '</strong>' +
-                        '<span>' + escapeHtml(item.bulan) + '</span>' +
-                    '</div>' +
-                    '<div>' +
-                        '<span class="announcement-label">' + escapeHtml(item.kategori) + '</span>' +
-                        '<h3>' + escapeHtml(item.judul) + '</h3>' +
-                        '<p>' + escapeHtml(item.deskripsi) + '</p>' +
-                    '</div>' +
+                    '<span class="announcement-date">' + escapeHtml(item.tanggal) + ' ' + escapeHtml(item.bulan) + '</span>' +
+                    '<span class="announcement-category">' + escapeHtml(item.kategori) + '</span>' +
+                    '<h3>' + escapeHtml(item.judul) + '</h3>' +
+                    '<p>' + escapeHtml(item.deskripsi) + '</p>' +
                 '</article>'
             );
         }).join('');
+    }
+
+    async function loadExtracurriculars() {
+        try {
+            extracurricularsData = await apiRequest('/api/ekstrakurikuler');
+        } catch (err) {
+            extracurricularsData = [];
+        }
+        renderExtracurriculars();
+        renderEkstraAdmin();
     }
 
     function renderExtracurriculars() {
@@ -426,6 +392,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('');
 
         applyExtraFilters();
+    }
+
+    async function loadSchedule() {
+        try {
+            scheduleData = await apiRequest('/api/jadwal');
+        } catch (err) {
+            scheduleData = [];
+        }
+        renderSchedule();
+        renderJadwalAdmin();
     }
 
     function renderSchedule() {
@@ -448,12 +424,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 '</tr>'
             );
         }).join('');
-    }
-
-    function escapeHtml(value) {
-        const div = document.createElement('div');
-        div.textContent = String(value == null ? '' : value);
-        return div.innerHTML;
     }
 
     /* -----------------------------------------------------
@@ -509,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (pengumumanForm) {
-        pengumumanForm.addEventListener('submit', function (e) {
+        pengumumanForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const id = pengumumanForm.id.value;
@@ -526,21 +496,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // TODO: ganti dengan fetch() POST/PUT ke route Laravel (mis. /admin/pengumuman)
+            try {
+                if (id) {
+                    await apiRequest('/api/pengumuman/' + id, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(pengumumanForm, 'Pengumuman berhasil diperbarui.', 'success');
+                } else {
+                    await apiRequest('/api/pengumuman', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(pengumumanForm, 'Pengumuman berhasil ditambahkan.', 'success');
+                }
 
-            if (id) {
-                announcementsData = announcementsData.map(function (item) {
-                    return String(item.id) === id ? Object.assign({ id: item.id }, payload) : item;
-                });
-                showFormNote(pengumumanForm, 'Pengumuman berhasil diperbarui.', 'success');
-            } else {
-                announcementsData.push(Object.assign({ id: nextAnnouncementId++ }, payload));
-                showFormNote(pengumumanForm, 'Pengumuman berhasil ditambahkan.', 'success');
+                resetPengumumanForm();
+                await loadAnnouncements();
+            } catch (err) {
+                showFormNote(pengumumanForm, err.message, 'error');
             }
-
-            resetPengumumanForm();
-            renderPengumumanAdmin();
-            renderAnnouncements();
         });
     }
 
@@ -557,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (pengumumanAdminList) {
-        pengumumanAdminList.addEventListener('click', function (e) {
+        pengumumanAdminList.addEventListener('click', async function (e) {
             const btn = e.target.closest('button[data-action]');
             if (!btn) return;
 
@@ -566,10 +541,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!id) return;
 
             if (btn.dataset.action === 'delete') {
-                // TODO: ganti dengan fetch() DELETE ke route Laravel
-                announcementsData = announcementsData.filter(function (item) { return String(item.id) !== id; });
-                renderPengumumanAdmin();
-                renderAnnouncements();
+                if (!confirm('Hapus pengumuman ini?')) return;
+                try {
+                    await apiRequest('/api/pengumuman/' + id, { method: 'DELETE' });
+                    await loadAnnouncements();
+                } catch (err) {
+                    alert(err.message);
+                }
                 return;
             }
 
@@ -648,7 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 showFormNote(jadwalForm, 'Jadwal berhasil diperbarui.', 'success');
             } else {
-                scheduleData.push(Object.assign({ id: nextScheduleId++ }, payload));
+                scheduleData.push(Object.assign({ id: getNextId(scheduleData) }, payload));
                 showFormNote(jadwalForm, 'Jadwal berhasil ditambahkan.', 'success');
             }
 
@@ -763,7 +741,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 showFormNote(ekstraForm, 'Ekstrakurikuler berhasil diperbarui.', 'success');
             } else {
-                extracurricularsData.push(Object.assign({ id: nextExtraId++ }, payload));
+                extracurricularsData.push(Object.assign({ id: getNextId(extracurricularsData) }, payload));
                 showFormNote(ekstraForm, 'Ekstrakurikuler berhasil ditambahkan.', 'success');
             }
 
@@ -821,13 +799,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- render awal saat halaman dimuat ---
+    // --- ambil & render data awal saat halaman dimuat ---
 
-    renderAnnouncements();
-    renderExtracurriculars();
-    renderSchedule();
-    renderPengumumanAdmin();
-    renderJadwalAdmin();
-    renderEkstraAdmin();
+    loadAnnouncements();
+    loadExtracurriculars();
+    loadSchedule();
 
 });
