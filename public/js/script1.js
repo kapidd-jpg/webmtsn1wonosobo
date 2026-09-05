@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderAnnouncements() {
-        const list = document.getElementById('pengumumanList');
+        const list = document.getElementById('announcementList');
         if (!list) return;
 
         if (announcementsData.length === 0) {
@@ -795,6 +795,138 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (ekstraFormTitle) ekstraFormTitle.textContent = 'Edit Ekstrakurikuler';
                 if (ekstraCancelEdit) ekstraCancelEdit.hidden = false;
                 ekstraForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    /* -----------------------------------------------------
+       8. STELA AI ASSISTANT (chat widget)
+       Catatan: balasan STELA diambil dari endpoint Laravel
+       POST /api/stela dengan body { message } yang membalas
+       JSON { reply: "..." }, contoh route:
+
+           Route::post('/api/stela', [StelaController::class, 'reply']);
+
+       Selama endpoint belum tersedia, apiRequest() akan gagal
+       (ke-catch) dan STELA menampilkan pesan fallback di bawah.
+    ----------------------------------------------------- */
+
+    const stelaTrigger = document.getElementById('stelaTrigger');
+    const stelaPanel = document.getElementById('stelaPanel');
+    const stelaClose = document.getElementById('stelaClose');
+    const stelaMessages = document.getElementById('stelaMessages');
+    const stelaForm = document.getElementById('stelaForm');
+    const stelaInput = document.getElementById('stelaInput');
+    const stelaSendBtn = stelaForm ? stelaForm.querySelector('.stela-send') : null;
+
+    let stelaGreeted = false;
+    let stelaBusy = false;
+
+    function stelaAddMessage(text, sender) {
+        if (!stelaMessages) return;
+        const bubble = document.createElement('div');
+        bubble.className = 'stela-message ' + sender;
+        bubble.textContent = text;
+        stelaMessages.appendChild(bubble);
+        stelaMessages.scrollTop = stelaMessages.scrollHeight;
+    }
+
+    function stelaShowTyping() {
+        if (!stelaMessages) return;
+        const typing = document.createElement('div');
+        typing.className = 'stela-typing';
+        typing.id = 'stelaTypingIndicator';
+        typing.innerHTML = '<span></span><span></span><span></span>';
+        stelaMessages.appendChild(typing);
+        stelaMessages.scrollTop = stelaMessages.scrollHeight;
+    }
+
+    function stelaHideTyping() {
+        const typing = document.getElementById('stelaTypingIndicator');
+        if (typing) typing.remove();
+    }
+
+    function openStela() {
+        if (!stelaPanel) return;
+        stelaPanel.classList.add('open');
+
+        if (stelaTrigger) {
+            stelaTrigger.classList.add('is-open');
+            stelaTrigger.setAttribute('aria-expanded', 'true');
+        }
+
+        if (!stelaGreeted) {
+            stelaGreeted = true;
+            stelaAddMessage(
+                'Halo! Aku STELA, asisten AI Portal Kesiswaan MTsN 1 Wonosobo. ' +
+                'Ada yang bisa aku bantu — jadwal pelajaran, ekstrakurikuler, konseling, atau pengumuman?',
+                'bot'
+            );
+        }
+
+        if (stelaInput) stelaInput.focus();
+    }
+
+    function closeStela() {
+        if (!stelaPanel) return;
+        stelaPanel.classList.remove('open');
+
+        if (stelaTrigger) {
+            stelaTrigger.classList.remove('is-open');
+            stelaTrigger.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    if (stelaTrigger) {
+        stelaTrigger.addEventListener('click', function () {
+            const isOpen = stelaPanel && stelaPanel.classList.contains('open');
+            isOpen ? closeStela() : openStela();
+        });
+    }
+
+    if (stelaClose) {
+        stelaClose.addEventListener('click', closeStela);
+    }
+
+    // Escape juga menutup panel STELA (selaras dengan modal lain di bagian 3)
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && stelaPanel && stelaPanel.classList.contains('open')) {
+            closeStela();
+        }
+    });
+
+    if (stelaForm) {
+        stelaForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            if (stelaBusy || !stelaInput) return;
+
+            const message = stelaInput.value.trim();
+            if (!message) return;
+
+            stelaAddMessage(message, 'user');
+            stelaInput.value = '';
+            stelaBusy = true;
+            if (stelaSendBtn) stelaSendBtn.disabled = true;
+            stelaShowTyping();
+
+            try {
+                const result = await apiRequest('/api/stela', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: message })
+                });
+
+                stelaHideTyping();
+                stelaAddMessage(
+                    result && result.reply ? result.reply : 'Maaf, aku belum punya jawaban untuk itu.',
+                    'bot'
+                );
+            } catch (err) {
+                stelaHideTyping();
+                stelaAddMessage('Maaf, STELA sedang tidak dapat diakses. Coba lagi sebentar lagi, ya.', 'bot');
+            } finally {
+                stelaBusy = false;
+                if (stelaSendBtn) stelaSendBtn.disabled = false;
+                stelaInput.focus();
             }
         });
     }

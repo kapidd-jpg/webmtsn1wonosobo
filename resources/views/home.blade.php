@@ -1587,6 +1587,77 @@
 
 
 
+    <!-- =====================================================
+         STELA AI ASSISTANT (chat widget — muncul di semua halaman)
+         Catatan backend: balasan STELA diambil dari endpoint
+         POST /api/stela (lihat TODO di script1.js bagian 8).
+    ====================================================== -->
+
+    <button
+        type="button"
+        class="stela-fab"
+        id="stelaTrigger"
+        aria-label="Buka STELA AI"
+        aria-expanded="false">
+        <span class="stela-fab-icon" aria-hidden="true">🤖</span>
+    </button>
+
+    <div class="stela-panel" id="stelaPanel" role="dialog" aria-label="STELA AI Assistant">
+
+        <div class="stela-header">
+
+            <div class="stela-header-info">
+
+                <span class="stela-avatar" aria-hidden="true">
+                    🤖
+                </span>
+
+                <div>
+                    <strong>STELA</strong>
+                    <span>Asisten AI Portal Kesiswaan</span>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="stela-close"
+                id="stelaClose"
+                aria-label="Tutup STELA">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="stela-messages" id="stelaMessages">
+            <!-- pesan STELA dirender lewat script1.js -->
+        </div>
+
+
+        <form class="stela-input-row" id="stelaForm">
+
+            <input
+                type="text"
+                name="message"
+                id="stelaInput"
+                placeholder="Tanya STELA..."
+                autocomplete="off"
+                required>
+
+            <button
+                type="submit"
+                class="stela-send"
+                aria-label="Kirim pesan ke STELA">
+                ➤
+            </button>
+
+        </form>
+
+    </div>
+
+
+
     <!-- JAVASCRIPT -->
 
     <script src="{{ asset('js/script1.js') }}"></script>
