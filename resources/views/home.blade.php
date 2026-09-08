@@ -596,80 +596,7 @@
 
             <div class="container page-content">
 
-                <div class="feature-grid">
-
-                    <article class="feature-card">
-
-                        <div class="feature-number">
-                            01
-                        </div>
-
-                        <h3>
-                            Organisasi Siswa
-                        </h3>
-
-                        <p>
-                            Wadah bagi siswa untuk belajar
-                            berorganisasi dan memimpin.
-                        </p>
-
-                    </article>
-
-
-                    <article class="feature-card">
-
-                        <div class="feature-number">
-                            02
-                        </div>
-
-                        <h3>
-                            Kegiatan Sekolah
-                        </h3>
-
-                        <p>
-                            Berbagai kegiatan yang mendukung
-                            kreativitas dan pengalaman siswa.
-                        </p>
-
-                    </article>
-
-
-                    <article class="feature-card">
-
-                        <div class="feature-number">
-                            03
-                        </div>
-
-                        <h3>
-                            Prestasi
-                        </h3>
-
-                        <p>
-                            Informasi dan apresiasi terhadap
-                            prestasi siswa.
-                        </p>
-
-                    </article>
-
-
-                    <article class="feature-card">
-
-                        <div class="feature-number">
-                            04
-                        </div>
-
-                        <h3>
-                            Tata Tertib
-                        </h3>
-
-                        <p>
-                            Informasi mengenai aturan dan
-                            kedisiplinan siswa.
-                        </p>
-
-                    </article>
-
-                </div>
+                <div class="feature-grid" id="kesiswaanGrid"></div>
 
             </div>
 
@@ -1134,6 +1061,13 @@
                         Ekstrakurikuler
                     </button>
 
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="kesiswaan">
+                        Kesiswaan
+                    </button>
+
                 </div>
 
 
@@ -1349,6 +1283,58 @@
                             <span class="card-label">DAFTAR EKSTRAKURIKULER</span>
                             <h2>Semua Kegiatan</h2>
                             <ul class="admin-list" id="ekstraAdminList"></ul>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PANEL: KESISWAAN -->
+                <div class="admin-panel" data-admin-panel="kesiswaan">
+
+                    <div class="two-column">
+
+                        <div class="form-card">
+
+                            <div class="form-header">
+                                <span class="section-label">FORM KESISWAAN</span>
+                                <h2 id="kesiswaanFormTitle">Tambah Konten Kesiswaan</h2>
+                            </div>
+
+                            <form id="kesiswaanForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="form-group">
+                                    <label>Judul</label>
+                                    <input type="text" name="judul" placeholder="Contoh: Organisasi Siswa" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Deskripsi</label>
+                                    <textarea name="deskripsi" rows="4" placeholder="Deskripsi singkat" required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Urutan Tampil</label>
+                                    <input type="number" name="urutan" placeholder="Contoh: 1" min="1">
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="button" class="btn btn-secondary" id="kesiswaanCancelEdit" hidden>Batal Edit</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR KONTEN</span>
+                            <h2>Semua Konten Kesiswaan</h2>
+                            <ul class="admin-list" id="kesiswaanAdminList"></ul>
                         </div>
 
                     </div>

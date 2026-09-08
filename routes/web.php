@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\ExtracurricularController;
 use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\StelaController;
+use App\Http\Controllers\Api\CounselingController;
+use App\Http\Controllers\Api\KesiswaanController;
 
 Route::get('/', [PortalController::class, 'index'])->name('portal.index');
 
@@ -18,6 +21,9 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::get('/api/pengumuman', [AnnouncementController::class, 'index']);
 Route::get('/api/ekstrakurikuler', [ExtracurricularController::class, 'index']);
 Route::get('/api/jadwal', [ScheduleController::class, 'index']);
+Route::post('/api/stela', [StelaController::class, 'reply']);
+Route::post('/api/konseling', [CounselingController::class, 'store']);
+Route::get('/api/kesiswaan', [KesiswaanController::class, 'index']);
 
 // Kelola data — hanya guru yang login
 Route::middleware(['auth', 'guru'])->group(function () {
@@ -32,4 +38,10 @@ Route::middleware(['auth', 'guru'])->group(function () {
     Route::post('/api/jadwal', [ScheduleController::class, 'store']);
     Route::put('/api/jadwal/{schedule}', [ScheduleController::class, 'update']);
     Route::delete('/api/jadwal/{schedule}', [ScheduleController::class, 'destroy']);
+
+    Route::get('/api/konseling', [CounselingController::class, 'index']);
+
+    Route::post('/api/kesiswaan', [KesiswaanController::class, 'store']);
+    Route::put('/api/kesiswaan/{kesiswaanItem}', [KesiswaanController::class, 'update']);
+    Route::delete('/api/kesiswaan/{kesiswaanItem}', [KesiswaanController::class, 'destroy']);
 });

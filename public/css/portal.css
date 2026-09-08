@@ -1350,7 +1350,37 @@ textarea:focus-visible {
     border-radius: var(--radius-sm);
     font-size: 13px;
     line-height: 1.5;
-    white-space: pre-line;
+}
+
+.stela-message p {
+    margin: 0 0 8px;
+}
+
+.stela-message p:last-child {
+    margin-bottom: 0;
+}
+
+.stela-message ul,
+.stela-message ol {
+    margin: 0 0 8px;
+    padding-left: 20px;
+}
+
+.stela-message ul:last-child,
+.stela-message ol:last-child {
+    margin-bottom: 0;
+}
+
+.stela-message li {
+    margin-bottom: 4px;
+}
+
+.stela-message strong {
+    font-weight: 700;
+}
+
+.stela-message em {
+    font-style: italic;
 }
 
 .stela-message.bot {

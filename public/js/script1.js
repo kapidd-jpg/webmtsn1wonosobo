@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const counselingForm = document.getElementById('counselingForm');
     if (counselingForm) {
-        counselingForm.addEventListener('submit', function (e) {
+        counselingForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const nama = counselingForm.nama.value.trim();
@@ -197,11 +197,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // TODO: ganti dengan request ke route Laravel, contoh:
-            // fetch('/konseling', { method: 'POST', body: new FormData(counselingForm), headers: { 'X-CSRF-TOKEN': token } })
+            try {
+                await apiRequest('/api/konseling', {
+                    method: 'POST',
+                    body: JSON.stringify({ nama: nama, kelas: kelas, masalah: masalah })
+                });
 
-            showFormNote(counselingForm, 'Pengajuan konsultasi berhasil dikirim. Guru BK akan menghubungi kamu.', 'success');
-            counselingForm.reset();
+                showFormNote(counselingForm, 'Pengajuan konsultasi berhasil dikirim. Guru BK akan menghubungi kamu.', 'success');
+                counselingForm.reset();
+            } catch (err) {
+                showFormNote(counselingForm, err.message, 'error');
+            }
         });
     }
 
@@ -283,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let announcementsData = [];
     let extracurricularsData = [];
     let scheduleData = [];
+    let kesiswaanData = [];
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
@@ -422,6 +429,37 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<td>' + escapeHtml(item.kelas) + '</td>' +
                     '<td>' + escapeHtml(item.guru) + '</td>' +
                 '</tr>'
+            );
+        }).join('');
+    }
+
+        async function loadKesiswaan() {
+        try {
+            kesiswaanData = await apiRequest('/api/kesiswaan');
+        } catch (err) {
+            kesiswaanData = [];
+        }
+        renderKesiswaan();
+        renderKesiswaanAdmin();
+    }
+
+    function renderKesiswaan() {
+        const grid = document.getElementById('kesiswaanGrid');
+        if (!grid) return;
+
+        if (kesiswaanData.length === 0) {
+            grid.innerHTML = '<p class="empty-state show">Belum ada konten kesiswaan.</p>';
+            return;
+        }
+
+        grid.innerHTML = kesiswaanData.map(function (item, index) {
+            const nomor = String(index + 1).padStart(2, '0');
+            return (
+                '<article class="feature-card">' +
+                    '<div class="feature-number">' + nomor + '</div>' +
+                    '<h3>' + escapeHtml(item.judul) + '</h3>' +
+                    '<p>' + escapeHtml(item.deskripsi) + '</p>' +
+                '</article>'
             );
         }).join('');
     }
@@ -600,8 +638,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('');
     }
 
-    if (jadwalForm) {
-        jadwalForm.addEventListener('submit', function (e) {
+            if (jadwalForm) {
+        jadwalForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const id = jadwalForm.id.value;
@@ -618,21 +656,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // TODO: ganti dengan fetch() POST/PUT ke route Laravel (mis. /admin/jadwal)
+            try {
+                if (id) {
+                    await apiRequest('/api/jadwal/' + id, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(jadwalForm, 'Jadwal berhasil diperbarui.', 'success');
+                } else {
+                    await apiRequest('/api/jadwal', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(jadwalForm, 'Jadwal berhasil ditambahkan.', 'success');
+                }
 
-            if (id) {
-                scheduleData = scheduleData.map(function (item) {
-                    return String(item.id) === id ? Object.assign({ id: item.id }, payload) : item;
-                });
-                showFormNote(jadwalForm, 'Jadwal berhasil diperbarui.', 'success');
-            } else {
-                scheduleData.push(Object.assign({ id: getNextId(scheduleData) }, payload));
-                showFormNote(jadwalForm, 'Jadwal berhasil ditambahkan.', 'success');
+                resetJadwalForm();
+                await loadSchedule();
+            } catch (err) {
+                showFormNote(jadwalForm, err.message, 'error');
             }
-
-            resetJadwalForm();
-            renderJadwalAdmin();
-            renderSchedule();
         });
     }
 
@@ -648,8 +691,8 @@ document.addEventListener('DOMContentLoaded', function () {
         jadwalCancelEdit.addEventListener('click', resetJadwalForm);
     }
 
-    if (jadwalAdminList) {
-        jadwalAdminList.addEventListener('click', function (e) {
+        if (jadwalAdminList) {
+        jadwalAdminList.addEventListener('click', async function (e) {
             const btn = e.target.closest('button[data-action]');
             if (!btn) return;
 
@@ -658,10 +701,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!id) return;
 
             if (btn.dataset.action === 'delete') {
-                // TODO: ganti dengan fetch() DELETE ke route Laravel
-                scheduleData = scheduleData.filter(function (item) { return String(item.id) !== id; });
-                renderJadwalAdmin();
-                renderSchedule();
+                if (!confirm('Hapus jadwal ini?')) return;
+                try {
+                    await apiRequest('/api/jadwal/' + id, { method: 'DELETE' });
+                    await loadSchedule();
+                } catch (err) {
+                    alert(err.message);
+                }
                 return;
             }
 
@@ -714,8 +760,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('');
     }
 
-    if (ekstraForm) {
-        ekstraForm.addEventListener('submit', function (e) {
+       if (ekstraForm) {
+        ekstraForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const id = ekstraForm.id.value;
@@ -733,21 +779,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // TODO: ganti dengan fetch() POST/PUT ke route Laravel (mis. /admin/ekstrakurikuler)
+            try {
+                if (id) {
+                    await apiRequest('/api/ekstrakurikuler/' + id, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(ekstraForm, 'Ekstrakurikuler berhasil diperbarui.', 'success');
+                } else {
+                    await apiRequest('/api/ekstrakurikuler', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(ekstraForm, 'Ekstrakurikuler berhasil ditambahkan.', 'success');
+                }
 
-            if (id) {
-                extracurricularsData = extracurricularsData.map(function (item) {
-                    return String(item.id) === id ? Object.assign({ id: item.id }, payload) : item;
-                });
-                showFormNote(ekstraForm, 'Ekstrakurikuler berhasil diperbarui.', 'success');
-            } else {
-                extracurricularsData.push(Object.assign({ id: getNextId(extracurricularsData) }, payload));
-                showFormNote(ekstraForm, 'Ekstrakurikuler berhasil ditambahkan.', 'success');
+                resetEkstraForm();
+                await loadExtracurriculars();
+            } catch (err) {
+                showFormNote(ekstraForm, err.message, 'error');
             }
-
-            resetEkstraForm();
-            renderEkstraAdmin();
-            renderExtracurriculars();
         });
     }
 
@@ -763,8 +814,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ekstraCancelEdit.addEventListener('click', resetEkstraForm);
     }
 
-    if (ekstraAdminList) {
-        ekstraAdminList.addEventListener('click', function (e) {
+        if (ekstraAdminList) {
+        ekstraAdminList.addEventListener('click', async function (e) {
             const btn = e.target.closest('button[data-action]');
             if (!btn) return;
 
@@ -773,10 +824,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!id) return;
 
             if (btn.dataset.action === 'delete') {
-                // TODO: ganti dengan fetch() DELETE ke route Laravel
-                extracurricularsData = extracurricularsData.filter(function (item) { return String(item.id) !== id; });
-                renderEkstraAdmin();
-                renderExtracurriculars();
+                if (!confirm('Hapus ekstrakurikuler ini?')) return;
+                try {
+                    await apiRequest('/api/ekstrakurikuler/' + id, { method: 'DELETE' });
+                    await loadExtracurriculars();
+                } catch (err) {
+                    alert(err.message);
+                }
                 return;
             }
 
@@ -795,6 +849,124 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (ekstraFormTitle) ekstraFormTitle.textContent = 'Edit Ekstrakurikuler';
                 if (ekstraCancelEdit) ekstraCancelEdit.hidden = false;
                 ekstraForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+        // --- KESISWAAN admin ---
+
+    const kesiswaanForm = document.getElementById('kesiswaanForm');
+    const kesiswaanAdminList = document.getElementById('kesiswaanAdminList');
+    const kesiswaanFormTitle = document.getElementById('kesiswaanFormTitle');
+    const kesiswaanCancelEdit = document.getElementById('kesiswaanCancelEdit');
+
+    function renderKesiswaanAdmin() {
+        if (!kesiswaanAdminList) return;
+
+        if (kesiswaanData.length === 0) {
+            kesiswaanAdminList.innerHTML = '<li class="admin-empty">Belum ada konten kesiswaan.</li>';
+            return;
+        }
+
+        kesiswaanAdminList.innerHTML = kesiswaanData.map(function (item) {
+            return (
+                '<li class="admin-list-item" data-id="' + item.id + '">' +
+                    '<div class="admin-list-item-info">' +
+                        '<strong>' + escapeHtml(item.judul) + '</strong>' +
+                        '<span>Urutan: ' + escapeHtml(item.urutan) + '</span>' +
+                    '</div>' +
+                    '<div class="admin-list-item-actions">' +
+                        '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
+                        '<button type="button" class="delete-btn" data-action="delete">Hapus</button>' +
+                    '</div>' +
+                '</li>'
+            );
+        }).join('');
+    }
+
+    if (kesiswaanForm) {
+        kesiswaanForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const id = kesiswaanForm.id.value;
+            const payload = {
+                judul: kesiswaanForm.judul.value.trim(),
+                deskripsi: kesiswaanForm.deskripsi.value.trim(),
+                urutan: kesiswaanForm.urutan.value ? Number(kesiswaanForm.urutan.value) : null
+            };
+
+            if (!payload.judul || !payload.deskripsi) {
+                showFormNote(kesiswaanForm, 'Judul dan deskripsi wajib diisi.', 'error');
+                return;
+            }
+
+            try {
+                if (id) {
+                    await apiRequest('/api/kesiswaan/' + id, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(kesiswaanForm, 'Konten berhasil diperbarui.', 'success');
+                } else {
+                    await apiRequest('/api/kesiswaan', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    showFormNote(kesiswaanForm, 'Konten berhasil ditambahkan.', 'success');
+                }
+
+                resetKesiswaanForm();
+                await loadKesiswaan();
+            } catch (err) {
+                showFormNote(kesiswaanForm, err.message, 'error');
+            }
+        });
+    }
+
+    function resetKesiswaanForm() {
+        if (!kesiswaanForm) return;
+        kesiswaanForm.reset();
+        kesiswaanForm.id.value = '';
+        if (kesiswaanFormTitle) kesiswaanFormTitle.textContent = 'Tambah Konten Kesiswaan';
+        if (kesiswaanCancelEdit) kesiswaanCancelEdit.hidden = true;
+    }
+
+    if (kesiswaanCancelEdit) {
+        kesiswaanCancelEdit.addEventListener('click', resetKesiswaanForm);
+    }
+
+    if (kesiswaanAdminList) {
+        kesiswaanAdminList.addEventListener('click', async function (e) {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+
+            const li = btn.closest('.admin-list-item');
+            const id = li ? li.dataset.id : null;
+            if (!id) return;
+
+            if (btn.dataset.action === 'delete') {
+                if (!confirm('Hapus konten kesiswaan ini?')) return;
+                try {
+                    await apiRequest('/api/kesiswaan/' + id, { method: 'DELETE' });
+                    await loadKesiswaan();
+                } catch (err) {
+                    alert(err.message);
+                }
+                return;
+            }
+
+            if (btn.dataset.action === 'edit') {
+                const item = kesiswaanData.find(function (k) { return String(k.id) === id; });
+                if (!item || !kesiswaanForm) return;
+
+                kesiswaanForm.id.value = item.id;
+                kesiswaanForm.judul.value = item.judul;
+                kesiswaanForm.deskripsi.value = item.deskripsi;
+                kesiswaanForm.urutan.value = item.urutan;
+
+                if (kesiswaanFormTitle) kesiswaanFormTitle.textContent = 'Edit Konten Kesiswaan';
+                if (kesiswaanCancelEdit) kesiswaanCancelEdit.hidden = false;
+                kesiswaanForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     }
@@ -821,12 +993,76 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let stelaGreeted = false;
     let stelaBusy = false;
+    let stelaHistory = [];
+
+    // Konversi Markdown sederhana (bold, italic, list, paragraf) ke HTML.
+    // Teks mentah di-escape dulu supaya aman, baru tag Markdown diproses,
+    // jadi tidak ada risiko HTML asing ikut ter-render.
+    function renderMarkdown(rawText) {
+        const escaped = escapeHtml(rawText);
+        const lines = escaped.split('\n');
+
+        let html = '';
+        let listBuffer = [];
+        let listType = null; // 'ul' atau 'ol'
+
+        function flushList() {
+            if (listBuffer.length === 0) return;
+            const tag = listType === 'ol' ? 'ol' : 'ul';
+            html += '<' + tag + '>' + listBuffer.join('') + '</' + tag + '>';
+            listBuffer = [];
+            listType = null;
+        }
+
+        function inlineFormat(str) {
+            return str
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/(^|[^*])\*(?!\*)(.+?)\*(?!\*)/g, '$1<em>$2</em>');
+        }
+
+        lines.forEach(function (line) {
+            const trimmed = line.trim();
+            const bulletMatch = trimmed.match(/^[-*]\s+(.*)$/);
+            const numberedMatch = trimmed.match(/^\d+\.\s+(.*)$/);
+
+            if (bulletMatch) {
+                if (listType !== 'ul') flushList();
+                listType = 'ul';
+                listBuffer.push('<li>' + inlineFormat(bulletMatch[1]) + '</li>');
+                return;
+            }
+
+            if (numberedMatch) {
+                if (listType !== 'ol') flushList();
+                listType = 'ol';
+                listBuffer.push('<li>' + inlineFormat(numberedMatch[1]) + '</li>');
+                return;
+            }
+
+            flushList();
+
+            if (trimmed === '') {
+                html += '<br>';
+            } else {
+                html += '<p>' + inlineFormat(trimmed) + '</p>';
+            }
+        });
+
+        flushList();
+        return html;
+    }
 
     function stelaAddMessage(text, sender) {
         if (!stelaMessages) return;
         const bubble = document.createElement('div');
         bubble.className = 'stela-message ' + sender;
-        bubble.textContent = text;
+
+        if (sender === 'bot') {
+            bubble.innerHTML = renderMarkdown(text);
+        } else {
+            bubble.textContent = text;
+        }
+
         stelaMessages.appendChild(bubble);
         stelaMessages.scrollTop = stelaMessages.scrollHeight;
     }
@@ -912,14 +1148,22 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const result = await apiRequest('/api/stela', {
                     method: 'POST',
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify({ message: message, history: stelaHistory })
                 });
 
                 stelaHideTyping();
-                stelaAddMessage(
-                    result && result.reply ? result.reply : 'Maaf, aku belum punya jawaban untuk itu.',
-                    'bot'
-                );
+
+                const replyText = result && result.reply ? result.reply : 'Maaf, aku belum punya jawaban untuk itu.';
+                stelaAddMessage(replyText, 'bot');
+
+                // simpan ke riwayat supaya STELA ingat konteks percakapan berikutnya
+                stelaHistory.push({ role: 'user', text: message });
+                stelaHistory.push({ role: 'model', text: replyText });
+
+                // batasi riwayat maksimal 20 entri biar tidak kebesaran
+                if (stelaHistory.length > 20) {
+                    stelaHistory = stelaHistory.slice(-20);
+                }
             } catch (err) {
                 stelaHideTyping();
                 stelaAddMessage('Maaf, STELA sedang tidak dapat diakses. Coba lagi sebentar lagi, ya.', 'bot');
@@ -936,5 +1180,6 @@ document.addEventListener('DOMContentLoaded', function () {
     loadAnnouncements();
     loadExtracurriculars();
     loadSchedule();
+    loadKesiswaan();
 
 });
