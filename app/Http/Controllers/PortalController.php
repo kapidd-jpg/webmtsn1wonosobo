@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 class PortalController extends Controller
 {
     public function index()
-    {
-       return view('home');
-    }
+        {
+            if (auth()->check() && auth()->user()->role === 'siswa') {
+                auth()->user()->load('extracurriculars');
+            }
+
+            return view('home');
+        }
 }

@@ -666,7 +666,7 @@
                     </div>
 
 
-                    <div class="academic-item">
+                    <div class="academic-item" data-target="ujian">
 
                         <div class="academic-icon">
                             📝
@@ -694,7 +694,7 @@
                     </div>
 
 
-                    <div class="academic-item">
+                    <div class="academic-item" data-target="materi">
 
                         <div class="academic-icon">
                             📖
@@ -813,25 +813,25 @@
 
                     <div class="profile-stat-card">
                         <span class="profile-stat-label">Kehadiran</span>
-                        <strong class="profile-stat-value">96%</strong>
+                        <strong class="profile-stat-value">{{ auth()->user()->kehadiran_persen !== null ? auth()->user()->kehadiran_persen . '%' : '-' }}</strong>
                         <span class="profile-stat-note">Bulan ini</span>
                     </div>
 
                     <div class="profile-stat-card">
                         <span class="profile-stat-label">Rata-rata Nilai</span>
-                        <strong class="profile-stat-value">87</strong>
+                        <strong class="profile-stat-value">{{ auth()->user()->rata_rata_nilai ?? '-' }}</strong>
                         <span class="profile-stat-note">Semester ini</span>
                     </div>
 
                     <div class="profile-stat-card">
                         <span class="profile-stat-label">Ekstrakurikuler</span>
-                        <strong class="profile-stat-value">2</strong>
+                        <strong class="profile-stat-value">{{ auth()->user()->extracurriculars->count() }}</strong>
                         <span class="profile-stat-note">Aktif diikuti</span>
                     </div>
 
                     <div class="profile-stat-card">
                         <span class="profile-stat-label">Poin Prestasi</span>
-                        <strong class="profile-stat-value">120</strong>
+                        <strong class="profile-stat-value">{{ auth()->user()->poin_prestasi ?? 0 }}</strong>
                         <span class="profile-stat-note">Total terkumpul</span>
                     </div>
 
@@ -885,29 +885,26 @@
                     <div class="content-card">
 
                         <span class="card-label">
-                            AKTIVITAS TERBARU
+                            EKSTRAKURIKULER
                         </span>
 
                         <h2>
-                            Ringkasan
+                            Sedang Diikuti
                         </h2>
 
                         <ul class="check-list">
 
-                            <li>
-                                <span>✓</span>
-                                Mengikuti latihan Futsal — 2 hari lalu
-                            </li>
-
-                            <li>
-                                <span>✓</span>
-                                Nilai Matematika diperbarui — 4 hari lalu
-                            </li>
-
-                            <li>
-                                <span>✓</span>
-                                Pengajuan konseling diterima — 1 minggu lalu
-                            </li>
+                            @forelse (auth()->user()->extracurriculars as $extra)
+                                <li>
+                                    <span>{{ $extra->icon }}</span>
+                                    {{ $extra->judul }}
+                                </li>
+                            @empty
+                                <li>
+                                    <span>—</span>
+                                    Belum mengikuti ekstrakurikuler apa pun.
+                                </li>
+                            @endforelse
 
                         </ul>
 
@@ -930,12 +927,6 @@
                     @endauth
 
                     </section>
-
-
-
-<!-- =================================================
-     JADWAL PELAJARAN (publik)
-================================================== -->
 
 
 
@@ -999,6 +990,104 @@
 
 
         <!-- =================================================
+             UJIAN DAN PENILAIAN (publik)
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="ujian">
+
+            <div class="page-hero">
+
+                <div class="container">
+
+                    <span class="section-label">
+                        AKADEMIK
+                    </span>
+
+                    <h1>
+                        Ujian dan Penilaian
+                    </h1>
+
+                    <p>
+                        Jadwal ujian dan penilaian yang perlu
+                        dipersiapkan siswa.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="schedule-table-wrap">
+
+                    <table class="schedule-table">
+
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Jam</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Kelas</th>
+                                <th>Jenis</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="examTableBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             MATERI PEMBELAJARAN (publik)
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="materi">
+
+            <div class="page-hero">
+
+                <div class="container">
+
+                    <span class="section-label">
+                        AKADEMIK
+                    </span>
+
+                    <h1>
+                        Materi Pembelajaran
+                    </h1>
+
+                    <p>
+                        Akses materi pembelajaran yang dibagikan
+                        oleh guru.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="announcement-list" id="materialList"></div>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
              DASHBOARD GURU (admin — kelola konten portal)
         ================================================== -->
 
@@ -1010,26 +1099,39 @@
 
             <div class="page-hero">
 
-                <div class="container profile-hero-row">
+                <div class="container profile-hero-row" style="justify-content: space-between; align-items: center;">
 
-                    <div class="profile-hero-avatar">
-                        GR
+                    <div style="display: flex; align-items: center; gap: 20px;">
+
+                        <div class="profile-hero-avatar">
+                            GR
+                        </div>
+
+                        <div>
+                            <span class="section-label">
+                                DASHBOARD GURU
+                            </span>
+
+                            <h1>
+                                Panel Pengelolaan Portal
+                            </h1>
+
+                            <p>
+                                Kelola pengumuman, jadwal pelajaran,
+                                dan ekstrakurikuler.
+                            </p>
+                        </div>
+
                     </div>
 
-                    <div>
-                        <span class="section-label">
-                            DASHBOARD GURU
-                        </span>
-
-                        <h1>
-                            Panel Pengelolaan Portal
-                        </h1>
-
-                        <p>
-                            Kelola pengumuman, jadwal pelajaran,
-                            dan ekstrakurikuler.
-                        </p>
-                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="btn btn-secondary">
+                            Keluar Akun
+                        </button>
+                    </form>
 
                 </div>
 
@@ -1066,6 +1168,34 @@
                         class="admin-tab"
                         data-admin-tab="kesiswaan">
                         Kesiswaan
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="ujian">
+                        Ujian
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="materi">
+                        Materi
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="konseling">
+                        Konseling
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-tab"
+                        data-admin-tab="siswa">
+                        Kelola Siswa
                     </button>
 
                 </div>
@@ -1302,7 +1432,7 @@
                                 <h2 id="kesiswaanFormTitle">Tambah Konten Kesiswaan</h2>
                             </div>
 
-                            <form id="kesiswaanForm">
+                           <form id="kesiswaanForm">
 
                                 <input type="hidden" name="id">
 
@@ -1321,6 +1451,12 @@
                                     <input type="number" name="urutan" placeholder="Contoh: 1" min="1">
                                 </div>
 
+                                <div class="form-group">
+                                    <label>Foto (opsional)</label>
+                                    <input type="file" name="gambar" accept="image/*">
+                                    <img id="kesiswaanImagePreview" src="" alt="" style="display:none; margin-top:10px; max-width:160px; border-radius:8px;">
+                                </div>
+
                                 <div class="admin-form-actions">
                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                     <button type="button" class="btn btn-secondary" id="kesiswaanCancelEdit" hidden>Batal Edit</button>
@@ -1335,6 +1471,281 @@
                             <span class="card-label">DAFTAR KONTEN</span>
                             <h2>Semua Konten Kesiswaan</h2>
                             <ul class="admin-list" id="kesiswaanAdminList"></ul>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PANEL: UJIAN -->
+                <div class="admin-panel" data-admin-panel="ujian">
+
+                    <div class="two-column">
+
+                        <div class="form-card">
+
+                            <div class="form-header">
+                                <span class="section-label">FORM UJIAN</span>
+                                <h2 id="ujianFormTitle">Tambah Jadwal Ujian</h2>
+                            </div>
+
+                            <form id="ujianForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Tanggal</label>
+                                        <input type="text" name="tanggal" placeholder="Contoh: 10 Oktober" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Jam</label>
+                                        <input type="text" name="jam" placeholder="Contoh: 07:00 - 08:30" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Mata Pelajaran</label>
+                                    <input type="text" name="mapel" placeholder="Contoh: Matematika" required>
+                                </div>
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Kelas</label>
+                                        <input type="text" name="kelas" placeholder="Contoh: IX A" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Jenis</label>
+                                        <select name="jenis" required>
+                                            <option value="">Pilih jenis</option>
+                                            <option>Ulangan Harian</option>
+                                            <option>UTS</option>
+                                            <option>UAS</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Keterangan (opsional)</label>
+                                    <textarea name="keterangan" rows="3" placeholder="Contoh: Materi Bab 1-4"></textarea>
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="button" class="btn btn-secondary" id="ujianCancelEdit" hidden>Batal Edit</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR UJIAN</span>
+                            <h2>Semua Jadwal Ujian</h2>
+                            <ul class="admin-list" id="ujianAdminList"></ul>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PANEL: MATERI -->
+                <div class="admin-panel" data-admin-panel="materi">
+
+                    <div class="two-column">
+
+                        <div class="form-card">
+
+                            <div class="form-header">
+                                <span class="section-label">FORM MATERI</span>
+                                <h2 id="materiFormTitle">Tambah Materi</h2>
+                            </div>
+
+                            <form id="materiForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Mata Pelajaran</label>
+                                        <input type="text" name="mapel" placeholder="Contoh: Matematika" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Kelas</label>
+                                        <input type="text" name="kelas" placeholder="Contoh: IX A" required>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Judul Materi</label>
+                                    <input type="text" name="judul" placeholder="Contoh: Bilangan Bulat" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Deskripsi</label>
+                                    <textarea name="deskripsi" rows="4" placeholder="Deskripsi singkat materi" required></textarea>
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="button" class="btn btn-secondary" id="materiCancelEdit" hidden>Batal Edit</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR MATERI</span>
+                            <h2>Semua Materi</h2>
+                            <ul class="admin-list" id="materiAdminList"></ul>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PANEL: KONSELING -->
+                <div class="admin-panel" data-admin-panel="konseling">
+
+                    <div class="content-card">
+                        <span class="card-label">PENGAJUAN MASUK</span>
+                        <h2>Daftar Pengajuan Konseling</h2>
+                        <ul class="admin-list" id="konselingAdminList"></ul>
+                    </div>
+
+                </div>
+
+
+                <!-- PANEL: KELOLA SISWA -->
+                <div class="admin-panel" data-admin-panel="siswa">
+
+                    <div class="content-card" style="margin-bottom: 24px;">
+
+                        <span class="card-label">AKUN BARU</span>
+                        <h2>Buat Akun Siswa / Guru</h2>
+
+                        <form id="createUserForm" style="margin-top: 20px;">
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label>Nama Lengkap</label>
+                                    <input type="text" name="name" placeholder="Contoh: Budi Santoso" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Role</label>
+                                    <select name="role" id="createUserRole" required>
+                                        <option value="siswa">Siswa</option>
+                                        <option value="guru">Guru</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label id="createUserNisNipLabel">NIS</label>
+                                    <input type="text" name="nis_nip" placeholder="Contoh: 20240002" required>
+                                </div>
+
+                                <div class="form-group" id="createUserKelasGroup">
+                                    <label>Kelas</label>
+                                    <input type="text" name="kelas" placeholder="Contoh: IX B">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Password Awal</label>
+                                <input type="password" name="password" placeholder="Minimal 6 karakter" required minlength="6">
+                            </div>
+
+                            <div class="admin-form-actions">
+                                <button type="submit" class="btn btn-primary">Buat Akun</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+
+                    <div class="two-column">
+
+                        <div class="form-card">
+
+                            <div class="form-header">
+                                <span class="section-label">DATA SISWA</span>
+                                <h2 id="siswaFormTitle">Pilih Siswa untuk Diedit</h2>
+                            </div>
+
+                            <form id="siswaForm">
+
+                                <input type="hidden" name="id">
+
+                                <div class="form-group">
+                                    <label>Kelas</label>
+                                    <input type="text" name="kelas" placeholder="Contoh: IX A">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Wali Kelas</label>
+                                    <input type="text" name="wali_kelas" placeholder="Contoh: Ibu Siti Rahmawati, S.Pd.">
+                                </div>
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Kehadiran (%)</label>
+                                        <input type="number" name="kehadiran_persen" min="0" max="100" placeholder="Contoh: 96">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Rata-rata Nilai</label>
+                                        <input type="number" name="rata_rata_nilai" min="0" max="100" placeholder="Contoh: 87">
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Poin Prestasi</label>
+                                    <input type="number" name="poin_prestasi" min="0" placeholder="Contoh: 120">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Ekstrakurikuler yang Diikuti</label>
+                                    <div id="siswaEkstraCheckboxes" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;"></div>
+                                </div>
+
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+
+
+                        <div class="content-card">
+                            <span class="card-label">DAFTAR SISWA</span>
+                            <h2>Semua Siswa</h2>
+                            <ul class="admin-list" id="siswaAdminList"></ul>
                         </div>
 
                     </div>

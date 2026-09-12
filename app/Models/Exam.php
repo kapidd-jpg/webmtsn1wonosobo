@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KesiswaanItem extends Model
+class Exam extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['judul', 'deskripsi', 'urutan', 'gambar'];
+    protected $fillable = ['tanggal', 'jam', 'mapel', 'kelas', 'jenis', 'keterangan'];
 }

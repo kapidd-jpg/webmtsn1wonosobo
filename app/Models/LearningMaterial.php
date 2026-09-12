@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KesiswaanItem extends Model
+class LearningMaterial extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['judul', 'deskripsi', 'urutan', 'gambar'];
+    protected $fillable = ['mapel', 'judul', 'kelas', 'deskripsi'];
 }

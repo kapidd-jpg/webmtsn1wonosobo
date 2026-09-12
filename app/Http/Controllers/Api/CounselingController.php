@@ -28,4 +28,15 @@ class CounselingController extends Controller
     {
         return CounselingSubmission::orderByDesc('id')->get();
     }
+
+    public function updateStatus(Request $request, CounselingSubmission $counselingSubmission)
+    {
+        $data = $request->validate([
+            'status' => 'required|in:baru,diproses,selesai',
+        ]);
+
+        $counselingSubmission->update($data);
+
+        return $counselingSubmission;
+    }
 }
