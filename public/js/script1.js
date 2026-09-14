@@ -382,6 +382,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 '</article>'
             );
         }).join('');
+
+        initScrollReveal('.announcement-card');
     }
 
     async function loadExtracurriculars() {
@@ -409,6 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
             );
         }).join('');
 
+        initScrollReveal('.extra-card');
         applyExtraFilters();
     }
 
@@ -466,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
         grid.innerHTML = kesiswaanData.map(function (item, index) {
             const nomor = String(index + 1).padStart(2, '0');
             const gambarHtml = item.gambar_url
-                ? '<img src="' + item.gambar_url + '" alt="' + escapeHtml(item.judul) + '" style="width:100%; border-radius:10px; margin-bottom:16px; aspect-ratio:16/9; object-fit:cover;">'
+                ? '<img src="' + item.gambar_url + '" alt="' + escapeHtml(item.judul) + '" class="feature-card-image">'
                 : '';
 
             return (
@@ -478,6 +481,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 '</article>'
             );
         }).join('');
+
+        initScrollReveal('.feature-card');
     }
 
         async function loadExams() {
@@ -546,6 +551,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 '</article>'
             );
         }).join('');
+
+        initScrollReveal('.announcement-card');
     }
 
         async function loadKonseling() {
@@ -1789,6 +1796,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* -----------------------------------------------------
+       9. SCROLL REVEAL ANIMATION
+       Menambahkan animasi fade-in saat kartu terlihat di layar.
+       Dipanggil ulang tiap kali data baru dirender (fetch API),
+       supaya kartu yang baru muncul juga ikut teranimasi.
+    ----------------------------------------------------- */
+
+    const scrollRevealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry, i) {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                setTimeout(function () {
+                    el.classList.add('revealed');
+                }, i * 60); // stagger halus antar kartu
+                scrollRevealObserver.unobserve(el);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    function initScrollReveal(selector) {
+        document.querySelectorAll(selector).forEach(function (el) {
+            if (el.classList.contains('scroll-reveal')) return; // sudah diamati sebelumnya
+            el.classList.add('scroll-reveal');
+            scrollRevealObserver.observe(el);
+        });
+    }
+
+    function initScrollRevealForAllCards() {
+        initScrollReveal('.quick-card');
+        initScrollReveal('.extra-card');
+        initScrollReveal('.feature-card');
+        initScrollReveal('.announcement-card');
+        initScrollReveal('.academic-item');
+        initScrollReveal('.profile-stat-card');
+    }
+
     // --- ambil & render data awal saat halaman dimuat ---
 
     loadAnnouncements();
@@ -1805,5 +1848,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (siswaAdminList) {
         loadSiswa();
     }
+
+    // Aktifkan animasi untuk kartu yang sudah ada saat load awal
+    // (quick-card, feature-card statis, academic-item, profile-stat-card)
+    initScrollRevealForAllCards();
+
+    // Aktifkan ulang tiap kali navigasi pindah halaman, supaya kartu
+    // di halaman yang baru dibuka (yang belum pernah terlihat) ikut teranimasi
+    document.querySelectorAll('[data-target]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            setTimeout(initScrollRevealForAllCards, 50);
+        });
+    });
 
 });
