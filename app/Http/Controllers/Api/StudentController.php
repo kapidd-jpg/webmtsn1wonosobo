@@ -23,7 +23,7 @@ class StudentController extends Controller
         $data = $request->validate([
             'name'     => 'required|string|max:100',
             'nis_nip'  => 'required|string|max:30|unique:users,nis_nip',
-            'role'     => 'required|in:siswa,guru',
+            'role'     => 'required|in:siswa,guru,guru_bk,admin',
             'kelas'    => 'nullable|string|max:50',
             'password' => ['required', 'string', Password::min(6)],
         ]);

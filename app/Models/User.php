@@ -39,6 +39,26 @@ class User extends Authenticatable
         return $this->role === 'guru';
     }
 
+    public function isGuruBk(): bool
+    {
+        return $this->role === 'guru_bk';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function canManageContent(): bool
+    {
+        return in_array($this->role, ['guru', 'admin'], true);
+    }
+
+    public function canManageKonseling(): bool
+    {
+        return in_array($this->role, ['guru_bk', 'admin'], true);
+    }
+
     public function isSiswa(): bool
     {
         return $this->role === 'siswa';

@@ -106,9 +106,19 @@
                         type="button"
                         class="profile-btn"
                         id="profileTrigger"
-                        data-target="{{ auth()->user()->role === 'guru' ? 'guru-dashboard' : 'profil' }}"
+                        data-target="{{ auth()->user()->role === 'siswa' ? 'profil' : 'guru-dashboard' }}"
                         title="Profil">
-                        <span class="profile-avatar">{{ auth()->user()->role === 'guru' ? 'GR' : 'AS' }}</span>
+                        <span class="profile-avatar">
+                            @if (auth()->user()->role === 'admin')
+                                AD
+                            @elseif (auth()->user()->role === 'guru_bk')
+                                BK
+                            @elseif (auth()->user()->role === 'guru')
+                                GR
+                            @else
+                                AS
+                            @endif
+                        </span>
                     </button>
                 @endauth
 
@@ -1092,7 +1102,7 @@
         ================================================== -->
 
         @auth
-        @if (auth()->user()->role === 'guru')
+        @if (auth()->user()->role !== 'siswa')
         <section
             class="page"
             data-page="guru-dashboard">
@@ -1104,21 +1114,45 @@
                     <div style="display: flex; align-items: center; gap: 20px;">
 
                         <div class="profile-hero-avatar">
-                            GR
+                            @if (auth()->user()->role === 'admin')
+                                AD
+                            @elseif (auth()->user()->role === 'guru_bk')
+                                BK
+                            @else
+                                GR
+                            @endif
                         </div>
 
                         <div>
                             <span class="section-label">
-                                DASHBOARD GURU
+                                @if (auth()->user()->role === 'admin')
+                                    DASHBOARD ADMIN
+                                @elseif (auth()->user()->role === 'guru_bk')
+                                    DASHBOARD GURU BK
+                                @else
+                                    DASHBOARD GURU
+                                @endif
                             </span>
 
                             <h1>
-                                Panel Pengelolaan Portal
+                                @if (auth()->user()->role === 'admin')
+                                    Panel Administrasi Sistem
+                                @elseif (auth()->user()->role === 'guru_bk')
+                                    Panel Layanan Konseling
+                                @else
+                                    Panel Pengelolaan Portal
+                                @endif
                             </h1>
 
                             <p>
-                                Kelola pengumuman, jadwal pelajaran,
-                                dan ekstrakurikuler.
+                                @if (auth()->user()->role === 'admin')
+                                    Kelola seluruh konten portal dan akun pengguna.
+                                @elseif (auth()->user()->role === 'guru_bk')
+                                    Kelola pengajuan konseling siswa.
+                                @else
+                                    Kelola pengumuman, jadwal pelajaran,
+                                    dan ekstrakurikuler.
+                                @endif
                             </p>
                         </div>
 
@@ -1142,67 +1176,88 @@
 
                 <div class="admin-tabs">
 
-                    <button
-                        type="button"
-                        class="admin-tab active"
-                        data-admin-tab="pengumuman">
-                        Pengumuman
-                    </button>
+                    @if (auth()->user()->canManageContent())
+                        <button
+                            type="button"
+                            class="admin-tab {{ auth()->user()->role !== 'guru_bk' ? 'active' : '' }}"
+                            data-admin-tab="pengumuman">
+                            Pengumuman
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="jadwal">
-                        Jadwal Pelajaran
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="jadwal">
+                            Jadwal Pelajaran
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="ekstra">
-                        Ekstrakurikuler
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="ekstra">
+                            Ekstrakurikuler
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="kesiswaan">
-                        Kesiswaan
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="kesiswaan">
+                            Kesiswaan
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="ujian">
-                        Ujian
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="ujian">
+                            Ujian
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="materi">
-                        Materi
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="materi">
+                            Materi
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="konseling">
-                        Konseling
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="siswa">
+                            Kelola Siswa
+                        </button>
 
-                    <button
-                        type="button"
-                        class="admin-tab"
-                        data-admin-tab="siswa">
-                        Kelola Siswa
-                    </button>
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="profil-sekolah">
+                            Profil Sekolah
+                        </button>
+                    @endif
+
+                    @if (auth()->user()->canManageKonseling())
+                        <button
+                            type="button"
+                            class="admin-tab {{ auth()->user()->role === 'guru_bk' ? 'active' : '' }}"
+                            data-admin-tab="konseling">
+                            Konseling
+                        </button>
+                    @endif
+
+                    @if (auth()->user()->role === 'admin')
+                        <button
+                            type="button"
+                            class="admin-tab"
+                            data-admin-tab="buat-akun">
+                            Buat Akun
+                        </button>
+                    @endif
 
                 </div>
 
 
+                @if (auth()->user()->canManageContent())
                 <!-- PANEL: PENGUMUMAN -->
-                <div class="admin-panel active" data-admin-panel="pengumuman">
+                <div class="admin-panel {{ auth()->user()->role !== 'guru_bk' ? 'active' : '' }}" data-admin-panel="pengumuman">
 
                     <div class="two-column">
 
@@ -1617,10 +1672,12 @@
                     </div>
 
                 </div>
+                @endif
 
 
+                @if (auth()->user()->canManageKonseling())
                 <!-- PANEL: KONSELING -->
-                <div class="admin-panel" data-admin-panel="konseling">
+                <div class="admin-panel {{ auth()->user()->role === 'guru_bk' ? 'active' : '' }}" data-admin-panel="konseling">
 
                     <div class="content-card">
                         <span class="card-label">PENGAJUAN MASUK</span>
@@ -1629,62 +1686,12 @@
                     </div>
 
                 </div>
+                @endif
 
 
+                @if (auth()->user()->canManageContent())
                 <!-- PANEL: KELOLA SISWA -->
                 <div class="admin-panel" data-admin-panel="siswa">
-
-                    <div class="content-card" style="margin-bottom: 24px;">
-
-                        <span class="card-label">AKUN BARU</span>
-                        <h2>Buat Akun Siswa / Guru</h2>
-
-                        <form id="createUserForm" style="margin-top: 20px;">
-
-                            <div class="admin-form-row">
-
-                                <div class="form-group">
-                                    <label>Nama Lengkap</label>
-                                    <input type="text" name="name" placeholder="Contoh: Budi Santoso" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Role</label>
-                                    <select name="role" id="createUserRole" required>
-                                        <option value="siswa">Siswa</option>
-                                        <option value="guru">Guru</option>
-                                    </select>
-                                </div>
-
-                            </div>
-
-                            <div class="admin-form-row">
-
-                                <div class="form-group">
-                                    <label id="createUserNisNipLabel">NIS</label>
-                                    <input type="text" name="nis_nip" placeholder="Contoh: 20240002" required>
-                                </div>
-
-                                <div class="form-group" id="createUserKelasGroup">
-                                    <label>Kelas</label>
-                                    <input type="text" name="kelas" placeholder="Contoh: IX B">
-                                </div>
-
-                            </div>
-
-                            <div class="form-group">
-                                <label>Password Awal</label>
-                                <input type="password" name="password" placeholder="Minimal 6 karakter" required minlength="6">
-                            </div>
-
-                            <div class="admin-form-actions">
-                                <button type="submit" class="btn btn-primary">Buat Akun</button>
-                            </div>
-
-                        </form>
-
-                    </div>
-
 
                     <div class="two-column">
 
@@ -1751,6 +1758,153 @@
                     </div>
 
                 </div>
+
+
+                <!-- PANEL: PROFIL SEKOLAH -->
+                <div class="admin-panel" data-admin-panel="profil-sekolah">
+
+                    <div class="form-card">
+
+                        <div class="form-header">
+                            <span class="section-label">IDENTITAS MADRASAH</span>
+                            <h2>Kelola Profil Sekolah</h2>
+                        </div>
+
+                        <form id="schoolProfileForm">
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label>Nama Sekolah</label>
+                                    <input type="text" name="nama_sekolah" placeholder="Contoh: MTsN 1 Wonosobo">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Kepala Sekolah</label>
+                                    <input type="text" name="kepala_sekolah" placeholder="Contoh: Mochamad Abdul Malik, M.Ag.">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <input type="text" name="alamat" placeholder="Contoh: Jl. Banyumas KM.04, Wonorejo, Selomerto, Wonosobo">
+                            </div>
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label>Telepon</label>
+                                    <input type="text" name="telepon" placeholder="Contoh: 0286-xxxxxx">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" name="email" placeholder="Contoh: info@mtsn1wonosobo.sch.id">
+                                </div>
+
+                            </div>
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label>Tahun Berdiri</label>
+                                    <input type="text" name="tahun_berdiri" placeholder="Contoh: 1978">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Akreditasi</label>
+                                    <input type="text" name="akreditasi" placeholder="Contoh: A">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Visi</label>
+                                <textarea name="visi" rows="3" placeholder="Visi sekolah"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Misi</label>
+                                <textarea name="misi" rows="4" placeholder="Misi sekolah"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Sejarah Singkat</label>
+                                <textarea name="sejarah_singkat" rows="4" placeholder="Sejarah singkat berdirinya sekolah"></textarea>
+                            </div>
+
+                            <div class="admin-form-actions">
+                                <button type="submit" class="btn btn-primary">Simpan Profil Sekolah</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+                @endif
+
+
+                @if (auth()->user()->role === 'admin')
+                <!-- PANEL: BUAT AKUN (khusus admin) -->
+                <div class="admin-panel" data-admin-panel="buat-akun">
+
+                    <div class="content-card">
+
+                        <span class="card-label">AKUN BARU</span>
+                        <h2>Buat Akun Siswa / Guru / Guru BK</h2>
+
+                        <form id="createUserForm" style="margin-top: 20px;">
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label>Nama Lengkap</label>
+                                    <input type="text" name="name" placeholder="Contoh: Budi Santoso" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Role</label>
+                                    <select name="role" id="createUserRole" required>
+                                        <option value="siswa">Siswa</option>
+                                        <option value="guru">Guru</option>
+                                        <option value="guru_bk">Guru BK</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+                                    <label id="createUserNisNipLabel">NIS</label>
+                                    <input type="text" name="nis_nip" placeholder="Contoh: 20240002" required>
+                                </div>
+
+                                <div class="form-group" id="createUserKelasGroup">
+                                    <label>Kelas</label>
+                                    <input type="text" name="kelas" placeholder="Contoh: IX B">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label>Password Awal</label>
+                                <input type="password" name="password" placeholder="Minimal 6 karakter" required minlength="6">
+                            </div>
+
+                            <div class="admin-form-actions">
+                                <button type="submit" class="btn btn-primary">Buat Akun</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+                @endif
 
             </div>
 

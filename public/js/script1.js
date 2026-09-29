@@ -573,6 +573,60 @@ document.addEventListener('DOMContentLoaded', function () {
         renderSiswaAdmin();
     }
 
+        // --- PROFIL SEKOLAH admin ---
+
+    const schoolProfileForm = document.getElementById('schoolProfileForm');
+
+    async function loadSchoolProfile() {
+        if (!schoolProfileForm) return;
+
+        try {
+            const profile = await apiRequest('/api/profil-sekolah');
+
+            schoolProfileForm.nama_sekolah.value = profile.nama_sekolah || '';
+            schoolProfileForm.kepala_sekolah.value = profile.kepala_sekolah || '';
+            schoolProfileForm.alamat.value = profile.alamat || '';
+            schoolProfileForm.telepon.value = profile.telepon || '';
+            schoolProfileForm.email.value = profile.email || '';
+            schoolProfileForm.tahun_berdiri.value = profile.tahun_berdiri || '';
+            schoolProfileForm.akreditasi.value = profile.akreditasi || '';
+            schoolProfileForm.visi.value = profile.visi || '';
+            schoolProfileForm.misi.value = profile.misi || '';
+            schoolProfileForm.sejarah_singkat.value = profile.sejarah_singkat || '';
+        } catch (err) {
+            // diamkan saja kalau gagal ambil (misal belum ada data sama sekali)
+        }
+    }
+
+    if (schoolProfileForm) {
+        schoolProfileForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const payload = {
+                nama_sekolah: schoolProfileForm.nama_sekolah.value.trim(),
+                kepala_sekolah: schoolProfileForm.kepala_sekolah.value.trim(),
+                alamat: schoolProfileForm.alamat.value.trim(),
+                telepon: schoolProfileForm.telepon.value.trim(),
+                email: schoolProfileForm.email.value.trim(),
+                tahun_berdiri: schoolProfileForm.tahun_berdiri.value.trim(),
+                akreditasi: schoolProfileForm.akreditasi.value.trim(),
+                visi: schoolProfileForm.visi.value.trim(),
+                misi: schoolProfileForm.misi.value.trim(),
+                sejarah_singkat: schoolProfileForm.sejarah_singkat.value.trim()
+            };
+
+            try {
+                await apiRequest('/api/profil-sekolah', {
+                    method: 'PUT',
+                    body: JSON.stringify(payload)
+                });
+                showFormNote(schoolProfileForm, 'Profil sekolah berhasil diperbarui.', 'success');
+            } catch (err) {
+                showFormNote(schoolProfileForm, err.message, 'error');
+            }
+        });
+    }
+
         // --- BUAT AKUN BARU (siswa/guru) ---
 
     const createUserForm = document.getElementById('createUserForm');
@@ -583,14 +637,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateCreateUserFormByRole() {
         if (!createUserRole) return;
 
-        const isGuru = createUserRole.value === 'guru';
+        const isSiswa = createUserRole.value === 'siswa';
 
         if (createUserNisNipLabel) {
-            createUserNisNipLabel.textContent = isGuru ? 'NIP' : 'NIS';
+            createUserNisNipLabel.textContent = isSiswa ? 'NIS' : 'NIP';
         }
 
         if (createUserKelasGroup) {
-            createUserKelasGroup.style.display = isGuru ? 'none' : 'block';
+            createUserKelasGroup.style.display = isSiswa ? 'block' : 'none';
         }
     }
 
@@ -1847,6 +1901,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (siswaAdminList) {
         loadSiswa();
+    }
+
+    if (schoolProfileForm) {
+        loadSchoolProfile();
     }
 
     // Aktifkan animasi untuk kartu yang sudah ada saat load awal

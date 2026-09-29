@@ -9,6 +9,7 @@ use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\SchoolProfile;
 
 class StelaController extends Controller
 {
@@ -30,8 +31,23 @@ class StelaController extends Controller
         return response()->json(['reply' => $reply]);
     }
 
-    private function buildContext(): string
+       private function buildContext(): string
     {
+        $profile = SchoolProfile::first();
+
+        $profilText = $profile ? <<<TEXT
+        Nama Sekolah: {$profile->nama_sekolah}
+        Kepala Sekolah: {$profile->kepala_sekolah}
+        Alamat: {$profile->alamat}
+        Telepon: {$profile->telepon}
+        Email: {$profile->email}
+        Tahun Berdiri: {$profile->tahun_berdiri}
+        Akreditasi: {$profile->akreditasi}
+        Visi: {$profile->visi}
+        Misi: {$profile->misi}
+        Sejarah Singkat: {$profile->sejarah_singkat}
+        TEXT : 'Belum ada data profil sekolah.';
+
         $schedules = Schedule::all()->map(function ($s) {
             return "{$s->hari}, {$s->jam}: {$s->mapel} - {$s->kelas} ({$s->guru})";
         })->implode("\n");
@@ -45,8 +61,12 @@ class StelaController extends Controller
         })->implode("\n");
 
         return <<<TEXT
+        PROFIL SEKOLAH:
+        {$profilText}
+
         DATA JADWAL PELAJARAN:
         {$schedules}
+        ...}
 
         DATA EKSTRAKURIKULER:
         {$extras}

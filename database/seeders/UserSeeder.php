@@ -33,5 +33,25 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('guru123'),
             ]
         );
+
+                User::updateOrCreate(
+            ['nis_nip' => '198701012015012002'],
+            [
+                'name' => 'Ibu Dewi Kusuma, S.Pd.',
+                'role' => 'guru_bk',
+                'email' => 'dewi.kusuma@guru.local',
+                'password' => Hash::make('gurubk123'),
+            ]
+        );
+
+        User::updateOrCreate(
+            ['nis_nip' => 'admin001'],
+            [
+                'name' => 'Administrator',
+                'role' => 'admin',
+                'email' => 'admin@portal.local',
+                'password' => Hash::make('admin123'),
+            ]
+        );
     }
 }

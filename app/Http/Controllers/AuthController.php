@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        $target = Auth::user()->role === 'guru' ? 'guru-dashboard' : 'profil';
+        $target = Auth::user()->role === 'siswa' ? 'profil' : 'guru-dashboard';
 
         return redirect(route('portal.index') . '#' . $target);
     }
