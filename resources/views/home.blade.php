@@ -187,7 +187,7 @@
                 <div class="hero-card">
 
                     <img
-                        src="https://images.unsplash.com/photo-1758270704524-596810e891b5?fm=jpg&q=80&w=900&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        src="{{ asset('images/hero/beranda.jpg') }}"
                         alt="Siswa MTsN 1 Wonosobo">
 
                 </div>
@@ -347,7 +347,7 @@
             class="page"
             data-page="konseling">
 
-            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1758273241086-f3585ef8c2f8?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/konseling.jpg') }}')">
 
                 <div class="container">
 
@@ -505,7 +505,7 @@
             class="page"
             data-page="ekstra">
 
-            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1676444920926-c8a084ec4003?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/ekstrakurikuler.jpg') }}')">
 
                 <div class="container">
 
@@ -582,7 +582,7 @@
             class="page"
             data-page="kesiswaan">
 
-            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1758270705482-cee87ea98738?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/kesiswaan.jpg') }}')">
 
                 <div class="container">
 
@@ -622,7 +622,7 @@
             class="page"
             data-page="akademik">
 
-            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/akademik.jpg') }}')">
 
                 <div class="container">
 
@@ -747,7 +747,7 @@
             class="page"
             data-page="pengumuman">
 
-            <div class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1580656449194-30bb3dfb0b76?q=80&w=1476&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/pengumuman.jpg') }}')">
 
                 <div class="container">
 
@@ -770,6 +770,8 @@
 
 
             <div class="container page-content">
+
+                <div class="announcement-filter" id="announcementFilter"></div>
 
                 <div class="announcement-list" id="announcementList"></div>
 
@@ -1031,27 +1033,9 @@
 
             <div class="container page-content">
 
-                <div class="schedule-table-wrap">
+                <div class="exam-summary" id="examSummary"></div>
 
-                    <table class="schedule-table">
-
-                        <thead>
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>Jam</th>
-                                <th>Mata Pelajaran</th>
-                                <th>Kelas</th>
-                                <th>Jenis</th>
-                                <th>Keterangan</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="examTableBody">
-                        </tbody>
-
-                    </table>
-
-                </div>
+                <div class="exam-grid" id="examList"></div>
 
             </div>
 
@@ -1091,7 +1075,7 @@
 
             <div class="container page-content">
 
-                <div class="announcement-list" id="materialList"></div>
+                <div class="material-grid" id="materialList"></div>
 
             </div>
 
@@ -1452,6 +1436,23 @@
                                 <div class="form-group">
                                     <label>Deskripsi</label>
                                     <textarea name="deskripsi" rows="3" placeholder="Deskripsi singkat kegiatan" required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Banner Gambar</label>
+                                    <input type="file" name="gambar" accept="image/png,image/jpeg,image/webp">
+                                    <input type="hidden" name="gambar_pilihan" id="ekstraGambarPilihan">
+                                    <img id="ekstraImagePreview" src="" alt="" style="display:none; margin-top:10px; max-width:100%; border-radius:8px;">
+                                    <p class="form-hint" id="ekstraGambarNote" style="margin-top:8px;">Biarkan kosong untuk memakai banner bawaan.</p>
+                                    <button type="button" class="btn btn-secondary" id="ekstraHapusGambar" hidden>Hapus Banner</button>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Atau pilih banner yang sudah ada</label>
+                                    <input type="search" id="ekstraImageSearch" class="image-picker-search" placeholder="Cari banner: voli, robotika, osis …" autocomplete="off">
+                                    <div class="image-picker" id="ekstraImagePicker">
+                                        <span class="image-picker-empty">Memuat daftar banner…</span>
+                                    </div>
                                 </div>
 
                                 <div class="admin-form-actions">
@@ -2106,6 +2107,12 @@
                 aria-label="Tutup">
                 ×
             </button>
+
+            <div class="extra-detail-banner">
+                <img
+                    id="extraDetailBanner"
+                    alt="">
+            </div>
 
             <div class="extra-detail-icon" id="extraDetailIcon"></div>
 

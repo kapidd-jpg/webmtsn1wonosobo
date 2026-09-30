@@ -45,6 +45,7 @@ Route::middleware(['auth', 'role:guru,admin'])->group(function () {
     Route::post('/api/ekstrakurikuler', [ExtracurricularController::class, 'store']);
     Route::put('/api/ekstrakurikuler/{extracurricular}', [ExtracurricularController::class, 'update']);
     Route::delete('/api/ekstrakurikuler/{extracurricular}', [ExtracurricularController::class, 'destroy']);
+    Route::get('/api/ekstrakurikuler/gambar', [ExtracurricularController::class, 'images']);
 
     Route::post('/api/jadwal', [ScheduleController::class, 'store']);
     Route::put('/api/jadwal/{schedule}', [ScheduleController::class, 'update']);

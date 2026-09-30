@@ -36,16 +36,91 @@ document.addEventListener('DOMContentLoaded', function () {
     const navLinks = document.querySelectorAll('.nav-link');
     const targetTriggers = document.querySelectorAll('[data-target]');
 
-    function goToPage(pageName) {
+    // halaman yang sudah dilewati, dipakai untuk memberi tahu tombol
+    // "Kembali" mau balik ke mana (dan untuk mendeteksi arah popstate)
+    const pageStack = [];
+
+    const BACK_TEXT = 'Kembali';
+    const BACK_TEXT_HOME = 'Kembali ke Beranda';
+
+    function currentPageName() {
+        const active = document.querySelector('.page.active');
+        return active ? active.dataset.page : 'home';
+    }
+
+    // Scroller portal ini elemen <body>, bukan <html>. Karena itu
+    // window.scrollTo tidak efek apa-apa dan harus scroll elemen yang benar.
+    function portalScroller() {
+        if (document.body && document.body.scrollHeight > document.body.clientHeight) {
+            return document.body;
+        }
+        if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
+            return document.documentElement;
+        }
+        return document.scrollingElement || document.body;
+    }
+
+    function scrollPortalTop() {
+        portalScroller().scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // suntik tombol "Kembali" ke tiap halaman selain Beranda.
+    // Halaman berlatar foto tombolnya ditaruh di dalam hero (teks putih),
+    // halaman tanpa hero ditaruh di atas konten (teks gelap).
+    function buildBackButtons() {
+        document.querySelectorAll('.page').forEach(function (page) {
+            if (page.dataset.page === 'home') return;
+            if (page.querySelector('.page-back')) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'page-back';
+            btn.innerHTML =
+                '<span class="page-back-arrow" aria-hidden="true">←</span>' +
+                '<span class="page-back-label">' + BACK_TEXT + '</span>';
+
+            const heroBox = page.querySelector('.page-hero .container');
+            if (heroBox) {
+                heroBox.classList.add('page-hero-top');
+                heroBox.insertBefore(btn, heroBox.firstChild);
+            } else {
+                const content = page.querySelector('.page-content') || page;
+                content.classList.add('page-content-top');
+                content.insertBefore(btn, content.firstChild);
+            }
+        });
+    }
+
+    // hanya tombol di halaman aktif yang labelnya perlu diperbarui
+    function syncBackButton(pageName) {
+        const text = pageStack.length ? BACK_TEXT : BACK_TEXT_HOME;
+
+        document.querySelectorAll('.page-back-label').forEach(function (el) {
+            const page = el.closest('.page');
+            if (page && page.dataset.page === pageName) el.textContent = text;
+        });
+    }
+
+    // mode: 'push' (klik menu, masuk riwayat browser)
+    //       'replace' (buka dari hash saat pertama load)
+    //       'none' (dipanggil popstate, jangan sentuh riwayat lagi)
+    function goToPage(pageName, mode) {
         if (!pageName) return;
 
         const nextPage = document.querySelector('.page[data-page="' + pageName + '"]');
         if (!nextPage) return;
 
+        const historyMode = mode || 'push';
         const currentPage = document.querySelector('.page.active');
 
+        // sudah berada di halaman ini: jangan menambah riwayat, cukup ke atas
+        if (currentPage === nextPage) {
+            scrollPortalTop();
+            return;
+        }
+
         // halaman lama: fade-out dulu, baru disembunyikan setelah animasinya kelar
-        if (currentPage && currentPage !== nextPage) {
+        if (currentPage) {
             currentPage.classList.remove('active');
             currentPage.classList.add('leaving');
 
@@ -62,24 +137,62 @@ document.addEventListener('DOMContentLoaded', function () {
             link.classList.toggle('active', link.dataset.target === pageName);
         });
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        scrollPortalTop();
 
-        // simpan posisi terakhir di URL biar bisa di-refresh/share
-        history.replaceState(null, '', '#' + pageName);
+        if (historyMode === 'push') {
+            pageStack.push(currentPageName());
+            // pushState (bukan replaceState) supaya tombol back browser
+            // ikut mundur antar halaman, dan URL tetap bisa di-share
+            history.pushState({ page: pageName }, '', '#' + pageName);
+        } else if (historyMode === 'replace') {
+            history.replaceState({ page: pageName }, '', '#' + pageName);
+        }
 
+        syncBackButton(pageName);
         closeMobileMenu();
+    }
+
+    // tombol back di dalam aplikasi ikut memakai riwayat browser,
+    // supaya tidak ada dua sumber kebenaran yang bisa tidak sinkron
+    function goBack() {
+        if (pageStack.length) {
+            history.back();
+        } else {
+            goToPage('home', 'push');
+        }
     }
 
     targetTriggers.forEach(function (el) {
         el.addEventListener('click', function () {
-            goToPage(el.dataset.target);
+            goToPage(el.dataset.target, 'push');
         });
     });
+
+    // tombol back browser: samakan stack lokal dengan arah gerakan
+    window.addEventListener('popstate', function () {
+        const pageName = (window.location.hash || '#home').replace('#', '');
+        if (!document.querySelector('.page[data-page="' + pageName + '"]')) return;
+
+        if (pageStack[pageStack.length - 1] === pageName) {
+            pageStack.pop(); // pengguna mundur
+        } else {
+            pageStack.push(currentPageName()); // pengguna maju
+        }
+
+        goToPage(pageName, 'none');
+    });
+
+    document.addEventListener('click', function (ev) {
+        const btn = ev.target.closest('.page-back');
+        if (btn) goBack();
+    });
+
+    buildBackButtons();
 
     // buka halaman sesuai hash URL saat pertama load (misal portal.com#akademik)
     const initialHash = window.location.hash.replace('#', '');
     if (initialHash && document.querySelector('.page[data-page="' + initialHash + '"]')) {
-        goToPage(initialHash);
+        goToPage(initialHash, 'replace');
     }
 
     /* -----------------------------------------------------
@@ -144,6 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ----------------------------------------------------- */
 
     const extraDetailModal = document.getElementById('extraDetailModal');
+    const extraDetailBanner = document.getElementById('extraDetailBanner');
     const extraDetailIcon = document.getElementById('extraDetailIcon');
     const extraDetailCategory = document.getElementById('extraDetailCategory');
     const extraDetailTitle = document.getElementById('extraDetailTitle');
@@ -154,6 +268,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function openExtraDetail(item) {
         if (!extraDetailModal || !item) return;
 
+        if (extraDetailBanner) {
+            extraDetailBanner.src = extraBannerFile(item);
+            extraDetailBanner.alt = 'Banner ' + item.judul;
+        }
         if (extraDetailIcon) extraDetailIcon.textContent = item.icon;
         if (extraDetailCategory) extraDetailCategory.textContent = item.kategori.toUpperCase();
         if (extraDetailTitle) extraDetailTitle.textContent = item.judul;
@@ -358,16 +476,63 @@ document.addEventListener('DOMContentLoaded', function () {
         renderPengumumanAdmin();
     }
 
+    // kategori pengumuman yang sedang difilter; kosong = tampilkan semua
+    let announcementFilterState = '';
+
     function renderAnnouncements() {
         const list = document.getElementById('announcementList');
+        const filterBox = document.getElementById('announcementFilter');
         if (!list) return;
 
         if (announcementsData.length === 0) {
             list.innerHTML = '<p class="empty-state show">Belum ada pengumuman.</p>';
+            if (filterBox) filterBox.innerHTML = '';
             return;
         }
 
-        list.innerHTML = announcementsData.map(function (item) {
+        // chip filter kategori, dibuat dari data supaya tidak perlu diubah manual
+        if (filterBox) {
+            const kategori = [];
+            announcementsData.forEach(function (item) {
+                if (item.kategori && kategori.indexOf(item.kategori) === -1) {
+                    kategori.push(item.kategori);
+                }
+            });
+
+            const chip = function (value, label, jumlah) {
+                const aktif = announcementFilterState === value;
+                return (
+                    '<button type="button" class="filter-chip' + (aktif ? ' active' : '') + '"' +
+                    ' data-filter="' + escapeHtml(value) + '"' +
+                    ' aria-pressed="' + (aktif ? 'true' : 'false') + '">' +
+                        escapeHtml(label) +
+                        '<span class="filter-chip-count">' + jumlah + '</span>' +
+                    '</button>'
+                );
+            };
+
+            filterBox.innerHTML =
+                chip('', 'Semua', announcementsData.length) +
+                kategori.map(function (k) {
+                    const jumlah = announcementsData.filter(function (i) {
+                        return i.kategori === k;
+                    }).length;
+                    return chip(k, k, jumlah);
+                }).join('');
+        }
+
+        const tampil = announcementFilterState
+            ? announcementsData.filter(function (item) {
+                return item.kategori === announcementFilterState;
+            })
+            : announcementsData;
+
+        if (tampil.length === 0) {
+            list.innerHTML = '<p class="empty-state show">Tidak ada pengumuman pada kategori ini.</p>';
+            return;
+        }
+
+        list.innerHTML = tampil.map(function (item) {
             return (
                 '<article class="announcement-card">' +
                     '<div class="announcement-date">' +
@@ -386,6 +551,16 @@ document.addEventListener('DOMContentLoaded', function () {
         initScrollReveal('.announcement-card');
     }
 
+    // klik chip filter -> render ulang daftar pengumuman
+    document.addEventListener('click', function (ev) {
+        const chip = ev.target.closest('.filter-chip');
+        if (!chip) return;
+
+        const nilai = chip.dataset.filter;
+        announcementFilterState = (announcementFilterState === nilai) ? '' : nilai;
+        renderAnnouncements();
+    });
+
     async function loadExtracurriculars() {
         try {
             extracurricularsData = await apiRequest('/api/ekstrakurikuler');
@@ -396,17 +571,51 @@ document.addEventListener('DOMContentLoaded', function () {
         renderEkstraAdmin();
     }
 
+const EXTRA_BANNERS = {
+        'voli': 'voli.png',
+        'atletik': 'atletik.png',
+        'pencak-silat': 'pencak-silat.png',
+        'marching-band': 'marching-band.png',
+        'seni-rupa': 'seni-rupa.png',
+        'teater-sekolah': 'teater-sekolah.png',
+        'osis': 'osis.png',
+        'pramuka': 'pramuka.png',
+        'robotika': 'robotika.png'
+    };
+
+    function extraBannerFile(item) {
+        if (item.gambar_url) return item.gambar_url;
+
+        const slug = String(item.judul || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+        return '/images/ekstra/' + (EXTRA_BANNERS[slug] || 'default.png');
+    }
+
     function renderExtracurriculars() {
         if (!extraGrid) return;
 
         extraGrid.innerHTML = extracurricularsData.map(function (item) {
+            const icon = String(item.icon || '').trim();
+            const showIcon = icon !== '' && icon !== '?' && icon !== '-';
+
             return (
                 '<article class="extra-card" data-category="' + escapeHtml(item.kategori) + '" data-id="' + item.id + '">' +
-                    '<div class="extra-icon">' + escapeHtml(item.icon) + '</div>' +
-                    '<span class="extra-category">' + escapeHtml(item.kategori.toUpperCase()) + '</span>' +
-                    '<h3>' + escapeHtml(item.judul) + '</h3>' +
-                    '<p>' + escapeHtml(item.deskripsi) + '</p>' +
-                    '<span class="extra-link">Lihat kegiatan →</span>' +
+                    '<div class="extra-banner">' +
+                        '<img src="' + extraBannerFile(item) + '" alt="Banner ' + escapeHtml(item.judul) + '" loading="lazy" ' +
+                            'onerror="this.onerror=null;this.src=\'/images/ekstra/default.png\';">' +
+                        '<span class="extra-category">' + escapeHtml(item.kategori.toUpperCase()) + '</span>' +
+                    '</div>' +
+                    '<div class="extra-body">' +
+                        (showIcon ? '<div class="extra-icon">' + escapeHtml(item.icon) + '</div>' : '') +
+                        '<h3>' + escapeHtml(item.judul) + '</h3>' +
+                        '<p>' + escapeHtml(item.deskripsi) + '</p>' +
+                        '<span class="extra-link">Lihat kegiatan →</span>' +
+                    '</div>' +
                 '</article>'
             );
         }).join('');
@@ -496,26 +705,58 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderExams() {
-        const body = document.getElementById('examTableBody');
-        if (!body) return;
+        const list = document.getElementById('examList');
+        const summary = document.getElementById('examSummary');
+        if (!list) return;
 
         if (examData.length === 0) {
-            body.innerHTML = '<tr class="schedule-empty"><td colspan="6">Jadwal ujian belum tersedia.</td></tr>';
+            list.innerHTML = '<p class="empty-state show">Jadwal ujian belum tersedia.</p>';
+            if (summary) summary.innerHTML = '';
             return;
         }
 
-        body.innerHTML = examData.map(function (item) {
+        // baris ringkasan: supaya halaman tidak terasa kosong walau ujiannya masih sedikit
+        if (summary) {
+            const mapel = new Set(examData.map(function (i) { return i.mapel; }));
+            const kelas = new Set(examData.map(function (i) { return i.kelas; }));
+            const jenis = new Set(examData.map(function (i) { return i.jenis; }));
+
+            const kartu = [
+                { angka: examData.length, label: 'Jadwal ujian' },
+                { angka: mapel.size, label: 'Mata pelajaran' },
+                { angka: kelas.size, label: 'Kelas' },
+                { angka: jenis.size, label: 'Jenis penilaian' }
+            ];
+
+            summary.innerHTML = kartu.map(function (s) {
+                return (
+                    '<div class="exam-summary-card">' +
+                        '<strong>' + escapeHtml(String(s.angka)) + '</strong>' +
+                        '<span>' + escapeHtml(s.label) + '</span>' +
+                    '</div>'
+                );
+            }).join('');
+        }
+
+        list.innerHTML = examData.map(function (item) {
             return (
-                '<tr>' +
-                    '<td>' + escapeHtml(item.tanggal) + '</td>' +
-                    '<td>' + escapeHtml(item.jam) + '</td>' +
-                    '<td>' + escapeHtml(item.mapel) + '</td>' +
-                    '<td>' + escapeHtml(item.kelas) + '</td>' +
-                    '<td>' + escapeHtml(item.jenis) + '</td>' +
-                    '<td>' + escapeHtml(item.keterangan || '-') + '</td>' +
-                '</tr>'
+                '<article class="exam-card">' +
+                    '<div class="exam-card-head">' +
+                        '<span class="exam-card-date">' + escapeHtml(item.tanggal) + '</span>' +
+                        '<span class="exam-card-jenis" data-jenis="' +
+                            escapeHtml(item.jenis) + '">' + escapeHtml(item.jenis) + '</span>' +
+                    '</div>' +
+                    '<h3>' + escapeHtml(item.mapel) + '</h3>' +
+                    '<div class="exam-card-meta">' +
+                        '<span>' + escapeHtml(item.jam) + '</span>' +
+                        '<span>Kelas ' + escapeHtml(item.kelas) + '</span>' +
+                    '</div>' +
+                    '<p>' + escapeHtml(item.keterangan || 'Tidak ada keterangan tambahan.') + '</p>' +
+                '</article>'
             );
         }).join('');
+
+        initScrollReveal('.exam-card');
     }
 
     async function loadMaterials() {
@@ -539,20 +780,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         list.innerHTML = materialData.map(function (item) {
             return (
-                '<article class="announcement-card">' +
-                    '<div class="announcement-date">' +
-                        '<strong>' + escapeHtml(item.kelas) + '</strong>' +
+                '<article class="material-card">' +
+                    '<div class="material-card-top">' +
+                        '<span class="material-card-mapel">' + escapeHtml(item.mapel) + '</span>' +
+                        '<span class="material-card-kelas">' + escapeHtml(item.kelas) + '</span>' +
                     '</div>' +
-                    '<div>' +
-                        '<span class="announcement-label">' + escapeHtml(item.mapel) + '</span>' +
-                        '<h3>' + escapeHtml(item.judul) + '</h3>' +
-                        '<p>' + escapeHtml(item.deskripsi) + '</p>' +
-                    '</div>' +
+                    '<h3>' + escapeHtml(item.judul) + '</h3>' +
+                    '<p>' + escapeHtml(item.deskripsi) + '</p>' +
                 '</article>'
             );
         }).join('');
 
-        initScrollReveal('.announcement-card');
+        initScrollReveal('.material-card');
     }
 
         async function loadKonseling() {
@@ -965,6 +1204,129 @@ document.addEventListener('DOMContentLoaded', function () {
     const ekstraAdminList = document.getElementById('ekstraAdminList');
     const ekstraFormTitle = document.getElementById('ekstraFormTitle');
     const ekstraCancelEdit = document.getElementById('ekstraCancelEdit');
+    const ekstraImagePreview = document.getElementById('ekstraImagePreview');
+    const ekstraGambarNote = document.getElementById('ekstraGambarNote');
+    const ekstraImagePicker = document.getElementById('ekstraImagePicker');
+    const ekstraGambarPilihan = document.getElementById('ekstraGambarPilihan');
+    const ekstraHapusGambar = document.getElementById('ekstraHapusGambar');
+
+    let ekstraBannerUrl = '';
+
+    function setEkstraBanner(url, label) {
+        ekstraBannerUrl = url || '';
+
+        if (ekstraImagePreview) {
+            ekstraImagePreview.src = ekstraBannerUrl;
+            ekstraImagePreview.style.display = ekstraBannerUrl ? 'block' : 'none';
+        }
+
+        if (ekstraGambarNote) {
+            ekstraGambarNote.textContent = ekstraBannerUrl
+                ? 'Banner aktif: ' + (label || ekstraBannerUrl.split('/').pop())
+                : 'Biarkan kosong untuk memakai banner bawaan.';
+        }
+
+        if (ekstraHapusGambar) ekstraHapusGambar.hidden = !ekstraBannerUrl;
+
+        if (ekstraImagePicker) {
+            ekstraImagePicker.querySelectorAll('[data-path]').forEach(function (el) {
+                el.classList.toggle('selected', !!ekstraBannerUrl && el.dataset.path === ekstraGambarPilihan.value);
+            });
+        }
+    }
+
+    async function loadEkstraImages() {
+        if (!ekstraImagePicker) return;
+
+        try {
+            const rows = await apiRequest('/api/ekstrakurikuler/gambar');
+            ekstraBannerList = rows;
+
+            if (!rows.length) {
+                ekstraImagePicker.innerHTML = '<span class="image-picker-empty">Belum ada banner. Unggah gambar dulu.</span>';
+                return;
+            }
+
+            ekstraImagePicker.innerHTML = rows.map(function (row) {
+                return (
+                    '<button type="button" class="image-picker-item" data-path="' + escapeHtml(row.path) + '" title="' + escapeHtml(row.nama) + '">' +
+                        '<img src="' + row.url + '" alt="' + escapeHtml(row.nama) + '" loading="lazy">' +
+                        '<span>' + escapeHtml(row.nama) + '</span>' +
+                    '</button>'
+                );
+            }).join('');
+        } catch (err) {
+            ekstraImagePicker.innerHTML = '<span class="image-picker-empty">Gagal memuat daftar banner.</span>';
+        }
+    }
+
+    let ekstraBannerList = [];
+
+    const ekstraImageSearch = document.getElementById('ekstraImageSearch');
+
+    function saringGambar(kata) {
+        if (!ekstraImagePicker) return;
+        const items = ekstraImagePicker.querySelectorAll('.image-picker-item');
+        if (!items.length) return;           // belum ada banner sama sekali
+
+        const q = String(kata || '').trim().toLowerCase();
+        let tampil = 0;
+        items.forEach(function (item) {
+            const cocok = !q || item.dataset.path.toLowerCase().includes(q);
+            item.hidden = !cocok;
+            if (cocok) tampil++;
+        });
+
+        const kosong = ekstraImagePicker.querySelector('.image-picker-empty[data-filter]');
+        if (!tampil) {
+            let span = kosong;
+            if (!span) {
+                span = document.createElement('span');
+                span.className = 'image-picker-empty';
+                span.dataset.filter = '1';
+                ekstraImagePicker.appendChild(span);
+            }
+            span.textContent = 'Tidak ada banner untuk "' + q + '".';
+        } else if (kosong) {
+            kosong.remove();
+        }
+    }
+
+    if (ekstraImageSearch) {
+        ekstraImageSearch.addEventListener('input', function () {
+            saringGambar(ekstraImageSearch.value);
+        });
+    }
+
+    if (ekstraImagePicker) {
+        ekstraImagePicker.addEventListener('click', function (e) {
+            const btn = e.target.closest('.image-picker-item');
+            if (!btn) return;
+
+            ekstraGambarPilihan.value = btn.dataset.path;
+            if (ekstraForm.gambar) ekstraForm.gambar.value = '';
+
+            setEkstraBanner('/' + btn.dataset.path, btn.querySelector('span').textContent);
+        });
+    }
+
+    if (ekstraForm && ekstraForm.gambar) {
+        ekstraForm.gambar.addEventListener('change', function () {
+            const file = ekstraForm.gambar.files[0];
+            if (!file) return;
+
+            ekstraGambarPilihan.value = '';
+            setEkstraBanner(URL.createObjectURL(file), file.name);
+        });
+    }
+
+    if (ekstraHapusGambar) {
+        ekstraHapusGambar.addEventListener('click', function () {
+            ekstraGambarPilihan.value = '';
+            if (ekstraForm.gambar) ekstraForm.gambar.value = '';
+            setEkstraBanner('', '');
+        });
+    }
 
     function renderEkstraAdmin() {
         if (!ekstraAdminList) return;
@@ -977,6 +1339,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ekstraAdminList.innerHTML = extracurricularsData.map(function (item) {
             return (
                 '<li class="admin-list-item" data-id="' + item.id + '">' +
+                    '<img class="admin-list-thumb" src="' + extraBannerFile(item) + '" alt="" loading="lazy">' +
                     '<div class="admin-list-item-info">' +
                         '<strong>' + escapeHtml(item.icon) + ' ' + escapeHtml(item.judul) + '</strong>' +
                         '<span>' + escapeHtml(item.kategori) + ' · ' + escapeHtml(item.jadwal || '-') + ' · ' + escapeHtml(item.lokasi || '-') + '</span>' +
@@ -990,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('');
     }
 
-       if (ekstraForm) {
+    if (ekstraForm) {
         ekstraForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
@@ -1009,23 +1372,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            const formData = new FormData();
+            Object.keys(payload).forEach(function (key) {
+                formData.append(key, payload[key]);
+            });
+
+            const file = ekstraForm.gambar.files[0];
+            if (file) formData.append('gambar', file);
+            else if (ekstraGambarPilihan.value) formData.append('gambar_pilihan', ekstraGambarPilihan.value);
+            else if (id) formData.append('hapus_gambar', '1');
+
             try {
                 if (id) {
+                    // PHP tidak mem-parse body multipart pada request PUT,
+                    // jadi update dikirim lewat POST dengan _method=PUT.
+                    formData.append('_method', 'PUT');
                     await apiRequest('/api/ekstrakurikuler/' + id, {
-                        method: 'PUT',
-                        body: JSON.stringify(payload)
+                        method: 'POST',
+                        body: formData
                     });
                     showFormNote(ekstraForm, 'Ekstrakurikuler berhasil diperbarui.', 'success');
                 } else {
                     await apiRequest('/api/ekstrakurikuler', {
                         method: 'POST',
-                        body: JSON.stringify(payload)
+                        body: formData
                     });
                     showFormNote(ekstraForm, 'Ekstrakurikuler berhasil ditambahkan.', 'success');
                 }
 
                 resetEkstraForm();
                 await loadExtracurriculars();
+                await loadEkstraImages();
             } catch (err) {
                 showFormNote(ekstraForm, err.message, 'error');
             }
@@ -1036,8 +1413,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!ekstraForm) return;
         ekstraForm.reset();
         ekstraForm.id.value = '';
+        if (ekstraGambarPilihan) ekstraGambarPilihan.value = '';
         if (ekstraFormTitle) ekstraFormTitle.textContent = 'Tambah Ekstrakurikuler';
         if (ekstraCancelEdit) ekstraCancelEdit.hidden = true;
+        setEkstraBanner('', '');
     }
 
     if (ekstraCancelEdit) {
@@ -1075,6 +1454,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 ekstraForm.jadwal.value = item.jadwal || '';
                 ekstraForm.lokasi.value = item.lokasi || '';
                 ekstraForm.deskripsi.value = item.deskripsi;
+
+                if (ekstraGambarPilihan) ekstraGambarPilihan.value = item.gambar || '';
+                setEkstraBanner(extraBannerFile(item), item.judul);
 
                 if (ekstraFormTitle) ekstraFormTitle.textContent = 'Edit Ekstrakurikuler';
                 if (ekstraCancelEdit) ekstraCancelEdit.hidden = false;
@@ -1894,6 +2276,10 @@ document.addEventListener('DOMContentLoaded', function () {
     loadKesiswaan();
     loadExams();
     loadMaterials();
+
+    if (ekstraImagePicker) {
+        loadEkstraImages();
+    }
 
     if (konselingAdminList) {
         loadKonseling();

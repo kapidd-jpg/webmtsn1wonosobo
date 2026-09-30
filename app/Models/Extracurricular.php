@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Extracurricular extends Model
 {
     use HasFactory;
-    protected $fillable = ['icon', 'kategori', 'judul', 'jadwal', 'lokasi', 'deskripsi'];
+    protected $fillable = ['icon', 'gambar', 'kategori', 'judul', 'jadwal', 'lokasi', 'deskripsi'];
 
     public function students()
     {

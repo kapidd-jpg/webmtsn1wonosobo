@@ -870,6 +870,57 @@ textarea:focus-visible {
 .page-content { padding-bottom: 96px; }
 
 /* =========================================================
+   TOMBOL KEMBALI
+   Disuntik JavaScript ke tiap halaman selain Beranda.
+   Hanya tombol di halaman aktif (.page.active) yang terlihat.
+   ========================================================= */
+
+.page-back {
+    display: none;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 9px 18px 9px 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.page.active .page-back { display: inline-flex; }
+
+.page-back:hover { transform: translateX(-3px); }
+.page-back:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 3px; }
+
+.page-back-arrow { font-size: 16px; line-height: 1; }
+
+/* di dalam hero berlatar foto: teks putih di atas foto */
+.page-hero-top .page-back {
+    margin-bottom: 22px;
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.28);
+    color: #fff;
+    backdrop-filter: blur(6px);
+}
+.page-hero-top .page-back:hover { background: rgba(255,255,255,0.22); }
+
+/* halaman tanpa hero: tombol gelap di atas konten */
+.page-content-top .page-back {
+    margin-bottom: 28px;
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--ink-soft);
+}
+.page-content-top .page-back:hover {
+    background: var(--bg-alt);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* =========================================================
    KONSELING — two column
 ========================================================= */
 
@@ -1042,12 +1093,53 @@ textarea:focus-visible {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 24px;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .extra-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .extra-card.hidden { display: none; }
+
+.extra-banner {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--primary-soft);
+    border-bottom: 1px solid var(--border);
+}
+
+.extra-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+
+.extra-card:hover .extra-banner img { transform: scale(1.05); }
+
+.extra-banner .extra-category {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    padding: 4px 9px;
+    border-radius: var(--radius-xs);
+    background: rgba(20, 27, 43, 0.55);
+    color: #FFFFFF;
+    backdrop-filter: blur(3px);
+}
+
+.extra-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.extra-body p { flex: 1; }
 
 .extra-icon { font-size: 26px; margin-bottom: 14px; }
 
@@ -1062,6 +1154,103 @@ textarea:focus-visible {
 .extra-card p { font-size: 13px; color: var(--ink-soft); margin-bottom: 14px; }
 
 .extra-link { font-size: 13px; font-weight: 700; color: var(--primary-text); }
+
+/* =========================================================
+   PANEL ADMIN — PEMILIH BANNER EKSTRAKURIKULER
+   ========================================================= */
+
+.image-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.image-picker-empty {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.image-picker-search {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--surface, #fff);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 8px);
+}
+
+.image-picker-search:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.image-picker-item[hidden] {
+    display: none;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.5;
+}
+
+.image-picker-item {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xs);
+    background: var(--bg);
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+    text-align: left;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.image-picker-item:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.image-picker-item.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-soft);
+}
+
+.image-picker-item img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.image-picker-item span {
+    display: block;
+    padding: 5px 7px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-list-thumb {
+    width: 52px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    flex: 0 0 auto;
+}
+
+.admin-list-item:has(.admin-list-thumb) .admin-list-item-info {
+    flex: 1;
+    min-width: 0;
+}
 
 .empty-state {
     text-align: center;
@@ -1114,8 +1303,202 @@ textarea:focus-visible {
 }
 
 /* =========================================================
+   UJIAN — ringkasan + grid kartu
+   Dulu tabel 6 kolom. Kalau ujiannya masih sedikit, tabel
+   terlihat kosong di halaman selebar. Kartu + baris ringkasan
+   membuat halamannya tetap terasa penuh.
+   ========================================================= */
+
+.exam-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.exam-summary-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+}
+
+.exam-summary-card strong {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+
+.exam-summary-card span {
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+/* auto-fit, bukan auto-fill: kalau isinya cuma 2 kartu, kolom kosong
+   ikut menyusut sehingga 2 kartunya melebar mengisi baris, bukan
+   menggantung di seperempat lebar halaman */
+.exam-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.exam-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 24px 26px;
+}
+
+.exam-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.exam-card-date {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+}
+
+.exam-card-jenis {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 11px;
+}
+
+.exam-card h3 { font-size: 19px; font-weight: 600; margin-bottom: 10px; }
+
+.exam-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.exam-card p { font-size: 14px; color: var(--ink-soft); }
+
+/* =========================================================
+   MATERI — grid kartu
+   Dulu memakai .announcement-list yang 1 kolom penuh, jadi
+   2 materi terlihat seperti 2 baris tipis. Sekarang grid.
+   ========================================================= */
+
+.material-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.material-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-soft);
+    border-radius: var(--radius-lg);
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+}
+
+.material-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.material-card-mapel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+}
+
+.material-card-kelas {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+    white-space: nowrap;
+}
+
+.material-card h3 { font-size: 19px; font-weight: 600; margin-bottom: 10px; }
+.material-card p { font-size: 14px; color: var(--ink-soft); }
+
+/* =========================================================
+   PENGUMUMAN — chip filter kategori
+   ========================================================= */
+
+.announcement-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 26px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+
+.filter-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.filter-chip-count {
+    font-size: 11px;
+    color: var(--ink-faint);
+    background: var(--bg-alt);
+    border-radius: 999px;
+    padding: 1px 8px;
+}
+
+.filter-chip.active .filter-chip-count { background: rgba(255,255,255,0.22); color: #fff; }
+
+.filter-chip:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+
+/* =========================================================
    AKADEMIK — list
-========================================================= */
+   ========================================================= */
+
 
 .academic-list { display: flex; flex-direction: column; gap: 14px; }
 
@@ -1326,6 +1709,22 @@ textarea:focus-visible {
 .modal-box form { text-align: left; }
 
 .extra-detail-box { text-align: center; max-width: 420px; }
+
+.extra-detail-banner {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--primary-soft);
+    margin-bottom: 18px;
+}
+
+.extra-detail-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 
 .extra-detail-icon {
     width: 64px; height: 64px;
@@ -1607,6 +2006,7 @@ textarea:focus-visible {
     .extra-grid { grid-template-columns: repeat(2, 1fr); }
     .two-column { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr; }
+    .exam-summary { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 720px) {
@@ -1651,6 +2051,12 @@ textarea:focus-visible {
     .section-heading p { max-width: none; }
 
     .quick-grid, .feature-grid, .extra-grid { grid-template-columns: 1fr; }
+    .exam-summary { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .exam-summary-card { padding: 16px 18px; }
+    .exam-summary-card strong { font-size: 26px; }
+    .exam-grid, .material-grid { grid-template-columns: 1fr; gap: 16px; }
+    .exam-card, .material-card { padding: 20px 22px; }
+    .page-back { font-size: 11px; padding: 8px 15px 8px 12px; }
     .info-banner { flex-direction: column; margin-bottom: 56px; }
 
     .profile-stats-grid { grid-template-columns: repeat(2, 1fr); }
