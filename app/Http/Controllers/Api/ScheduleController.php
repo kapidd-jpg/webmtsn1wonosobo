@@ -10,9 +10,17 @@ class ScheduleController extends Controller
 {
     private array $dayOrder = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-    public function index()
+    public function index(Request $request)
     {
-        $schedules = Schedule::all();
+        $user = $request->user();
+
+        $query = Schedule::query();
+
+        if ($user && $user->role === 'siswa') {
+            $query->where('kelas', $user->kelas);
+        }
+
+        $schedules = $query->get();
 
         return $schedules->sortBy(function ($item) {
             return array_search($item->hari, $this->dayOrder) . $item->jam;

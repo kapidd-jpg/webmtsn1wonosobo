@@ -252,6 +252,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // tombol/kartu lain yang mengarahkan ke login (mis. kartu Akademik untuk tamu)
+    document.querySelectorAll('[data-open-login]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            openModal(loginModal);
+        });
+    });
+
     /* -----------------------------------------------------
        3b. MODAL DETAIL EKSTRAKURIKULER
     ----------------------------------------------------- */
@@ -631,7 +638,92 @@ const EXTRA_BANNERS = {
             scheduleData = [];
         }
         renderSchedule();
+        renderDashboardAgenda();
         renderJadwalAdmin();
+    }
+
+    const dayNamesId = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+    function renderDashboardAgenda() {
+        const list = document.getElementById('dashboardAgendaList');
+        if (!list) return;
+
+        const card = document.getElementById('dashboardAgenda');
+        const dayLabel = document.getElementById('dashboardAgendaDay');
+
+        const todayName = dayNamesId[new Date().getDay()];
+        const studentClass = card ? (card.dataset.studentClass || '').trim() : '';
+
+        // jadwal untuk satu hari tertentu, difokuskan ke kelas siswa bila ada
+        function itemsForDay(day) {
+            let items = scheduleData.filter(function (item) {
+                return item.hari === day;
+            });
+
+            if (studentClass) {
+                const byClass = items.filter(function (item) {
+                    return String(item.kelas).toLowerCase() === studentClass.toLowerCase();
+                });
+                if (byClass.length > 0) items = byClass;
+            }
+
+            return items;
+        }
+
+        function renderItems(items) {
+            return items.map(function (item) {
+                const detail = item.guru
+                    ? escapeHtml(item.kelas) + ' • ' + escapeHtml(item.guru)
+                    : escapeHtml(item.kelas);
+
+                return (
+                    '<div class="agenda-item">' +
+                        '<span class="agenda-time">' + escapeHtml(item.jam) + '</span>' +
+                        '<span class="agenda-marker" aria-hidden="true">📖</span>' +
+                        '<div class="agenda-body">' +
+                            '<h3>' + escapeHtml(item.mapel) + '</h3>' +
+                            '<p>' + detail + '</p>' +
+                        '</div>' +
+                    '</div>'
+                );
+            }).join('');
+        }
+
+        const todayItems = itemsForDay(todayName);
+
+        if (todayItems.length > 0) {
+            if (dayLabel) dayLabel.textContent = todayName;
+            list.innerHTML = renderItems(todayItems);
+            return;
+        }
+
+        // hari ini kosong: cari hari terdekat (setelah hari ini) yang ada pelajaran
+        const todayIndex = dayNamesId.indexOf(todayName);
+        let nearestDay = null;
+        let nearestItems = [];
+
+        for (let step = 1; step < dayNamesId.length; step++) {
+            const day = dayNamesId[(todayIndex + step) % dayNamesId.length];
+            if (day === 'Minggu') continue;
+
+            const items = itemsForDay(day);
+            if (items.length > 0) {
+                nearestDay = day;
+                nearestItems = items;
+                break;
+            }
+        }
+
+        if (dayLabel) dayLabel.textContent = nearestDay ? nearestDay + ' (terdekat)' : todayName;
+
+        let html = '<p class="agenda-note">Tidak ada agenda untuk hari ini. Selamat beristirahat! 🌿</p>';
+
+        if (nearestDay) {
+            html += '<p class="agenda-note agenda-note-day">Jadwal terdekat — ' + escapeHtml(nearestDay) + '</p>';
+            html += renderItems(nearestItems);
+        }
+
+        list.innerHTML = html;
     }
 
     function renderSchedule() {
@@ -2272,10 +2364,23 @@ const EXTRA_BANNERS = {
 
     loadAnnouncements();
     loadExtracurriculars();
-    loadSchedule();
     loadKesiswaan();
-    loadExams();
-    loadMaterials();
+
+    // Data akademik bersifat personal (per kelas) & hanya untuk pengguna login,
+    // jadi hanya dimuat kalau memang ada elemen yang menampilkannya.
+    if (document.getElementById('scheduleTableBody') ||
+        document.getElementById('dashboardAgendaList') ||
+        document.getElementById('jadwalAdminList')) {
+        loadSchedule();
+    }
+
+    if (document.getElementById('examList') || document.getElementById('ujianAdminList')) {
+        loadExams();
+    }
+
+    if (document.getElementById('materialList') || document.getElementById('materiAdminList')) {
+        loadMaterials();
+    }
 
     if (ekstraImagePicker) {
         loadEkstraImages();
@@ -2304,5 +2409,64 @@ const EXTRA_BANNERS = {
             setTimeout(initScrollRevealForAllCards, 50);
         });
     });
+
+    /* --- tab akademik di dashboard siswa (Jadwal / Ujian / Materi) --- */
+
+    (function initDashAcademicTabs() {
+        const tabs = document.querySelectorAll('.dash-tab');
+        const panels = document.querySelectorAll('.dash-panel');
+        if (!tabs.length) return;
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                const name = tab.dataset.dashTab;
+
+                tabs.forEach(function (t) {
+                    const on = t === tab;
+                    t.classList.toggle('active', on);
+                    t.setAttribute('aria-selected', String(on));
+                });
+
+                panels.forEach(function (p) {
+                    p.classList.toggle('active', p.dataset.dashPanel === name);
+                });
+            });
+        });
+    })();
+
+    /* --- auto-refresh jadwal & agenda (near real-time) ---
+       Polling ringan + refresh saat tab kembali aktif, supaya
+       agenda siswa ikut berubah tanpa reload manual.
+       Hanya berjalan di halaman yang menampilkan jadwal/agenda
+       agar tidak mengganggu proses edit di panel admin. */
+
+    function isScheduleViewActive() {
+        const active = document.querySelector('.page.active');
+        const pageName = active ? active.dataset.page : 'home';
+        return pageName === 'profil';
+    }
+
+    let scheduleRefreshBusy = false;
+
+    async function refreshScheduleRealtime() {
+        if (scheduleRefreshBusy) return;
+        if (document.visibilityState === 'hidden') return;
+        if (!isScheduleViewActive()) return;
+
+        scheduleRefreshBusy = true;
+        try {
+            await loadSchedule();
+        } finally {
+            scheduleRefreshBusy = false;
+        }
+    }
+
+    setInterval(refreshScheduleRealtime, 60000);
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') refreshScheduleRealtime();
+    });
+
+    window.addEventListener('focus', refreshScheduleRealtime);
 
 });

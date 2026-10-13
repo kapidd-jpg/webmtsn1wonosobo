@@ -28,12 +28,14 @@ Route::get('/api/jadwal', [ScheduleController::class, 'index']);
 Route::post('/api/stela', [StelaController::class, 'reply']);
 Route::post('/api/konseling', [CounselingController::class, 'store']);
 Route::get('/api/kesiswaan', [KesiswaanController::class, 'index']);
-Route::get('/api/ujian', [ExamController::class, 'index']);
-Route::get('/api/materi', [MaterialController::class, 'index']);
 Route::get('/api/profil-sekolah', [SchoolProfileController::class, 'show']);
 
+// Data akademik bersifat personal (per kelas) — wajib login
 Route::middleware('auth')->group(function () {
     Route::get('/api/me', [StudentController::class, 'me']);
+    Route::get('/api/jadwal', [ScheduleController::class, 'index']);
+    Route::get('/api/ujian', [ExamController::class, 'index']);
+    Route::get('/api/materi', [MaterialController::class, 'index']);
 });
 
 // Kelola konten portal — guru & admin

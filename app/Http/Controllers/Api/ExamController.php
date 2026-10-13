@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Exam::orderBy('tanggal')->get();
+        $user = $request->user();
+
+        $query = Exam::query();
+
+        if ($user && $user->role === 'siswa') {
+            $query->where('kelas', $user->kelas);
+        }
+
+        return $query->orderBy('tanggal')->get();
     }
 
     public function store(Request $request)

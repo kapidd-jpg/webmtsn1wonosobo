@@ -1850,12 +1850,13 @@ textarea:focus-visible {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
+    line-height: 1;
     flex-shrink: 0;
 }
 
 .stela-header-info strong { display: block; font-size: 14px; font-family: var(--font-display); }
-.stela-header-info span { display: block; font-size: 11px; color: rgba(255,255,255,0.78); }
+.stela-header-info > div span { display: block; font-size: 11px; color: rgba(255,255,255,0.78); }
 
 .stela-close {
     width: 28px; height: 28px;
@@ -1996,6 +1997,180 @@ textarea:focus-visible {
 .stela-send:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 /* =========================================================
+   DASHBOARD SISWA — Bento (sesuai desain Figma)
+========================================================= */
+
+.dashboard {
+    padding-top: 32px;
+    padding-bottom: 64px;
+}
+
+.dashboard-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.dashboard-greeting {
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--heading);
+    margin: 8px 0;
+}
+
+.dashboard-sub {
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 560px;
+}
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 28px;
+}
+
+.bento-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.bento-agenda { grid-column: span 12; }
+
+.bento-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.bento-head h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.bento-icon { font-size: 18px; line-height: 1; }
+
+/* Agenda */
+.agenda-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 340px));
+    justify-content: start;
+    gap: 14px;
+}
+
+.agenda-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+}
+
+.agenda-time {
+    min-width: 52px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--primary-text);
+    white-space: nowrap;
+}
+
+.agenda-day {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+.agenda-empty {
+    grid-column: 1 / -1;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.agenda-note {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.agenda-note-day {
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+}
+
+.agenda-marker {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-soft);
+    font-size: 17px;
+}
+
+.agenda-body h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.agenda-body p { font-size: 13px; color: var(--ink-soft); }
+
+/* Akademik di dashboard siswa (tab Jadwal / Ujian / Materi) */
+.dash-academic {
+    grid-column: span 12;
+}
+
+.dash-tabs {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+}
+
+.dash-tab {
+    border: 0;
+    background: transparent;
+    padding: 8px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dash-tab:hover { color: var(--heading); }
+
+.dash-tab.active {
+    background: var(--primary);
+    color: #FFFFFF;
+}
+
+.dash-panel { display: none; }
+.dash-panel.active { display: block; }
+
+/* =========================================================
    RESPONSIVE
 ========================================================= */
 
@@ -2109,4 +2284,20 @@ textarea:focus-visible {
     .hero-content h1 { font-size: 24px; }
     .brand-text strong { font-size: 14px; }
     .btn { padding: 12px 18px; font-size: 13px; }
+}
+
+/* DASHBOARD SISWA — Bento */
+@media (max-width: 960px) {
+    .bento-agenda { grid-column: span 12; }
+    .agenda-list { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+    .dashboard { padding-top: 24px; padding-bottom: 48px; }
+    .dashboard-head { flex-direction: column; }
+    .dashboard-greeting { font-size: 26px; }
+    .bento-card { padding: 20px; }
+    .agenda-item { flex-wrap: wrap; }
+    .dash-tabs { display: flex; width: 100%; }
+    .dash-tab { flex: 1; text-align: center; padding: 8px 12px; }
 }

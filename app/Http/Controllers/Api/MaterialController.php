@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 
 class MaterialController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return LearningMaterial::orderByDesc('id')->get();
+        $user = $request->user();
+
+        $query = LearningMaterial::query();
+
+        if ($user && $user->role === 'siswa') {
+            $query->where('kelas', $user->kelas);
+        }
+
+        return $query->orderByDesc('id')->get();
     }
 
     public function store(Request $request)

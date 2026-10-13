@@ -79,13 +79,6 @@
                 <button
                     type="button"
                     class="nav-link"
-                    data-target="akademik">
-                    Akademik
-                </button>
-
-                <button
-                    type="button"
-                    class="nav-link"
                     data-target="pengumuman">
                     Pengumuman
                 </button>
@@ -265,7 +258,7 @@
 
                     <button
                         class="quick-card"
-                        data-target="akademik">
+                        @auth data-target="{{ auth()->user()->role === 'siswa' ? 'profil' : 'guru-dashboard' }}" @else data-open-login @endauth>
 
                         <div class="quick-icon orange">
                             ▣
@@ -274,8 +267,8 @@
                         <div>
                             <h3>Akademik</h3>
                             <p>
-                                Informasi pembelajaran,
-                                jadwal, dan akademik.
+                                Jadwal, ujian, dan materi
+                                kelasmu.
                             </p>
                         </div>
 
@@ -615,131 +608,6 @@
 
 
         <!-- =================================================
-             AKADEMIK
-        ================================================== -->
-
-        <section
-            class="page"
-            data-page="akademik">
-
-            <div class="page-hero" style="background-image: url('{{ asset('images/hero/akademik.jpg') }}')">
-
-                <div class="container">
-
-                    <span class="section-label">
-                        PEMBELAJARAN
-                    </span>
-
-                    <h1>
-                        Akademik
-                    </h1>
-
-                    <p>
-                        Informasi yang membantu perjalanan
-                        belajar siswa.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="container page-content">
-
-                <div class="academic-list">
-
-                    <div class="academic-item" data-target="jadwal">
-
-                        <div class="academic-icon">
-                            📅
-                        </div>
-
-                        <div>
-                            <span>
-                                INFORMASI
-                            </span>
-
-                            <h3>
-                                Jadwal Pelajaran
-                            </h3>
-
-                            <p>
-                                Informasi jadwal pembelajaran
-                                siswa.
-                            </p>
-                        </div>
-
-                        <span class="arrow">
-                            →
-                        </span>
-
-                    </div>
-
-
-                    <div class="academic-item" data-target="ujian">
-
-                        <div class="academic-icon">
-                            📝
-                        </div>
-
-                        <div>
-                            <span>
-                                PENILAIAN
-                            </span>
-
-                            <h3>
-                                Ujian dan Penilaian
-                            </h3>
-
-                            <p>
-                                Informasi mengenai jadwal
-                                ujian dan penilaian.
-                            </p>
-                        </div>
-
-                        <span class="arrow">
-                            →
-                        </span>
-
-                    </div>
-
-
-                    <div class="academic-item" data-target="materi">
-
-                        <div class="academic-icon">
-                            📖
-                        </div>
-
-                        <div>
-                            <span>
-                                PEMBELAJARAN
-                            </span>
-
-                            <h3>
-                                Materi Pembelajaran
-                            </h3>
-
-                            <p>
-                                Akses informasi dan materi
-                                pembelajaran.
-                            </p>
-                        </div>
-
-                        <span class="arrow">
-                            →
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
              PENGUMUMAN
         ================================================== -->
 
@@ -792,292 +660,154 @@
 @auth
 @if (auth()->user()->role === 'siswa')
 
-            <div class="page-hero">
+            @php
+                $firstName = explode(' ', trim(auth()->user()->name))[0];
+            @endphp
 
-                <div class="container profile-hero-row">
+            <div class="container dashboard">
 
-                    <div class="profile-hero-avatar">
-                        AS
-                    </div>
+                <div class="dashboard-head">
 
                     <div>
                         <span class="section-label">
                             DASHBOARD SISWA
                         </span>
 
-                        <h1 id="profileGreeting">
-                            Halo, {{ auth()->user()->name }}
+                        <h1 class="dashboard-greeting">
+                            Halo, {{ $firstName }}.
                         </h1>
 
-                        <p>
-                            Kelas {{ auth()->user()->kelas ?? '-' }} · NIS {{ auth()->user()->nis_nip }}
+                        <p class="dashboard-sub">
+                            Semoga harimu menyenangkan. Berikut ringkasan aktivitasmu hari ini.
                         </p>
                     </div>
 
-                </div>
-
-            </div>
-
-
-            <div class="container page-content">
-
-                <div class="profile-stats-grid">
-
-                    <div class="profile-stat-card">
-                        <span class="profile-stat-label">Kehadiran</span>
-                        <strong class="profile-stat-value">{{ auth()->user()->kehadiran_persen !== null ? auth()->user()->kehadiran_persen . '%' : '-' }}</strong>
-                        <span class="profile-stat-note">Bulan ini</span>
-                    </div>
-
-                    <div class="profile-stat-card">
-                        <span class="profile-stat-label">Rata-rata Nilai</span>
-                        <strong class="profile-stat-value">{{ auth()->user()->rata_rata_nilai ?? '-' }}</strong>
-                        <span class="profile-stat-note">Semester ini</span>
-                    </div>
-
-                    <div class="profile-stat-card">
-                        <span class="profile-stat-label">Ekstrakurikuler</span>
-                        <strong class="profile-stat-value">{{ auth()->user()->extracurriculars->count() }}</strong>
-                        <span class="profile-stat-note">Aktif diikuti</span>
-                    </div>
-
-                    <div class="profile-stat-card">
-                        <span class="profile-stat-label">Poin Prestasi</span>
-                        <strong class="profile-stat-value">{{ auth()->user()->poin_prestasi ?? 0 }}</strong>
-                        <span class="profile-stat-note">Total terkumpul</span>
-                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="btn btn-secondary">
+                            Keluar Akun
+                        </button>
+                    </form>
 
                 </div>
 
 
-                <div class="two-column">
+                <div class="bento-grid">
 
-                    <div class="content-card">
+                    <!-- AGENDA HARI INI -->
+                    <article
+                        class="bento-card bento-agenda"
+                        id="dashboardAgenda"
+                        data-student-class="{{ auth()->user()->kelas }}">
 
-                        <span class="card-label">
-                            DATA SISWA
-                        </span>
+                        <div class="bento-head">
+                            <span class="bento-icon" aria-hidden="true">📅</span>
+                            <h2>Agenda Kamu Hari Ini</h2>
+                            <span class="agenda-day" id="dashboardAgendaDay"></span>
+                        </div>
 
-                        <h2>
-                            Informasi Pribadi
-                        </h2>
+                        <div
+                            class="agenda-list"
+                            id="dashboardAgendaList">
 
-                        <ul class="profile-detail-list">
-
-                          <li>
-                                <span>Nama Lengkap</span>
-                                <strong>{{ auth()->user()->name }}</strong>
-                            </li>
-
-                            <li>
-                                <span>NIS</span>
-                                <strong id="profileNis">{{ auth()->user()->nis_nip }}</strong>
-                            </li>
-
-                            <li>
-                                <span>Kelas</span>
-                                <strong>{{ auth()->user()->kelas ?? '-' }}</strong>
-                            </li>
-
-                            <li>
-                                <span>Wali Kelas</span>
-                                <strong>{{ auth()->user()->wali_kelas ?? '-' }}</strong>
-                            </li>
-
-                            <li>
-                                <span>Status</span>
-                                <strong>Aktif</strong>
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-
-                    <div class="content-card">
-
-                        <span class="card-label">
-                            EKSTRAKURIKULER
-                        </span>
-
-                        <h2>
-                            Sedang Diikuti
-                        </h2>
-
-                        <ul class="check-list">
-
-                            @forelse (auth()->user()->extracurriculars as $extra)
-                                <li>
-                                    <span>{{ $extra->icon }}</span>
-                                    {{ $extra->judul }}
-                                </li>
-                            @empty
-                                <li>
-                                    <span>—</span>
-                                    Belum mengikuti ekstrakurikuler apa pun.
-                                </li>
-                            @endforelse
-
-                        </ul>
-
-                        <form method="POST" action="{{ route('logout') }}" style="margin-top: 24px;">
-                            @csrf
-                            <button
-                                type="submit"
-                                class="btn btn-secondary full profile-logout-btn">
-                                Keluar Akun
-                            </button>
-                        </form>
-
-                    </div>
+                            <p class="agenda-empty">
+                                Memuat agenda…
+                            </p>
 
                         </div>
 
+                    </article>
+
+
+                    <!-- AKADEMIK (personal — per kelas siswa) -->
+                    <article class="bento-card dash-academic">
+
+                        <div class="bento-head">
+                            <span class="bento-icon" aria-hidden="true">🎓</span>
+                            <h2>Akademik Kelasmu</h2>
+                            <span class="agenda-day">Kelas {{ auth()->user()->kelas }}</span>
                         </div>
 
-                    @endif
-                    @endauth
+                        <div class="dash-tabs" role="tablist">
 
-                    </section>
+                        <button
+                            type="button"
+                            class="dash-tab active"
+                            data-dash-tab="jadwal"
+                            role="tab"
+                            aria-selected="true">
+                            Jadwal
+                        </button>
 
+                        <button
+                            type="button"
+                            class="dash-tab"
+                            data-dash-tab="ujian"
+                            role="tab"
+                            aria-selected="false">
+                            Ujian
+                        </button>
 
+                        <button
+                            type="button"
+                            class="dash-tab"
+                            data-dash-tab="materi"
+                            role="tab"
+                            aria-selected="false">
+                            Materi
+                        </button>
 
-        <!-- =================================================
-             JADWAL PELAJARAN (publik)
-        ================================================== -->
+                    </div>
 
-        <section
-            class="page"
-            data-page="jadwal">
+                    <div class="dash-panel active" data-dash-panel="jadwal">
 
-            <div class="page-hero">
+                        <div class="schedule-table-wrap">
 
-                <div class="container">
+                            <table class="schedule-table">
 
-                    <span class="section-label">
-                        AKADEMIK
-                    </span>
+                                <thead>
+                                    <tr>
+                                        <th>Hari</th>
+                                        <th>Jam</th>
+                                        <th>Mata Pelajaran</th>
+                                        <th>Kelas</th>
+                                        <th>Guru</th>
+                                    </tr>
+                                </thead>
 
-                    <h1>
-                        Jadwal Pelajaran
-                    </h1>
+                                <tbody id="scheduleTableBody">
+                                </tbody>
 
-                    <p>
-                        Jadwal pelajaran terbaru yang dikelola
-                        oleh guru dan staf sekolah.
-                    </p>
+                            </table>
 
-                </div>
+                        </div>
 
-            </div>
+                    </div>
 
+                    <div class="dash-panel" data-dash-panel="ujian">
 
-            <div class="container page-content">
+                        <div class="exam-summary" id="examSummary"></div>
 
-                <div class="schedule-table-wrap">
+                        <div class="exam-grid" id="examList"></div>
 
-                    <table class="schedule-table">
+                    </div>
 
-                        <thead>
-                            <tr>
-                                <th>Hari</th>
-                                <th>Jam</th>
-                                <th>Mata Pelajaran</th>
-                                <th>Kelas</th>
-                                <th>Guru</th>
-                            </tr>
-                        </thead>
+                    <div class="dash-panel" data-dash-panel="materi">
 
-                        <tbody id="scheduleTableBody">
-                        </tbody>
+                        <div class="material-grid" id="materialList"></div>
 
-                    </table>
+                    </div>
 
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             UJIAN DAN PENILAIAN (publik)
-        ================================================== -->
-
-        <section
-            class="page"
-            data-page="ujian">
-
-            <div class="page-hero">
-
-                <div class="container">
-
-                    <span class="section-label">
-                        AKADEMIK
-                    </span>
-
-                    <h1>
-                        Ujian dan Penilaian
-                    </h1>
-
-                    <p>
-                        Jadwal ujian dan penilaian yang perlu
-                        dipersiapkan siswa.
-                    </p>
+                    </article>
 
                 </div>
 
             </div>
 
-
-            <div class="container page-content">
-
-                <div class="exam-summary" id="examSummary"></div>
-
-                <div class="exam-grid" id="examList"></div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             MATERI PEMBELAJARAN (publik)
-        ================================================== -->
-
-        <section
-            class="page"
-            data-page="materi">
-
-            <div class="page-hero">
-
-                <div class="container">
-
-                    <span class="section-label">
-                        AKADEMIK
-                    </span>
-
-                    <h1>
-                        Materi Pembelajaran
-                    </h1>
-
-                    <p>
-                        Akses materi pembelajaran yang dibagikan
-                        oleh guru.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="container page-content">
-
-                <div class="material-grid" id="materialList"></div>
-
-            </div>
+@endif
+@endauth
 
         </section>
 
@@ -1974,10 +1704,6 @@
 
                 <button data-target="kesiswaan">
                     Kesiswaan
-                </button>
-
-                <button data-target="akademik">
-                    Akademik
                 </button>
 
                 <button data-target="pengumuman">
