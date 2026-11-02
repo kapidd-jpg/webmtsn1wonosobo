@@ -8,11 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::statement("ALTER TABLE users MODIFY role ENUM('siswa', 'guru', 'guru_bk', 'admin') NOT NULL DEFAULT 'siswa'");
     }
 
     public function down(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
+
         DB::statement("ALTER TABLE users MODIFY role ENUM('siswa', 'guru') NOT NULL DEFAULT 'siswa'");
     }
 };

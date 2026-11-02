@@ -10,10 +10,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('nis_nip')->unique()->after('name');
-            $table->enum('role', ['siswa', 'guru'])->default('siswa')->after('nis_nip');
+            $table->string('role', 20)->default('siswa')->after('nis_nip');
             $table->string('kelas')->nullable()->after('role');
             $table->string('wali_kelas')->nullable()->after('kelas');
-            $table->string('email')->nullable()->change();
         });
     }
 
