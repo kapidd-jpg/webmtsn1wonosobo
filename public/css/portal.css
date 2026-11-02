@@ -1263,7 +1263,216 @@ textarea:focus-visible {
 .empty-state.show { display: block; }
 
 /* =========================================================
-   KESISWAAN — feature grid
+   GALERI — album grid + lightbox
+========================================================= */
+
+.gallery-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.gallery-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.gallery-tab {
+    border: 1px solid var(--border-strong);
+    background: var(--primary-soft);
+    color: var(--ink-soft);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.gallery-tab:hover { border-color: var(--primary); color: var(--heading); }
+.gallery-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.gallery-toolbar input[type="search"] {
+    flex: 1;
+    min-width: 220px;
+    max-width: 340px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 11px 18px;
+    background: var(--surface);
+}
+
+.gallery-toolbar input[type="search"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.gallery-card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gallery-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.gallery-cover {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--primary-soft);
+}
+
+.gallery-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+}
+
+.gallery-card:hover .gallery-cover img { transform: scale(1.05); }
+
+.gallery-count {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    padding: 4px 9px;
+    border-radius: var(--radius-xs);
+    background: rgba(20, 27, 43, 0.6);
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(3px);
+}
+
+.gallery-card-body {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gallery-card-body strong { font-size: 15px; font-weight: 600; color: var(--heading); }
+
+.gallery-card-body span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+}
+
+.gallery-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 0;
+    color: var(--ink-faint);
+    font-size: 14px;
+}
+
+/* --- lightbox --- */
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    background: rgba(10, 18, 16, 0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.lightbox.open { opacity: 1; visibility: visible; }
+
+.lightbox-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.lightbox-figure img {
+    max-width: min(1200px, 88vw);
+    max-height: 78vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    background: #000000;
+}
+
+.lightbox-figure figcaption {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.24); }
+
+.lightbox-nav {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #FFFFFF;
+    font-size: 34px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.lightbox-nav:hover { background: rgba(255, 255, 255, 0.28); }
+.lightbox-nav[hidden] { display: none; }
+
+/* =========================================================
+   KESISWAAN - feature grid
 ========================================================= */
 
 .feature-grid {

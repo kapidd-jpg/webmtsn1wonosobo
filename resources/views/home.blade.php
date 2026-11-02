@@ -83,6 +83,13 @@
                     Pengumuman
                 </button>
 
+                <button
+                    type="button"
+                    class="nav-link"
+                    data-target="galeri">
+                    Galeri
+                </button>
+
             </nav>
 
 
@@ -180,7 +187,7 @@
                 <div class="hero-card">
 
                     <img
-                        src="{{ asset('images/hero/beranda.jpg') }}"
+                        src="{{ asset('images/hero/beranda.webp') }}"
                         alt="Siswa MTsN 1 Wonosobo">
 
                 </div>
@@ -498,7 +505,7 @@
             class="page"
             data-page="ekstra">
 
-            <div class="page-hero" style="background-image: url('{{ asset('images/hero/ekstrakurikuler.jpg') }}')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/ekstrakurikuler.webp') }}')">
 
                 <div class="container">
 
@@ -575,7 +582,7 @@
             class="page"
             data-page="kesiswaan">
 
-            <div class="page-hero" style="background-image: url('{{ asset('images/hero/kesiswaan.jpg') }}')">
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/kesiswaan.webp') }}')">
 
                 <div class="container">
 
@@ -646,6 +653,111 @@
             </div>
 
         </section>
+
+
+
+        <!-- =================================================
+             GALERI
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="galeri">
+
+            <div class="page-hero" style="background-image: url('{{ asset('images/hero/galeri.webp') }}')">
+
+                <div class="container">
+
+                    <span class="section-label">
+                        DOKUMENTASI KEGIATAN
+                    </span>
+
+                    <h1>
+                        Galeri
+                    </h1>
+
+                    <p>
+                        Kumpulan foto kegiatan siswa, ekstrakurikuler,
+                        dan unit kerja MTsN 1 Wonosobo.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="gallery-toolbar">
+
+                    <div class="gallery-tabs" id="galleryTabs"></div>
+
+                    <input
+                        type="search"
+                        id="gallerySearch"
+                        placeholder="Cari album...">
+
+                </div>
+
+                <div class="gallery-grid" id="galleryGrid">
+                    <p class="gallery-loading">Memuat galeri…</p>
+                </div>
+
+                <p class="empty-state" id="galleryEmpty">
+                    Tidak ada album yang cocok dengan pencarianmu.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LIGHTBOX GALERI
+        ================================================== -->
+
+        <div
+            class="lightbox"
+            id="galleryLightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Penampil foto galeri">
+
+            <button
+                type="button"
+                class="lightbox-close"
+                id="galleryLightboxClose"
+                aria-label="Tutup">
+                ×
+            </button>
+
+            <button
+                type="button"
+                class="lightbox-nav lightbox-prev"
+                id="galleryLightboxPrev"
+                aria-label="Foto sebelumnya">
+                ‹
+            </button>
+
+            <figure class="lightbox-figure">
+
+                <img
+                    id="galleryLightboxImage"
+                    alt="">
+
+                <figcaption id="galleryLightboxCaption"></figcaption>
+
+            </figure>
+
+            <button
+                type="button"
+                class="lightbox-nav lightbox-next"
+                id="galleryLightboxNext"
+                aria-label="Foto berikutnya">
+                ›
+            </button>
+
+        </div>
 
 
 
@@ -1708,6 +1820,10 @@
 
                 <button data-target="pengumuman">
                     Pengumuman
+                </button>
+
+                <button data-target="galeri">
+                    Galeri
                 </button>
 
             </div>

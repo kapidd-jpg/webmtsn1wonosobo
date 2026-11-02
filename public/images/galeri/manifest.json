@@ -1,0 +1,456 @@
+{
+    "generated_at":  "2026-11-02T11:54:35+00:00",
+    "groups":  [
+                   {
+                       "key":  "kegiatan",
+                       "label":  "Kegiatan"
+                   },
+                   {
+                       "key":  "guru-organisasi",
+                       "label":  "Guru \u0026 Organisasi"
+                   },
+                   {
+                       "key":  "ekstrakurikuler",
+                       "label":  "Ekstrakurikuler"
+                   },
+                   {
+                       "key":  "unit",
+                       "label":  "Unit Kerja"
+                   }
+               ],
+    "albums":  [
+                   {
+                       "slug":  "baca-al-quran",
+                       "judul":  "Baca Al-Quran",
+                       "group":  "kegiatan",
+                       "cover":  "/images/galeri/baca-al-quran/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/baca-al-quran/01.webp",
+                                      "/images/galeri/baca-al-quran/02.webp",
+                                      "/images/galeri/baca-al-quran/03.webp",
+                                      "/images/galeri/baca-al-quran/04.webp",
+                                      "/images/galeri/baca-al-quran/05.webp",
+                                      "/images/galeri/baca-al-quran/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "pembelajaran-era-digitalisasi",
+                       "judul":  "Pembelajaran Era Digitalisasi",
+                       "group":  "kegiatan",
+                       "cover":  "/images/galeri/pembelajaran-era-digitalisasi/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/pembelajaran-era-digitalisasi/01.webp",
+                                      "/images/galeri/pembelajaran-era-digitalisasi/02.webp",
+                                      "/images/galeri/pembelajaran-era-digitalisasi/03.webp",
+                                      "/images/galeri/pembelajaran-era-digitalisasi/04.webp",
+                                      "/images/galeri/pembelajaran-era-digitalisasi/05.webp",
+                                      "/images/galeri/pembelajaran-era-digitalisasi/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "sholat-berjamaah",
+                       "judul":  "Sholat Berjamaah",
+                       "group":  "kegiatan",
+                       "cover":  "/images/galeri/sholat-berjamaah/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/sholat-berjamaah/01.webp",
+                                      "/images/galeri/sholat-berjamaah/02.webp",
+                                      "/images/galeri/sholat-berjamaah/03.webp",
+                                      "/images/galeri/sholat-berjamaah/04.webp",
+                                      "/images/galeri/sholat-berjamaah/05.webp",
+                                      "/images/galeri/sholat-berjamaah/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "foto-guru-staff",
+                       "judul":  "Foto Guru \u0026 Staff",
+                       "group":  "guru-organisasi",
+                       "cover":  "/images/galeri/foto-guru-staff/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/foto-guru-staff/01.webp",
+                                      "/images/galeri/foto-guru-staff/02.webp",
+                                      "/images/galeri/foto-guru-staff/03.webp",
+                                      "/images/galeri/foto-guru-staff/04.webp",
+                                      "/images/galeri/foto-guru-staff/05.webp",
+                                      "/images/galeri/foto-guru-staff/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "osim",
+                       "judul":  "OSIM",
+                       "group":  "guru-organisasi",
+                       "cover":  "/images/galeri/osim/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/osim/01.webp",
+                                      "/images/galeri/osim/02.webp",
+                                      "/images/galeri/osim/03.webp",
+                                      "/images/galeri/osim/04.webp",
+                                      "/images/galeri/osim/05.webp",
+                                      "/images/galeri/osim/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "pak-kamad-waka",
+                       "judul":  "Pak Kamad \u0026 Waka",
+                       "group":  "guru-organisasi",
+                       "cover":  "/images/galeri/pak-kamad-waka/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/pak-kamad-waka/01.webp",
+                                      "/images/galeri/pak-kamad-waka/02.webp",
+                                      "/images/galeri/pak-kamad-waka/03.webp",
+                                      "/images/galeri/pak-kamad-waka/04.webp",
+                                      "/images/galeri/pak-kamad-waka/05.webp",
+                                      "/images/galeri/pak-kamad-waka/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "pramuka",
+                       "judul":  "Pramuka",
+                       "group":  "guru-organisasi",
+                       "cover":  "/images/galeri/pramuka/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/pramuka/01.webp",
+                                      "/images/galeri/pramuka/02.webp",
+                                      "/images/galeri/pramuka/03.webp",
+                                      "/images/galeri/pramuka/04.webp",
+                                      "/images/galeri/pramuka/05.webp",
+                                      "/images/galeri/pramuka/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "adiwiyata",
+                       "judul":  "Adiwiyata",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/adiwiyata/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/adiwiyata/01.webp",
+                                      "/images/galeri/adiwiyata/02.webp",
+                                      "/images/galeri/adiwiyata/03.webp",
+                                      "/images/galeri/adiwiyata/04.webp",
+                                      "/images/galeri/adiwiyata/05.webp",
+                                      "/images/galeri/adiwiyata/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "atletik",
+                       "judul":  "Atletik",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/atletik/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/atletik/01.webp",
+                                      "/images/galeri/atletik/02.webp",
+                                      "/images/galeri/atletik/03.webp",
+                                      "/images/galeri/atletik/04.webp",
+                                      "/images/galeri/atletik/05.webp",
+                                      "/images/galeri/atletik/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "b-inggris",
+                       "judul":  "B. Inggris",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/b-inggris/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/b-inggris/01.webp",
+                                      "/images/galeri/b-inggris/02.webp",
+                                      "/images/galeri/b-inggris/03.webp",
+                                      "/images/galeri/b-inggris/04.webp",
+                                      "/images/galeri/b-inggris/05.webp",
+                                      "/images/galeri/b-inggris/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "bulu-tangkis",
+                       "judul":  "Bulu Tangkis",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/bulu-tangkis/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/bulu-tangkis/01.webp",
+                                      "/images/galeri/bulu-tangkis/02.webp",
+                                      "/images/galeri/bulu-tangkis/03.webp",
+                                      "/images/galeri/bulu-tangkis/04.webp",
+                                      "/images/galeri/bulu-tangkis/05.webp",
+                                      "/images/galeri/bulu-tangkis/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "futsal",
+                       "judul":  "Futsal",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/futsal/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/futsal/01.webp",
+                                      "/images/galeri/futsal/02.webp",
+                                      "/images/galeri/futsal/03.webp",
+                                      "/images/galeri/futsal/04.webp",
+                                      "/images/galeri/futsal/05.webp",
+                                      "/images/galeri/futsal/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "ipa",
+                       "judul":  "IPA",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/ipa/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/ipa/01.webp",
+                                      "/images/galeri/ipa/02.webp",
+                                      "/images/galeri/ipa/03.webp",
+                                      "/images/galeri/ipa/04.webp",
+                                      "/images/galeri/ipa/05.webp",
+                                      "/images/galeri/ipa/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "matematika",
+                       "judul":  "Matematika",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/matematika/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/matematika/01.webp",
+                                      "/images/galeri/matematika/02.webp",
+                                      "/images/galeri/matematika/03.webp",
+                                      "/images/galeri/matematika/04.webp",
+                                      "/images/galeri/matematika/05.webp",
+                                      "/images/galeri/matematika/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "muai-thai",
+                       "judul":  "Muai Thai",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/muai-thai/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/muai-thai/01.webp",
+                                      "/images/galeri/muai-thai/02.webp",
+                                      "/images/galeri/muai-thai/03.webp",
+                                      "/images/galeri/muai-thai/04.webp",
+                                      "/images/galeri/muai-thai/05.webp",
+                                      "/images/galeri/muai-thai/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "pmr",
+                       "judul":  "PMR",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/pmr/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/pmr/01.webp",
+                                      "/images/galeri/pmr/02.webp",
+                                      "/images/galeri/pmr/03.webp",
+                                      "/images/galeri/pmr/04.webp",
+                                      "/images/galeri/pmr/05.webp",
+                                      "/images/galeri/pmr/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "pustakawan-muda",
+                       "judul":  "Pustakawan Muda",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/pustakawan-muda/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/pustakawan-muda/01.webp",
+                                      "/images/galeri/pustakawan-muda/02.webp",
+                                      "/images/galeri/pustakawan-muda/03.webp",
+                                      "/images/galeri/pustakawan-muda/04.webp",
+                                      "/images/galeri/pustakawan-muda/05.webp",
+                                      "/images/galeri/pustakawan-muda/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "pencak-silat",
+                       "judul":  "Pencak Silat",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/pencak-silat/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/pencak-silat/01.webp",
+                                      "/images/galeri/pencak-silat/02.webp",
+                                      "/images/galeri/pencak-silat/03.webp",
+                                      "/images/galeri/pencak-silat/04.webp",
+                                      "/images/galeri/pencak-silat/05.webp",
+                                      "/images/galeri/pencak-silat/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "taekwondo",
+                       "judul":  "Taekwondo",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/taekwondo/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/taekwondo/01.webp",
+                                      "/images/galeri/taekwondo/02.webp",
+                                      "/images/galeri/taekwondo/03.webp",
+                                      "/images/galeri/taekwondo/04.webp",
+                                      "/images/galeri/taekwondo/05.webp",
+                                      "/images/galeri/taekwondo/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "takraw",
+                       "judul":  "Takraw",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/takraw/01.webp",
+                       "count":  5,
+                       "photos":  [
+                                      "/images/galeri/takraw/01.webp",
+                                      "/images/galeri/takraw/02.webp",
+                                      "/images/galeri/takraw/03.webp",
+                                      "/images/galeri/takraw/04.webp",
+                                      "/images/galeri/takraw/05.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "tari",
+                       "judul":  "Tari",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/tari/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/tari/01.webp",
+                                      "/images/galeri/tari/02.webp",
+                                      "/images/galeri/tari/03.webp",
+                                      "/images/galeri/tari/04.webp",
+                                      "/images/galeri/tari/05.webp",
+                                      "/images/galeri/tari/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "tenis-meja",
+                       "judul":  "Tenis Meja",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/tenis-meja/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/tenis-meja/01.webp",
+                                      "/images/galeri/tenis-meja/02.webp",
+                                      "/images/galeri/tenis-meja/03.webp",
+                                      "/images/galeri/tenis-meja/04.webp",
+                                      "/images/galeri/tenis-meja/05.webp",
+                                      "/images/galeri/tenis-meja/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "vokal",
+                       "judul":  "Vokal",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/vokal/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/vokal/01.webp",
+                                      "/images/galeri/vokal/02.webp",
+                                      "/images/galeri/vokal/03.webp",
+                                      "/images/galeri/vokal/04.webp",
+                                      "/images/galeri/vokal/05.webp",
+                                      "/images/galeri/vokal/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "voli",
+                       "judul":  "Voli",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/voli/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/voli/01.webp",
+                                      "/images/galeri/voli/02.webp",
+                                      "/images/galeri/voli/03.webp",
+                                      "/images/galeri/voli/04.webp",
+                                      "/images/galeri/voli/05.webp",
+                                      "/images/galeri/voli/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "wushu",
+                       "judul":  "Wushu",
+                       "group":  "ekstrakurikuler",
+                       "cover":  "/images/galeri/wushu/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/wushu/01.webp",
+                                      "/images/galeri/wushu/02.webp",
+                                      "/images/galeri/wushu/03.webp",
+                                      "/images/galeri/wushu/04.webp",
+                                      "/images/galeri/wushu/05.webp",
+                                      "/images/galeri/wushu/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "humas",
+                       "judul":  "Humas",
+                       "group":  "unit",
+                       "cover":  "/images/galeri/humas/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/humas/01.webp",
+                                      "/images/galeri/humas/02.webp",
+                                      "/images/galeri/humas/03.webp",
+                                      "/images/galeri/humas/04.webp",
+                                      "/images/galeri/humas/05.webp",
+                                      "/images/galeri/humas/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "kesiswaan",
+                       "judul":  "Kesiswaan",
+                       "group":  "unit",
+                       "cover":  "/images/galeri/kesiswaan/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/kesiswaan/01.webp",
+                                      "/images/galeri/kesiswaan/02.webp",
+                                      "/images/galeri/kesiswaan/03.webp",
+                                      "/images/galeri/kesiswaan/04.webp",
+                                      "/images/galeri/kesiswaan/05.webp",
+                                      "/images/galeri/kesiswaan/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "kurikulum",
+                       "judul":  "Kurikulum",
+                       "group":  "unit",
+                       "cover":  "/images/galeri/kurikulum/01.webp",
+                       "count":  6,
+                       "photos":  [
+                                      "/images/galeri/kurikulum/01.webp",
+                                      "/images/galeri/kurikulum/02.webp",
+                                      "/images/galeri/kurikulum/03.webp",
+                                      "/images/galeri/kurikulum/04.webp",
+                                      "/images/galeri/kurikulum/05.webp",
+                                      "/images/galeri/kurikulum/06.webp"
+                                  ]
+                   },
+                   {
+                       "slug":  "sarpras",
+                       "judul":  "Sarpras",
+                       "group":  "unit",
+                       "cover":  "/images/galeri/sarpras/01.webp",
+                       "count":  5,
+                       "photos":  [
+                                      "/images/galeri/sarpras/01.webp",
+                                      "/images/galeri/sarpras/02.webp",
+                                      "/images/galeri/sarpras/03.webp",
+                                      "/images/galeri/sarpras/05.webp",
+                                      "/images/galeri/sarpras/06.webp"
+                                  ]
+                   }
+               ]
+}

@@ -402,6 +402,200 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* -----------------------------------------------------
+       5b. GALERI — grid album + lightbox
+    ----------------------------------------------------- */
+
+    const galleryGrid = document.getElementById('galleryGrid');
+    const galleryTabs = document.getElementById('galleryTabs');
+    const gallerySearch = document.getElementById('gallerySearch');
+    const galleryEmpty = document.getElementById('galleryEmpty');
+    const galleryLightbox = document.getElementById('galleryLightbox');
+    const galleryLightboxImage = document.getElementById('galleryLightboxImage');
+    const galleryLightboxCaption = document.getElementById('galleryLightboxCaption');
+    const galleryLightboxPrev = document.getElementById('galleryLightboxPrev');
+    const galleryLightboxNext = document.getElementById('galleryLightboxNext');
+    const galleryLightboxClose = document.getElementById('galleryLightboxClose');
+
+    let galleryAlbums = [];
+    let galleryGroups = [];
+    let galleryActiveGroup = 'all';
+    let galleryLightboxAlbum = null;
+    let galleryLightboxIndex = 0;
+
+    async function loadGallery() {
+        if (!galleryGrid) return;
+
+        try {
+            const res = await fetch('/images/galeri/manifest.json', {
+                headers: { Accept: 'application/json' }
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+
+            const data = await res.json();
+            galleryAlbums = Array.isArray(data.albums) ? data.albums : [];
+            galleryGroups = Array.isArray(data.groups) ? data.groups : [];
+
+            renderGalleryTabs();
+            renderGalleryAlbums();
+        } catch (err) {
+            galleryGrid.innerHTML = '<p class="gallery-loading">Galeri belum tersedia.</p>';
+        }
+    }
+
+    function galleryGroupLabel(key) {
+        const group = galleryGroups.find(function (g) { return g.key === key; });
+        return group ? group.label : key;
+    }
+
+    function renderGalleryTabs() {
+        if (!galleryTabs) return;
+
+        const items = [{ key: 'all', label: 'Semua' }].concat(galleryGroups);
+
+        galleryTabs.innerHTML = items.map(function (g) {
+            return '<button type="button" class="gallery-tab' +
+                (g.key === galleryActiveGroup ? ' active' : '') +
+                '" data-group="' + escapeHtml(g.key) + '">' +
+                escapeHtml(g.label) +
+                '</button>';
+        }).join('');
+
+        galleryTabs.querySelectorAll('.gallery-tab').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                galleryActiveGroup = btn.dataset.group;
+                galleryTabs.querySelectorAll('.gallery-tab').forEach(function (b) {
+                    b.classList.toggle('active', b === btn);
+                });
+                renderGalleryAlbums();
+            });
+        });
+    }
+
+    function renderGalleryAlbums() {
+        if (!galleryGrid) return;
+
+        const keyword = gallerySearch ? gallerySearch.value.trim().toLowerCase() : '';
+
+        const filtered = galleryAlbums.filter(function (album) {
+            const matchGroup = galleryActiveGroup === 'all' || album.group === galleryActiveGroup;
+            const matchKeyword = !keyword || String(album.judul || '').toLowerCase().includes(keyword);
+            return matchGroup && matchKeyword;
+        });
+
+        if (!filtered.length) {
+            galleryGrid.innerHTML = '';
+            if (galleryEmpty) galleryEmpty.classList.add('show');
+            return;
+        }
+
+        if (galleryEmpty) galleryEmpty.classList.remove('show');
+
+        galleryGrid.innerHTML = filtered.map(function (album) {
+            return '<button type="button" class="gallery-card" data-slug="' + escapeHtml(album.slug) + '">' +
+                '<span class="gallery-cover">' +
+                    '<img src="' + album.cover + '" alt="Album ' + escapeHtml(album.judul) + '" loading="lazy">' +
+                    '<span class="gallery-count">' + album.count + ' foto</span>' +
+                '</span>' +
+                '<span class="gallery-card-body">' +
+                    '<strong>' + escapeHtml(album.judul) + '</strong>' +
+                    '<span>' + escapeHtml(galleryGroupLabel(album.group)) + '</span>' +
+                '</span>' +
+            '</button>';
+        }).join('');
+
+        initScrollReveal('.gallery-card');
+    }
+
+    function updateGalleryLightbox() {
+        if (!galleryLightboxAlbum) return;
+
+        const photos = galleryLightboxAlbum.photos || [];
+        if (!photos.length) return;
+
+        if (galleryLightboxIndex < 0) galleryLightboxIndex = photos.length - 1;
+        if (galleryLightboxIndex >= photos.length) galleryLightboxIndex = 0;
+
+        if (galleryLightboxImage) {
+            galleryLightboxImage.src = photos[galleryLightboxIndex];
+            galleryLightboxImage.alt = galleryLightboxAlbum.judul + ' — foto ' + (galleryLightboxIndex + 1);
+        }
+
+        if (galleryLightboxCaption) {
+            galleryLightboxCaption.textContent =
+                galleryLightboxAlbum.judul + ' · ' + (galleryLightboxIndex + 1) + ' / ' + photos.length;
+        }
+
+        const single = photos.length <= 1;
+        if (galleryLightboxPrev) galleryLightboxPrev.hidden = single;
+        if (galleryLightboxNext) galleryLightboxNext.hidden = single;
+    }
+
+    function openGalleryLightbox(album, index) {
+        if (!galleryLightbox || !album || !(album.photos || []).length) return;
+
+        galleryLightboxAlbum = album;
+        galleryLightboxIndex = index || 0;
+        updateGalleryLightbox();
+
+        galleryLightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeGalleryLightbox() {
+        if (!galleryLightbox) return;
+
+        galleryLightbox.classList.remove('open');
+        document.body.style.overflow = '';
+        galleryLightboxAlbum = null;
+    }
+
+    function stepGalleryLightbox(delta) {
+        if (!galleryLightboxAlbum) return;
+        galleryLightboxIndex += delta;
+        updateGalleryLightbox();
+    }
+
+    if (galleryGrid) {
+        galleryGrid.addEventListener('click', function (e) {
+            const card = e.target.closest('.gallery-card');
+            if (!card) return;
+
+            const album = galleryAlbums.find(function (a) { return a.slug === card.dataset.slug; });
+            if (album) openGalleryLightbox(album, 0);
+        });
+    }
+
+    if (gallerySearch) {
+        gallerySearch.addEventListener('input', renderGalleryAlbums);
+    }
+
+    if (galleryLightboxClose) {
+        galleryLightboxClose.addEventListener('click', closeGalleryLightbox);
+    }
+
+    if (galleryLightboxPrev) {
+        galleryLightboxPrev.addEventListener('click', function () { stepGalleryLightbox(-1); });
+    }
+
+    if (galleryLightboxNext) {
+        galleryLightboxNext.addEventListener('click', function () { stepGalleryLightbox(1); });
+    }
+
+    if (galleryLightbox) {
+        galleryLightbox.addEventListener('click', function (e) {
+            if (e.target === galleryLightbox) closeGalleryLightbox();
+        });
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (!galleryLightbox || !galleryLightbox.classList.contains('open')) return;
+
+        if (e.key === 'Escape') closeGalleryLightbox();
+        else if (e.key === 'ArrowLeft') stepGalleryLightbox(-1);
+        else if (e.key === 'ArrowRight') stepGalleryLightbox(1);
+    });
+
+    /* -----------------------------------------------------
        6. DATA PORTAL — pengumuman, jadwal, ekstrakurikuler
        Catatan: pengumuman & ekstrakurikuler & jadwal diambil
        lewat apiRequest() dari endpoint Laravel. Untuk
@@ -579,14 +773,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 const EXTRA_BANNERS = {
-        'voli': 'voli.png',
-        'atletik': 'atletik.png',
-        'pencak-silat': 'pencak-silat.png',
+        'voli': 'voli.webp',
+        'atletik': 'atletik.webp',
+        'pencak-silat': 'pencak-silat.webp',
         'marching-band': 'marching-band.png',
         'seni-rupa': 'seni-rupa.png',
         'teater-sekolah': 'teater-sekolah.png',
-        'osis': 'osis.png',
-        'pramuka': 'pramuka.png',
+        'osis': 'osis.webp',
+        'pramuka': 'pramuka.webp',
         'robotika': 'robotika.png'
     };
 
@@ -2396,6 +2590,10 @@ const EXTRA_BANNERS = {
 
     if (schoolProfileForm) {
         loadSchoolProfile();
+    }
+
+    if (galleryGrid) {
+        loadGallery();
     }
 
     // Aktifkan animasi untuk kartu yang sudah ada saat load awal
