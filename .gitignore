@@ -17,3 +17,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+.vercel
+.env
+.env.local
+.env.*.local
+.env.backup
+.env.production
