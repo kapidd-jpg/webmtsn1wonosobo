@@ -9,9 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedTinyInteger('kehadiran_persen')->nullable()->after('wali_kelas');
-            $table->unsignedTinyInteger('rata_rata_nilai')->nullable()->after('kehadiran_persen');
-            $table->unsignedInteger('poin_prestasi')->default(0)->after('rata_rata_nilai');
+            $table->unsignedTinyInteger('kehadiran_persen')->nullable();
+            $table->unsignedTinyInteger('rata_rata_nilai')->nullable();
+            $table->unsignedInteger('poin_prestasi')->default(0);
         });
     }
 

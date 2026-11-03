@@ -9,10 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('nis_nip')->unique()->after('name');
-            $table->string('role', 20)->default('siswa')->after('nis_nip');
-            $table->string('kelas')->nullable()->after('role');
-            $table->string('wali_kelas')->nullable()->after('kelas');
+            $table->string('nis_nip')->unique();
+            $table->string('role', 20)->default('siswa');
+            $table->string('kelas')->nullable();
+            $table->string('wali_kelas')->nullable();
         });
     }
 
