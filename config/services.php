@@ -35,4 +35,15 @@ return [
         'key' => env('GEMINI_API_KEY'),
     ],
 
+    /*
+    | Penyimpanan gambar unggahan. Bila token diisi (otomatis oleh Vercel
+    | saat Blob store terhubung), gambar disimpan ke Vercel Blob. Bila
+    | kosong, gambar disimpan ke penyimpanan lokal.
+    */
+    'vercel_blob' => [
+        'token' => env('BLOB_READ_WRITE_TOKEN'),
+        'store_id' => env('BLOB_STORE_ID'),
+        'access' => env('BLOB_ACCESS', 'public'),
+    ],
+
 ];

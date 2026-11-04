@@ -4,15 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\KesiswaanItem;
+use App\Services\ImageStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class KesiswaanController extends Controller
 {
+    public function __construct(private readonly ImageStorage $images)
+    {
+    }
+
     public function index()
     {
         return KesiswaanItem::orderBy('urutan')->get()->map(function ($item) {
-            $item->gambar_url = $item->gambar ? Storage::url($item->gambar) : null;
+            $item->gambar_url = $this->gambarUrl($item->gambar);
             return $item;
         });
     }
@@ -29,7 +35,7 @@ class KesiswaanController extends Controller
         $data['urutan'] = $data['urutan'] ?? (KesiswaanItem::max('urutan') + 1);
 
         if ($request->hasFile('gambar')) {
-            $data['gambar'] = $request->file('gambar')->store('kesiswaan', 'public');
+            $data['gambar'] = $this->simpanGambar($request, $data['judul']);
         }
 
         return KesiswaanItem::create($data);
@@ -45,10 +51,8 @@ class KesiswaanController extends Controller
         ]);
 
         if ($request->hasFile('gambar')) {
-            if ($kesiswaanItem->gambar) {
-                Storage::disk('public')->delete($kesiswaanItem->gambar);
-            }
-            $data['gambar'] = $request->file('gambar')->store('kesiswaan', 'public');
+            $this->images->delete($kesiswaanItem->gambar);
+            $data['gambar'] = $this->simpanGambar($request, $data['judul']);
         }
 
         $kesiswaanItem->update($data);
@@ -58,12 +62,33 @@ class KesiswaanController extends Controller
 
     public function destroy(KesiswaanItem $kesiswaanItem)
     {
-        if ($kesiswaanItem->gambar) {
-            Storage::disk('public')->delete($kesiswaanItem->gambar);
-        }
+        $this->images->delete($kesiswaanItem->gambar);
 
         $kesiswaanItem->delete();
 
         return response()->noContent();
+    }
+
+    private function simpanGambar(Request $request, ?string $judul = null): ?string
+    {
+        return $this->images->put(
+            $request->file('gambar'),
+            'kesiswaan',
+            $judul ?: 'kesiswaan',
+            ImageStorage::STORAGE_DISK
+        );
+    }
+
+    private function gambarUrl(?string $gambar): ?string
+    {
+        if (! $gambar) {
+            return null;
+        }
+
+        if (Str::startsWith($gambar, ['http://', 'https://'])) {
+            return $gambar;
+        }
+
+        return Storage::url($gambar);
     }
 }

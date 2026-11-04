@@ -1530,7 +1530,8 @@ const EXTRA_BANNERS = {
 
         if (ekstraImagePicker) {
             ekstraImagePicker.querySelectorAll('[data-path]').forEach(function (el) {
-                el.classList.toggle('selected', !!ekstraBannerUrl && el.dataset.path === ekstraGambarPilihan.value);
+                const dipilih = el.dataset.path === ekstraGambarPilihan.value || el.dataset.url === ekstraGambarPilihan.value;
+                el.classList.toggle('selected', !!ekstraBannerUrl && dipilih);
             });
         }
     }
@@ -1549,7 +1550,7 @@ const EXTRA_BANNERS = {
 
             ekstraImagePicker.innerHTML = rows.map(function (row) {
                 return (
-                    '<button type="button" class="image-picker-item" data-path="' + escapeHtml(row.path) + '" title="' + escapeHtml(row.nama) + '">' +
+                    '<button type="button" class="image-picker-item" data-path="' + escapeHtml(row.path) + '" data-url="' + escapeHtml(row.url) + '" title="' + escapeHtml(row.nama) + '">' +
                         '<img src="' + row.url + '" alt="' + escapeHtml(row.nama) + '" loading="lazy">' +
                         '<span>' + escapeHtml(row.nama) + '</span>' +
                     '</button>'
@@ -1606,7 +1607,7 @@ const EXTRA_BANNERS = {
             ekstraGambarPilihan.value = btn.dataset.path;
             if (ekstraForm.gambar) ekstraForm.gambar.value = '';
 
-            setEkstraBanner('/' + btn.dataset.path, btn.querySelector('span').textContent);
+            setEkstraBanner(btn.dataset.url || ('/' + btn.dataset.path), btn.querySelector('span').textContent);
         });
     }
 

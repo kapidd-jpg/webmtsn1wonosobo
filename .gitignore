@@ -5,9 +5,6 @@
 /public/storage
 /storage/*.key
 /vendor
-.env
-.env.backup
-.env.production
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -18,10 +15,9 @@ yarn-error.log
 /.idea
 /.vscode
 
-.vercel
+# Kredensial & konfigurasi lokal (contoh tetap ikut di-commit)
 .env
-.env.local
-.env.*.local
-.env.local.vercel
-.env.backup
-.env.production
+.env.*
+!.env.example
+
+.vercel
