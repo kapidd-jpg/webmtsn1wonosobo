@@ -1,6 +1,6 @@
 # Serah Terima Portal MTsN 1 Wonosobo
 
-Folder ini berisi dua dokumen:
+Folder ini berisi tiga dokumen:
 
 1. **`CHECKLIST.md`** — panduan internal langkah demi langkah sebelum aplikasi
    diserahkan ke client (bersih-bersih akun, backup, transfer kepemilikan,
@@ -8,6 +8,8 @@ Folder ini berisi dua dokumen:
 2. **`DOKUMEN-SERAH-TERIMA.md`** — dokumen resmi untuk client. Isi bagian
    kosong (nama, tanggal, domain, kontak), lalu cetak dan tanda tangani dua
    rangkap.
+3. **`SISA-PEKERJAAN.md`** — daftar sisa pekerjaan yang belum selesai beserta
+   urutan prioritasnya.
 
 ## Urutan pemakaian
 
