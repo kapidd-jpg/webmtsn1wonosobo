@@ -55,12 +55,14 @@
                     Beranda
                 </button>
 
-                <button
-                    type="button"
-                    class="nav-link"
-                    data-target="konseling">
-                    Konseling
-                </button>
+                @if (auth()->check() && auth()->user()->role === 'siswa')
+                    <button
+                        type="button"
+                        class="nav-link"
+                        data-target="konseling">
+                        Konseling
+                    </button>
+                @endif
 
                 <button
                     type="button"
@@ -69,12 +71,25 @@
                     Ekstra
                 </button>
 
-                <button
-                    type="button"
-                    class="nav-link"
-                    data-target="kesiswaan">
-                    Kesiswaan
-                </button>
+                @unless (auth()->check() && in_array(auth()->user()->role, ['guru', 'guru_bk'], true))
+                    <button
+                        type="button"
+                        class="nav-link"
+                        data-target="kesiswaan">
+                        Kesiswaan
+                    </button>
+                @endunless
+
+                @auth
+                    @if (auth()->user()->role === 'guru_bk')
+                        <button
+                            type="button"
+                            class="nav-link"
+                            data-target="guru-dashboard">
+                            Pengajuan
+                        </button>
+                    @endif
+                @endauth
 
                 <button
                     type="button"
@@ -221,25 +236,27 @@
 
                 <div class="quick-grid">
 
-                    <button
-                        class="quick-card"
-                        data-target="konseling">
+                    @if (auth()->check() && auth()->user()->role === 'siswa')
+                        <button
+                            class="quick-card"
+                            data-target="konseling">
 
-                        <div class="quick-icon green">
-                            ♡
-                        </div>
+                            <div class="quick-icon green">
+                                ♡
+                            </div>
 
-                        <div>
-                            <h3>Konseling</h3>
-                            <p>
-                                Konsultasi bersama guru BK
-                                secara nyaman.
-                            </p>
-                        </div>
+                            <div>
+                                <h3>Konseling</h3>
+                                <p>
+                                    Konsultasi bersama guru BK
+                                    secara nyaman.
+                                </p>
+                            </div>
 
-                        <span class="arrow">→</span>
+                            <span class="arrow">→</span>
 
-                    </button>
+                        </button>
+                    @endif
 
 
                     <button
@@ -274,8 +291,7 @@
                         <div>
                             <h3>Akademik</h3>
                             <p>
-                                Jadwal, ujian, dan materi
-                                kelasmu.
+                                Jadwal dan ujian kelasmu.
                             </p>
                         </div>
 
@@ -773,7 +789,7 @@
 @if (auth()->user()->role === 'siswa')
 
             @php
-                $firstName = explode(' ', trim(auth()->user()->name))[0];
+                $greetingName = auth()->user()->greetingName();
             @endphp
 
             <div class="container dashboard">
@@ -786,7 +802,7 @@
                         </span>
 
                         <h1 class="dashboard-greeting">
-                            Halo, {{ $firstName }}.
+                            Halo, {{ $greetingName }}
                         </h1>
 
                         <p class="dashboard-sub">
@@ -862,15 +878,6 @@
                             Ujian
                         </button>
 
-                        <button
-                            type="button"
-                            class="dash-tab"
-                            data-dash-tab="materi"
-                            role="tab"
-                            aria-selected="false">
-                            Materi
-                        </button>
-
                     </div>
 
                     <div class="dash-panel active" data-dash-panel="jadwal">
@@ -906,12 +913,6 @@
 
                     </div>
 
-                    <div class="dash-panel" data-dash-panel="materi">
-
-                        <div class="material-grid" id="materialList"></div>
-
-                    </div>
-
                     </article>
 
                 </div>
@@ -933,55 +934,38 @@
             class="page"
             data-page="guru-dashboard">
 
-            <div class="page-hero">
+            @php
+                $greetingName = auth()->user()->greetingName();
+            @endphp
 
-                <div class="container profile-hero-row" style="justify-content: space-between; align-items: center;">
+            <div class="container dashboard">
 
-                    <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="dashboard-head">
 
-                        <div class="profile-hero-avatar">
+                    <div>
+                        <span class="section-label">
                             @if (auth()->user()->role === 'admin')
-                                AD
+                                DASHBOARD ADMIN
                             @elseif (auth()->user()->role === 'guru_bk')
-                                BK
+                                DASHBOARD GURU BK
                             @else
-                                GR
+                                DASHBOARD GURU
                             @endif
-                        </div>
+                        </span>
 
-                        <div>
-                            <span class="section-label">
-                                @if (auth()->user()->role === 'admin')
-                                    DASHBOARD ADMIN
-                                @elseif (auth()->user()->role === 'guru_bk')
-                                    DASHBOARD GURU BK
-                                @else
-                                    DASHBOARD GURU
-                                @endif
-                            </span>
+                        <h1 class="dashboard-greeting">
+                            Halo, {{ $greetingName }}
+                        </h1>
 
-                            <h1>
-                                @if (auth()->user()->role === 'admin')
-                                    Panel Administrasi Sistem
-                                @elseif (auth()->user()->role === 'guru_bk')
-                                    Panel Layanan Konseling
-                                @else
-                                    Panel Pengelolaan Portal
-                                @endif
-                            </h1>
-
-                            <p>
-                                @if (auth()->user()->role === 'admin')
-                                    Kelola seluruh konten portal dan akun pengguna.
-                                @elseif (auth()->user()->role === 'guru_bk')
-                                    Kelola pengajuan konseling siswa.
-                                @else
-                                    Kelola pengumuman, jadwal pelajaran,
-                                    dan ekstrakurikuler.
-                                @endif
-                            </p>
-                        </div>
-
+                        <p class="dashboard-sub">
+                            @if (auth()->user()->role === 'admin')
+                                Kelola seluruh konten portal dan akun pengguna.
+                            @elseif (auth()->user()->role === 'guru_bk')
+                                Kelola pengajuan konseling siswa.
+                            @else
+                                Akses informasi portal kesiswaan.
+                            @endif
+                        </p>
                     </div>
 
                     <form method="POST" action="{{ route('logout') }}">
@@ -994,11 +978,6 @@
                     </form>
 
                 </div>
-
-            </div>
-
-
-            <div class="container page-content">
 
                 <div class="admin-tabs">
 
@@ -1041,13 +1020,6 @@
                         <button
                             type="button"
                             class="admin-tab"
-                            data-admin-tab="materi">
-                            Materi
-                        </button>
-
-                        <button
-                            type="button"
-                            class="admin-tab"
                             data-admin-tab="siswa">
                             Kelola Siswa
                         </button>
@@ -1065,7 +1037,7 @@
                             type="button"
                             class="admin-tab {{ auth()->user()->role === 'guru_bk' ? 'active' : '' }}"
                             data-admin-tab="konseling">
-                            Konseling
+                            Pengajuan
                         </button>
                     @endif
 
@@ -1079,6 +1051,20 @@
                     @endif
 
                 </div>
+
+                @if (auth()->user()->role === 'guru')
+                    <div class="bento-grid">
+                        <article class="bento-card bento-agenda">
+                            <div class="bento-head">
+                                <h2>Akses Guru</h2>
+                            </div>
+                            <p class="agenda-note">
+                                Akun guru hanya dapat melihat informasi portal.
+                                Pengelolaan konten dilakukan oleh admin.
+                            </p>
+                        </article>
+                    </div>
+                @endif
 
 
                 @if (auth()->user()->canManageContent())
@@ -1098,18 +1084,9 @@
 
                                 <input type="hidden" name="id">
 
-                                <div class="admin-form-row">
-
-                                    <div class="form-group">
-                                        <label>Tanggal</label>
-                                        <input type="text" name="tanggal" placeholder="Contoh: 25" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Bulan</label>
-                                        <input type="text" name="bulan" placeholder="Contoh: AGU" required maxlength="3">
-                                    </div>
-
+                                <div class="form-group">
+                                    <label>Tanggal</label>
+                                    <input type="date" name="tanggal_picker" required>
                                 </div>
 
                                 <div class="form-group">
@@ -1396,7 +1373,7 @@
 
                                     <div class="form-group">
                                         <label>Tanggal</label>
-                                        <input type="text" name="tanggal" placeholder="Contoh: 10 Oktober" required>
+                                        <input type="date" name="tanggal" required>
                                     </div>
 
                                     <div class="form-group">
@@ -1456,65 +1433,6 @@
                 </div>
 
 
-                <!-- PANEL: MATERI -->
-                <div class="admin-panel" data-admin-panel="materi">
-
-                    <div class="two-column">
-
-                        <div class="form-card">
-
-                            <div class="form-header">
-                                <span class="section-label">FORM MATERI</span>
-                                <h2 id="materiFormTitle">Tambah Materi</h2>
-                            </div>
-
-                            <form id="materiForm">
-
-                                <input type="hidden" name="id">
-
-                                <div class="admin-form-row">
-
-                                    <div class="form-group">
-                                        <label>Mata Pelajaran</label>
-                                        <input type="text" name="mapel" placeholder="Contoh: Matematika" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Kelas</label>
-                                        <input type="text" name="kelas" placeholder="Contoh: IX A" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Judul Materi</label>
-                                    <input type="text" name="judul" placeholder="Contoh: Bilangan Bulat" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Deskripsi</label>
-                                    <textarea name="deskripsi" rows="4" placeholder="Deskripsi singkat materi" required></textarea>
-                                </div>
-
-                                <div class="admin-form-actions">
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                    <button type="button" class="btn btn-secondary" id="materiCancelEdit" hidden>Batal Edit</button>
-                                </div>
-
-                            </form>
-
-                        </div>
-
-
-                        <div class="content-card">
-                            <span class="card-label">DAFTAR MATERI</span>
-                            <h2>Semua Materi</h2>
-                            <ul class="admin-list" id="materiAdminList"></ul>
-                        </div>
-
-                    </div>
-
-                </div>
                 @endif
 
 
@@ -1525,7 +1443,22 @@
                     <div class="content-card">
                         <span class="card-label">PENGAJUAN MASUK</span>
                         <h2>Daftar Pengajuan Konseling</h2>
-                        <ul class="admin-list" id="konselingAdminList"></ul>
+
+                        <div class="schedule-table-wrap konseling-table-wrap">
+                            <table class="schedule-table konseling-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama</th>
+                                        <th>Kelas</th>
+                                        <th>Masalah</th>
+                                        <th>Diajukan</th>
+                                        <th>Sudah Diatasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="konselingAdminList"></tbody>
+                            </table>
+                        </div>
                     </div>
 
                 </div>
@@ -1797,9 +1730,11 @@
                     Beranda
                 </button>
 
-                <button data-target="konseling">
-                    Konseling
-                </button>
+                @if (auth()->check() && auth()->user()->role === 'siswa')
+                    <button data-target="konseling">
+                        Konseling
+                    </button>
+                @endif
 
                 <button data-target="ekstra">
                     Ekstra
@@ -1814,9 +1749,19 @@
                     Informasi
                 </h4>
 
-                <button data-target="kesiswaan">
-                    Kesiswaan
-                </button>
+                @unless (auth()->check() && in_array(auth()->user()->role, ['guru', 'guru_bk'], true))
+                    <button data-target="kesiswaan">
+                        Kesiswaan
+                    </button>
+                @endunless
+
+                @auth
+                    @if (auth()->user()->role === 'guru_bk')
+                        <button data-target="guru-dashboard">
+                            Pengajuan
+                        </button>
+                    @endif
+                @endauth
 
                 <button data-target="pengumuman">
                     Pengumuman

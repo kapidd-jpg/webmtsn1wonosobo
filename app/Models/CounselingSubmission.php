@@ -9,7 +9,11 @@ class CounselingSubmission extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'nama', 'kelas', 'masalah', 'status'];
+    protected $fillable = ['user_id', 'nama', 'kelas', 'masalah', 'status', 'sudah_ditangani'];
+
+    protected $casts = [
+        'sudah_ditangani' => 'boolean',
+    ];
 
     public function user()
     {

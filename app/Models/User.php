@@ -34,6 +34,34 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    /**
+     * Nama lengkap untuk sapaan dashboard, tanpa gelar sapaan
+     * ("Bpk.", "Ibu", "Pak", "Bu"), tetapi gelar akademik tetap ditampilkan.
+     */
+    public function greetingName(): string
+    {
+        $name = trim((string) $this->name);
+
+        // Buang gelar sapaan di depan nama.
+        $stripped = preg_replace(
+            '/^(?:(?:bapak|bpk|pak|ibu|bu|saudari|saudara|sdri|sdr|prof|drs|dra|dr|hj|h)\.?\s+)+/i',
+            '',
+            $name
+        );
+
+        $stripped = trim((string) $stripped);
+
+        // Rapikan tanda koma di nama, mis. "Dewi Kusuma, S.Pd." -> "Dewi Kusuma S.Pd.".
+        $stripped = preg_replace('/\s*,\s*/', ' ', $stripped);
+        $stripped = trim(preg_replace('/\s+/', ' ', (string) $stripped));
+
+        if ($stripped === '') {
+            $stripped = $name;
+        }
+
+        return $stripped;
+    }
+
     public function isGuru(): bool
     {
         return $this->role === 'guru';
@@ -51,7 +79,7 @@ class User extends Authenticatable
 
     public function canManageContent(): bool
     {
-        return in_array($this->role, ['guru', 'admin'], true);
+        return $this->role === 'admin';
     }
 
     public function canManageKonseling(): bool

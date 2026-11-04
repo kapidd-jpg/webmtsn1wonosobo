@@ -10,7 +10,6 @@ use App\Http\Controllers\Api\StelaController;
 use App\Http\Controllers\Api\CounselingController;
 use App\Http\Controllers\Api\KesiswaanController;
 use App\Http\Controllers\Api\ExamController;
-use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\SchoolProfileController;
 
@@ -34,11 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/me', [StudentController::class, 'me']);
     Route::get('/api/jadwal', [ScheduleController::class, 'index']);
     Route::get('/api/ujian', [ExamController::class, 'index']);
-    Route::get('/api/materi', [MaterialController::class, 'index']);
 });
 
-// Kelola konten portal — guru & admin
-Route::middleware(['auth', 'role:guru,admin'])->group(function () {
+// Kelola konten portal — khusus admin
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/api/pengumuman', [AnnouncementController::class, 'store']);
     Route::put('/api/pengumuman/{announcement}', [AnnouncementController::class, 'update']);
     Route::delete('/api/pengumuman/{announcement}', [AnnouncementController::class, 'destroy']);
@@ -59,10 +57,6 @@ Route::middleware(['auth', 'role:guru,admin'])->group(function () {
     Route::post('/api/ujian', [ExamController::class, 'store']);
     Route::put('/api/ujian/{exam}', [ExamController::class, 'update']);
     Route::delete('/api/ujian/{exam}', [ExamController::class, 'destroy']);
-
-    Route::post('/api/materi', [MaterialController::class, 'store']);
-    Route::put('/api/materi/{learningMaterial}', [MaterialController::class, 'update']);
-    Route::delete('/api/materi/{learningMaterial}', [MaterialController::class, 'destroy']);
 
     Route::get('/api/siswa', [StudentController::class, 'index']);
     Route::put('/api/siswa/{user}', [StudentController::class, 'update']);

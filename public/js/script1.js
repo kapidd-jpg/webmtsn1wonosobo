@@ -610,7 +610,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let scheduleData = [];
     let kesiswaanData = [];
     let examData = [];
-    let materialData = [];
     let konselingData = [];
     let siswaData = [];
 
@@ -663,6 +662,56 @@ document.addEventListener('DOMContentLoaded', function () {
         const div = document.createElement('div');
         div.textContent = String(value == null ? '' : value);
         return div.innerHTML;
+    }
+
+    const BULAN_SINGKAT = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const BULAN_PANJANG = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    function parseIsoDate(value) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || '').trim());
+        if (!match) return null;
+        return { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
+    }
+
+    function tanggalPengumumanDariIso(value) {
+        const date = parseIsoDate(value);
+        if (!date) return null;
+        return {
+            tanggal: String(date.day).padStart(2, '0'),
+            bulan: BULAN_SINGKAT[date.month - 1].toUpperCase()
+        };
+    }
+
+    function isoPengumumanDariTanggal(tanggal, bulan) {
+        const day = parseInt(String(tanggal || '').replace(/\D/g, ''), 10);
+        const index = BULAN_SINGKAT.findIndex(function (nama) {
+            return nama.toUpperCase() === String(bulan || '').trim().toUpperCase();
+        });
+        if (!day || index < 0) return '';
+        return new Date().getFullYear() + '-' + String(index + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    }
+
+    function formatTanggalUjian(value) {
+        const date = parseIsoDate(value);
+        if (!date) return value;
+        return date.day + ' ' + BULAN_PANJANG[date.month - 1] + ' ' + date.year;
+    }
+
+    function isoUjianDariNilai(value) {
+        const text = String(value || '').trim();
+        if (parseIsoDate(text)) return text;
+
+        const match = /^(\d{1,2})\s+([A-Za-z]+)(?:\s+(\d{4}))?$/.exec(text);
+        if (!match) return '';
+
+        const bulanText = match[2].toLowerCase().slice(0, 3);
+        const index = BULAN_PANJANG.findIndex(function (nama) {
+            return nama.toLowerCase().slice(0, 3) === bulanText;
+        });
+        if (index < 0) return '';
+
+        const year = match[3] ? Number(match[3]) : new Date().getFullYear();
+        return year + '-' + String(index + 1).padStart(2, '0') + '-' + String(Number(match[1])).padStart(2, '0');
     }
 
     /* ---------- RENDER: halaman publik ---------- */
@@ -1028,7 +1077,7 @@ const EXTRA_BANNERS = {
             return (
                 '<article class="exam-card">' +
                     '<div class="exam-card-head">' +
-                        '<span class="exam-card-date">' + escapeHtml(item.tanggal) + '</span>' +
+                        '<span class="exam-card-date">' + escapeHtml(formatTanggalUjian(item.tanggal)) + '</span>' +
                         '<span class="exam-card-jenis" data-jenis="' +
                             escapeHtml(item.jenis) + '">' + escapeHtml(item.jenis) + '</span>' +
                     '</div>' +
@@ -1043,41 +1092,6 @@ const EXTRA_BANNERS = {
         }).join('');
 
         initScrollReveal('.exam-card');
-    }
-
-    async function loadMaterials() {
-        try {
-            materialData = await apiRequest('/api/materi');
-        } catch (err) {
-            materialData = [];
-        }
-        renderMaterials();
-        renderMateriAdmin();
-    }
-
-    function renderMaterials() {
-        const list = document.getElementById('materialList');
-        if (!list) return;
-
-        if (materialData.length === 0) {
-            list.innerHTML = '<p class="empty-state show">Belum ada materi pembelajaran.</p>';
-            return;
-        }
-
-        list.innerHTML = materialData.map(function (item) {
-            return (
-                '<article class="material-card">' +
-                    '<div class="material-card-top">' +
-                        '<span class="material-card-mapel">' + escapeHtml(item.mapel) + '</span>' +
-                        '<span class="material-card-kelas">' + escapeHtml(item.kelas) + '</span>' +
-                    '</div>' +
-                    '<h3>' + escapeHtml(item.judul) + '</h3>' +
-                    '<p>' + escapeHtml(item.deskripsi) + '</p>' +
-                '</article>'
-            );
-        }).join('');
-
-        initScrollReveal('.material-card');
     }
 
         async function loadKonseling() {
@@ -1276,9 +1290,10 @@ const EXTRA_BANNERS = {
             e.preventDefault();
 
             const id = pengumumanForm.id.value;
+            const tanggalParts = tanggalPengumumanDariIso(pengumumanForm.tanggal_picker.value) || {};
             const payload = {
-                tanggal: pengumumanForm.tanggal.value.trim(),
-                bulan: pengumumanForm.bulan.value.trim().toUpperCase(),
+                tanggal: tanggalParts.tanggal || '',
+                bulan: tanggalParts.bulan || '',
                 kategori: pengumumanForm.kategori.value.trim().toUpperCase(),
                 judul: pengumumanForm.judul.value.trim(),
                 deskripsi: pengumumanForm.deskripsi.value.trim()
@@ -1349,8 +1364,7 @@ const EXTRA_BANNERS = {
                 if (!item || !pengumumanForm) return;
 
                 pengumumanForm.id.value = item.id;
-                pengumumanForm.tanggal.value = item.tanggal;
-                pengumumanForm.bulan.value = item.bulan;
+                pengumumanForm.tanggal_picker.value = isoPengumumanDariTanggal(item.tanggal, item.bulan);
                 pengumumanForm.kategori.value = item.kategori;
                 pengumumanForm.judul.value = item.judul;
                 pengumumanForm.deskripsi.value = item.deskripsi;
@@ -1916,7 +1930,7 @@ const EXTRA_BANNERS = {
                 '<li class="admin-list-item" data-id="' + item.id + '">' +
                     '<div class="admin-list-item-info">' +
                         '<strong>' + escapeHtml(item.mapel) + ' · ' + escapeHtml(item.kelas) + '</strong>' +
-                        '<span>' + escapeHtml(item.tanggal) + ', ' + escapeHtml(item.jam) + ' · ' + escapeHtml(item.jenis) + '</span>' +
+                        '<span>' + escapeHtml(formatTanggalUjian(item.tanggal)) + ', ' + escapeHtml(item.jam) + ' · ' + escapeHtml(item.jenis) + '</span>' +
                     '</div>' +
                     '<div class="admin-list-item-actions">' +
                         '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
@@ -2006,7 +2020,7 @@ const EXTRA_BANNERS = {
                 if (!item || !ujianForm) return;
 
                 ujianForm.id.value = item.id;
-                ujianForm.tanggal.value = item.tanggal;
+                ujianForm.tanggal.value = isoUjianDariNilai(item.tanggal);
                 ujianForm.jam.value = item.jam;
                 ujianForm.mapel.value = item.mapel;
                 ujianForm.kelas.value = item.kelas;
@@ -2020,185 +2034,61 @@ const EXTRA_BANNERS = {
         });
     }
 
-    // --- MATERI admin ---
-
-    const materiForm = document.getElementById('materiForm');
-    const materiAdminList = document.getElementById('materiAdminList');
-    const materiFormTitle = document.getElementById('materiFormTitle');
-    const materiCancelEdit = document.getElementById('materiCancelEdit');
-
-    function renderMateriAdmin() {
-        if (!materiAdminList) return;
-
-        if (materialData.length === 0) {
-            materiAdminList.innerHTML = '<li class="admin-empty">Belum ada materi.</li>';
-            return;
-        }
-
-        materiAdminList.innerHTML = materialData.map(function (item) {
-            return (
-                '<li class="admin-list-item" data-id="' + item.id + '">' +
-                    '<div class="admin-list-item-info">' +
-                        '<strong>' + escapeHtml(item.judul) + '</strong>' +
-                        '<span>' + escapeHtml(item.mapel) + ' · ' + escapeHtml(item.kelas) + '</span>' +
-                    '</div>' +
-                    '<div class="admin-list-item-actions">' +
-                        '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
-                        '<button type="button" class="delete-btn" data-action="delete">Hapus</button>' +
-                    '</div>' +
-                '</li>'
-            );
-        }).join('');
-    }
-
-    if (materiForm) {
-        materiForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const id = materiForm.id.value;
-            const payload = {
-                mapel: materiForm.mapel.value.trim(),
-                kelas: materiForm.kelas.value.trim(),
-                judul: materiForm.judul.value.trim(),
-                deskripsi: materiForm.deskripsi.value.trim()
-            };
-
-            if (!payload.mapel || !payload.kelas || !payload.judul || !payload.deskripsi) {
-                showFormNote(materiForm, 'Semua kolom wajib diisi.', 'error');
-                return;
-            }
-
-            try {
-                if (id) {
-                    await apiRequest('/api/materi/' + id, {
-                        method: 'PUT',
-                        body: JSON.stringify(payload)
-                    });
-                    showFormNote(materiForm, 'Materi berhasil diperbarui.', 'success');
-                } else {
-                    await apiRequest('/api/materi', {
-                        method: 'POST',
-                        body: JSON.stringify(payload)
-                    });
-                    showFormNote(materiForm, 'Materi berhasil ditambahkan.', 'success');
-                }
-
-                resetMateriForm();
-                await loadMaterials();
-            } catch (err) {
-                showFormNote(materiForm, err.message, 'error');
-            }
-        });
-    }
-
-    function resetMateriForm() {
-        if (!materiForm) return;
-        materiForm.reset();
-        materiForm.id.value = '';
-        if (materiFormTitle) materiFormTitle.textContent = 'Tambah Materi';
-        if (materiCancelEdit) materiCancelEdit.hidden = true;
-    }
-
-    if (materiCancelEdit) {
-        materiCancelEdit.addEventListener('click', resetMateriForm);
-    }
-
-    if (materiAdminList) {
-        materiAdminList.addEventListener('click', async function (e) {
-            const btn = e.target.closest('button[data-action]');
-            if (!btn) return;
-
-            const li = btn.closest('.admin-list-item');
-            const id = li ? li.dataset.id : null;
-            if (!id) return;
-
-            if (btn.dataset.action === 'delete') {
-                if (!confirm('Hapus materi ini?')) return;
-                try {
-                    await apiRequest('/api/materi/' + id, { method: 'DELETE' });
-                    await loadMaterials();
-                } catch (err) {
-                    alert(err.message);
-                }
-                return;
-            }
-
-            if (btn.dataset.action === 'edit') {
-                const item = materialData.find(function (m) { return String(m.id) === id; });
-                if (!item || !materiForm) return;
-
-                materiForm.id.value = item.id;
-                materiForm.mapel.value = item.mapel;
-                materiForm.kelas.value = item.kelas;
-                materiForm.judul.value = item.judul;
-                materiForm.deskripsi.value = item.deskripsi;
-
-                if (materiFormTitle) materiFormTitle.textContent = 'Edit Materi';
-                if (materiCancelEdit) materiCancelEdit.hidden = false;
-                materiForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        });
-    }
-
-    // --- KONSELING admin (read-only + ubah status) ---
+    // --- KONSELING admin (daftar pengajuan + tandai sudah diatasi) ---
 
     const konselingAdminList = document.getElementById('konselingAdminList');
-
-    const statusLabel = {
-        baru: 'Baru',
-        diproses: 'Diproses',
-        selesai: 'Selesai'
-    };
 
     function renderKonselingAdmin() {
         if (!konselingAdminList) return;
 
         if (konselingData.length === 0) {
-            konselingAdminList.innerHTML = '<li class="admin-empty">Belum ada pengajuan konseling.</li>';
+            konselingAdminList.innerHTML = '<tr><td colspan="6" class="konseling-empty">Belum ada pengajuan konseling.</td></tr>';
             return;
         }
 
-        konselingAdminList.innerHTML = konselingData.map(function (item) {
+        konselingAdminList.innerHTML = konselingData.map(function (item, index) {
             const tanggal = item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID', {
                 day: 'numeric', month: 'long', year: 'numeric'
             }) : '-';
 
+            const ditangani = Boolean(Number(item.sudah_ditangani));
+
             return (
-                '<li class="admin-list-item" data-id="' + item.id + '" style="flex-direction: column; align-items: stretch;">' +
-                    '<div class="admin-list-item-info">' +
-                        '<strong>' + escapeHtml(item.nama) + ' · ' + escapeHtml(item.kelas) + '</strong>' +
-                        '<span>Diajukan: ' + escapeHtml(tanggal) + '</span>' +
-                        '<p class="konseling-item-masalah">' + escapeHtml(item.masalah) + '</p>' +
-                    '</div>' +
-                    '<div class="admin-list-item-actions" style="margin-top: 10px; align-self: flex-start;">' +
-                        '<select class="status-select" data-action="status">' +
-                            '<option value="baru"' + (item.status === 'baru' ? ' selected' : '') + '>' + statusLabel.baru + '</option>' +
-                            '<option value="diproses"' + (item.status === 'diproses' ? ' selected' : '') + '>' + statusLabel.diproses + '</option>' +
-                            '<option value="selesai"' + (item.status === 'selesai' ? ' selected' : '') + '>' + statusLabel.selesai + '</option>' +
-                        '</select>' +
-                    '</div>' +
-                '</li>'
+                '<tr data-id="' + item.id + '"' + (ditangani ? ' class="is-handled"' : '') + '>' +
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td>' + escapeHtml(item.nama) + '</td>' +
+                    '<td>' + escapeHtml(item.kelas) + '</td>' +
+                    '<td class="konseling-masalah">' + escapeHtml(item.masalah) + '</td>' +
+                    '<td>' + escapeHtml(tanggal) + '</td>' +
+                    '<td>' +
+                        '<input type="checkbox" class="konseling-check" data-action="handled" ' +
+                            (ditangani ? 'checked ' : '') +
+                            'aria-label="Tandai pengajuan sudah diatasi">' +
+                    '</td>' +
+                '</tr>'
             );
         }).join('');
     }
 
     if (konselingAdminList) {
         konselingAdminList.addEventListener('change', async function (e) {
-            const select = e.target.closest('select[data-action="status"]');
-            if (!select) return;
+            const checkbox = e.target.closest('input[data-action="handled"]');
+            if (!checkbox) return;
 
-            const li = select.closest('.admin-list-item');
-            const id = li ? li.dataset.id : null;
+            const row = e.target.closest('tr[data-id]');
+            const id = row ? row.dataset.id : null;
             if (!id) return;
 
             try {
                 await apiRequest('/api/konseling/' + id, {
                     method: 'PUT',
-                    body: JSON.stringify({ status: select.value })
+                    body: JSON.stringify({ sudah_ditangani: checkbox.checked })
                 });
+
                 await loadKonseling();
             } catch (err) {
                 alert(err.message);
+                await loadKonseling();
             }
         });
     }
@@ -2572,10 +2462,6 @@ const EXTRA_BANNERS = {
         loadExams();
     }
 
-    if (document.getElementById('materialList') || document.getElementById('materiAdminList')) {
-        loadMaterials();
-    }
-
     if (ekstraImagePicker) {
         loadEkstraImages();
     }
@@ -2608,7 +2494,7 @@ const EXTRA_BANNERS = {
         });
     });
 
-    /* --- tab akademik di dashboard siswa (Jadwal / Ujian / Materi) --- */
+    /* --- tab akademik di dashboard siswa (Jadwal / Ujian) --- */
 
     (function initDashAcademicTabs() {
         const tabs = document.querySelectorAll('.dash-tab');

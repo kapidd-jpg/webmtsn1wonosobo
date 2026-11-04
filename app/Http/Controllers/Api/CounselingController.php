@@ -32,7 +32,8 @@ class CounselingController extends Controller
     public function updateStatus(Request $request, CounselingSubmission $counselingSubmission)
     {
         $data = $request->validate([
-            'status' => 'required|in:baru,diproses,selesai',
+            'status'            => 'sometimes|in:baru,diproses,selesai',
+            'sudah_ditangani'   => 'sometimes|boolean',
         ]);
 
         $counselingSubmission->update($data);

@@ -247,18 +247,34 @@ textarea:focus-visible {
 }
 
 .login-btn {
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--primary);
     background: var(--primary);
     color: #fff;
-    padding: 10px 20px;
-    border-radius: var(--radius-xs);
+    padding: 9px 22px;
+    border-radius: 999px;
+    font-family: inherit;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
     box-shadow: var(--shadow-sm);
-    transition: background 0.15s ease, transform 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.login-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.login-btn:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.login-btn:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+
+.login-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 .profile-btn {
     width: 40px;
@@ -425,24 +441,32 @@ textarea:focus-visible {
 
 .admin-tabs {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     flex-wrap: wrap;
+    width: fit-content;
+    max-width: 100%;
+    padding: 4px;
     margin-bottom: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
 }
 
 .admin-tab {
-    border: 1px solid var(--border-strong);
-    background: var(--primary-soft);
+    border: 0;
+    background: transparent;
     color: var(--ink-soft);
-    padding: 10px 18px;
+    padding: 8px 22px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
-.admin-tab:hover { border-color: var(--primary); color: var(--heading); }
-.admin-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.admin-tab:hover { color: var(--heading); background: transparent; }
+.admin-tab.active { background: var(--primary); color: #fff; }
 
 .admin-panel { display: none; }
 .admin-panel.active { display: block; }
@@ -510,26 +534,42 @@ textarea:focus-visible {
 
 .admin-list-item-actions button:hover { border-color: var(--primary); color: var(--heading); }
 
-.status-select {
-    border: 1px solid var(--border-strong);
-    border-radius: 7px;
-    padding: 6px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--surface);
-    color: var(--ink-soft);
+.konseling-table-wrap {
+    margin-top: 20px;
 }
 
-.status-select:focus {
-    outline: none;
-    border-color: var(--primary);
+.konseling-table {
+    min-width: 880px;
 }
 
-.konseling-item-masalah {
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-top: 6px;
-    line-height: 1.5;
+.konseling-table td.konseling-masalah {
+    white-space: normal;
+    min-width: 240px;
+    max-width: 380px;
+    line-height: 1.55;
+}
+
+.konseling-table tbody tr.is-handled td {
+    background: var(--primary-soft);
+}
+
+.konseling-table tbody tr.is-handled td.konseling-masalah {
+    color: var(--ink-faint);
+    text-decoration: line-through;
+}
+
+.konseling-check {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.konseling-empty {
+    text-align: center;
+    color: var(--ink-faint);
+    white-space: normal;
+    padding: 32px 20px;
 }
 
 .admin-list-item-actions .delete-btn:hover {
@@ -1607,57 +1647,6 @@ textarea:focus-visible {
 .exam-card p { font-size: 14px; color: var(--ink-soft); }
 
 /* =========================================================
-   MATERI — grid kartu
-   Dulu memakai .announcement-list yang 1 kolom penuh, jadi
-   2 materi terlihat seperti 2 baris tipis. Sekarang grid.
-   ========================================================= */
-
-.material-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.material-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent-soft);
-    border-radius: var(--radius-lg);
-    padding: 26px 28px;
-    display: flex;
-    flex-direction: column;
-}
-
-.material-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-}
-
-.material-card-mapel {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent-text);
-}
-
-.material-card-kelas {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink-faint);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 3px 10px;
-    white-space: nowrap;
-}
-
-.material-card h3 { font-size: 19px; font-weight: 600; margin-bottom: 10px; }
-.material-card p { font-size: 14px; color: var(--ink-soft); }
-
-/* =========================================================
    PENGUMUMAN — chip filter kategori
    ========================================================= */
 
@@ -2340,7 +2329,7 @@ textarea:focus-visible {
 .agenda-body h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
 .agenda-body p { font-size: 13px; color: var(--ink-soft); }
 
-/* Akademik di dashboard siswa (tab Jadwal / Ujian / Materi) */
+/* Akademik di dashboard siswa (tab Jadwal / Ujian) */
 .dash-academic {
     grid-column: span 12;
 }
@@ -2438,8 +2427,8 @@ textarea:focus-visible {
     .exam-summary { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .exam-summary-card { padding: 16px 18px; }
     .exam-summary-card strong { font-size: 26px; }
-    .exam-grid, .material-grid { grid-template-columns: 1fr; gap: 16px; }
-    .exam-card, .material-card { padding: 20px 22px; }
+    .exam-grid { grid-template-columns: 1fr; gap: 16px; }
+    .exam-card { padding: 20px 22px; }
     .page-back { font-size: 11px; padding: 8px 15px 8px 12px; }
     .info-banner { flex-direction: column; margin-bottom: 56px; }
 
