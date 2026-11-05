@@ -58,6 +58,7 @@ Route::middleware(['auth', 'role:guru,guru_bk,admin'])->group(function () {
 // Data siswa untuk guru kesiswaan (hanya baca)
 Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/api/siswa-kesiswaan', [StudentController::class, 'indexForGuru']);
+    Route::get('/api/wali-kelas', [StudentController::class, 'waliKelasList']);
 });
 
 // Kelola konten portal — khusus admin

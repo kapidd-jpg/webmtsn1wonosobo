@@ -35,6 +35,46 @@ class StudentController extends Controller
         return $this->resolveWaliKelas($students);
     }
 
+    /**
+     * Daftar wali kelas per kelas, diambil dari data siswa.
+     */
+    public function waliKelasList()
+    {
+        $students = User::where('role', 'siswa')
+            ->whereNotNull('kelas')
+            ->get(['id', 'kelas', 'wali_kelas']);
+
+        $students = $this->resolveWaliKelas($students);
+
+        $classes = [];
+
+        foreach ($students as $student) {
+            $key = $this->normalizeKelas($student->kelas);
+
+            if ($key === '') {
+                continue;
+            }
+
+            if (! isset($classes[$key])) {
+                $classes[$key] = [
+                    'kelas'        => trim((string) $student->kelas),
+                    'wali_kelas'   => $student->wali_kelas,
+                    'jumlah_siswa' => 0,
+                ];
+            }
+
+            $classes[$key]['jumlah_siswa']++;
+
+            if (blank($classes[$key]['wali_kelas']) && filled($student->wali_kelas)) {
+                $classes[$key]['wali_kelas'] = $student->wali_kelas;
+            }
+        }
+
+        usort($classes, fn ($a, $b) => strnatcasecmp($a['kelas'], $b['kelas']));
+
+        return response()->json(array_values($classes));
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

@@ -1083,6 +1083,31 @@
                 @endif
 
                 @if (auth()->user()->role === 'guru')
+                    <!-- DAFTAR WALI KELAS (guru kesiswaan) -->
+                    <div class="content-card guru-wali-card">
+                        <span class="card-label">DAFTAR WALI KELAS</span>
+                        <h2>Wali Kelas per Kelas</h2>
+                        <p>Ringkasan wali kelas untuk setiap kelas yang memiliki siswa.</p>
+
+                        <div class="schedule-table-wrap">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kelas</th>
+                                        <th>Wali Kelas</th>
+                                        <th>Jumlah Siswa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="waliKelasList">
+                                    <tr>
+                                        <td colspan="4" class="konseling-empty">Memuat data wali kelas...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- DAFTAR SISWA (guru kesiswaan) -->
                     <div class="content-card guru-siswa-card">
                         <span class="card-label">DATA SISWA</span>

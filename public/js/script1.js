@@ -1285,6 +1285,41 @@ const EXTRA_BANNERS = {
         }
     }
 
+    // --- DAFTAR WALI KELAS untuk guru kesiswaan ---
+
+    const waliKelasList = document.getElementById('waliKelasList');
+
+    function renderWaliKelas(rows) {
+        if (!waliKelasList) return;
+
+        if (!rows.length) {
+            waliKelasList.innerHTML = '<tr><td colspan="4" class="konseling-empty">Belum ada data wali kelas.</td></tr>';
+            return;
+        }
+
+        waliKelasList.innerHTML = rows.map(function (item, index) {
+            return (
+                '<tr>' +
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td>' + escapeHtml(item.kelas || '-') + '</td>' +
+                    '<td>' + escapeHtml(item.wali_kelas || '-') + '</td>' +
+                    '<td>' + Number(item.jumlah_siswa || 0).toLocaleString('id-ID') + '</td>' +
+                '</tr>'
+            );
+        }).join('');
+    }
+
+    async function loadWaliKelas() {
+        if (!waliKelasList) return;
+
+        try {
+            const rows = await apiRequest('/api/wali-kelas');
+            renderWaliKelas(Array.isArray(rows) ? rows : []);
+        } catch (err) {
+            waliKelasList.innerHTML = '<tr><td colspan="4" class="konseling-empty">Gagal memuat data wali kelas.</td></tr>';
+        }
+    }
+
         // --- PROFIL SEKOLAH admin ---
 
     const schoolProfileForm = document.getElementById('schoolProfileForm');
@@ -2648,6 +2683,10 @@ const EXTRA_BANNERS = {
 
     if (guruStats) {
         loadGuruStats();
+    }
+
+    if (waliKelasList) {
+        loadWaliKelas();
     }
 
     if (guruSiswaList) {

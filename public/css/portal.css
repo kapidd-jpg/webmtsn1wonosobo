@@ -381,6 +381,11 @@ textarea:focus-visible {
     max-width: 320px;
 }
 
+/* Kartu daftar wali kelas & siswa (guru kesiswaan) */
+.guru-wali-card {
+    margin-bottom: 28px;
+}
+
 .profile-detail-list {
     display: flex;
     flex-direction: column;
