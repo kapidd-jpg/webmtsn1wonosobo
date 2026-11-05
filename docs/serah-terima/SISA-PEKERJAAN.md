@@ -16,6 +16,8 @@ dikerjakan** agar portal bisa diserahkan penuh ke client.
 - [x] `APP_DEBUG=false`, `APP_URL`, session aman, log production bersih.
 - [x] `.env.example` lengkap dengan variabel TiDB/TLS dan Blob.
 - [x] Dokumen dan checklist serah terima.
+- [x] Asisten AI STELA aktif di production (Google Gemini `gemini-3.6-flash`),
+      rate limit 20 permintaan/menit, jawaban tidak terpotong.
 
 ---
 
@@ -78,17 +80,25 @@ dikerjakan** agar portal bisa diserahkan penuh ke client.
 
 ## F. API AI (STELA / Google Gemini)
 
-- [ ] Buat API key di **Google AI Studio atas nama sekolah**:
-      https://aistudio.google.com/apikey
-- [ ] Simpan `GEMINI_API_KEY` sebagai **Secret** di Vercel (Production & Preview)
-      dan di `.env` lokal untuk pengembangan.
-- [ ] Uji STELA di production dengan 2–3 pertanyaan.
-- [ ] Catat di dokumen serah terima: pemilik key, cara rotasi, dan siapa yang
-      menanggung biaya kuota.
+- [x] API key aktif dan terpasang sebagai **Secret** di Vercel (Production &
+      Preview).
+- [x] Uji STELA di production dengan 3 pertanyaan — semua jawaban lengkap.
 - [x] Perbaiki teks sampah `...}` pada konteks prompt.
 - [x] Tambah rate limit 20 permintaan/menit per IP untuk `/api/stela`.
-- [x] Model dan batas panjang jawaban bisa diatur lewat `GEMINI_MODEL` dan
-      `GEMINI_MAX_OUTPUT_TOKENS`.
+- [x] Model dan batas panjang jawaban bisa diatur lewat `GEMINI_MODEL`,
+      `GEMINI_MAX_OUTPUT_TOKENS`, dan `GEMINI_THINKING_BUDGET`.
+- [x] Matikan *thinking* (`GEMINI_THINKING_BUDGET=0`) agar jawaban tidak
+      terpotong di tengah kalimat.
+- [ ] **Rotasi API key sebelum serah terima.** Key yang dipakai sekarang pernah
+      dikirim lewat chat, jadi harus dianggap bocor. Buat key baru di
+      https://aistudio.google.com/apikey, lalu ganti Secret `GEMINI_API_KEY`
+      di Vercel (Production & Preview) dan redeploy.
+- [ ] Pastikan key dibuat/dimiliki **akun Google sekolah**, bukan akun pribadi
+      developer.
+- [ ] Catat di dokumen serah terima: pemilik key, cara rotasi, dan siapa yang
+      menanggung biaya kuota.
+- [ ] Pantau kuota Gemini; aktifkan billing di akun sekolah bila pemakaian
+      naik.
 
 ---
 

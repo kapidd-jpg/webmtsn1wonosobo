@@ -149,5 +149,9 @@ npx vercel --prod --yes
 | `MYSQL_ATTR_SSL_CA` | Opsional; default `database/certs/cacert.pem` |
 | `BLOB_READ_WRITE_TOKEN` | Otomatis dari Vercel Blob |
 | `BLOB_ACCESS` | `public` |
+| `GEMINI_API_KEY` | API key asisten AI STELA (Secret) |
+| `GEMINI_MODEL` | Opsional; default `gemini-3.6-flash` |
+| `GEMINI_MAX_OUTPUT_TOKENS` | Opsional; default `1024` |
+| `GEMINI_THINKING_BUDGET` | Opsional; default `0` (thinking dimatikan) |
 | `SESSION_SECURE_COOKIE` | `true` |
 | `LOG_CHANNEL` | `stderr` |
