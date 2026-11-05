@@ -148,11 +148,11 @@ class StelaController extends Controller
         ];
 
         $model = config('services.gemini.model', 'gemini-3.6-flash');
-        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 1024);
+        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 2048);
         $thinkingBudget = (int) config('services.gemini.thinking_budget', 0);
 
         $generationConfig = [
-            'maxOutputTokens' => $maxOutputTokens > 0 ? $maxOutputTokens : 1024,
+            'maxOutputTokens' => $maxOutputTokens > 0 ? $maxOutputTokens : 2048,
         ];
 
         // Tanpa ini, model "berpikir" memakai jatah token jawaban sehingga
@@ -181,9 +181,26 @@ class StelaController extends Controller
             }
 
             $data = $response->json();
-            $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+            $candidate = $data['candidates'][0] ?? [];
+            $finishReason = $candidate['finishReason'] ?? null;
 
-            return $text ?: 'Maaf, aku belum punya jawaban untuk itu.';
+            // Gemini bisa memecah jawaban menjadi beberapa "part"; kalau hanya
+            // part pertama yang diambil, balasan tampak terpotong di tengah.
+            $text = collect($candidate['content']['parts'] ?? [])
+                ->pluck('text')
+                ->filter()
+                ->implode('');
+
+            if ($finishReason === 'MAX_TOKENS') {
+                Log::warning('STELA: jawaban Gemini mencapai batas token', [
+                    'model' => $model,
+                    'max_output_tokens' => $maxOutputTokens,
+                    'thinking_budget' => $thinkingBudget,
+                    'chars' => mb_strlen($text),
+                ]);
+            }
+
+            return $text !== '' ? $text : 'Maaf, aku belum punya jawaban untuk itu.';
         } catch (\Exception $e) {
             Log::error('Gemini request failed', ['error' => $e->getMessage()]);
             return 'Maaf, STELA sedang tidak dapat diakses. Coba lagi sebentar lagi, ya.';
