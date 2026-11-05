@@ -89,6 +89,8 @@ dikerjakan** agar portal bisa diserahkan penuh ke client.
       `GEMINI_MAX_OUTPUT_TOKENS`, dan `GEMINI_THINKING_BUDGET`.
 - [x] Matikan *thinking* (`GEMINI_THINKING_BUDGET=0`) agar jawaban tidak
       terpotong di tengah kalimat.
+- [x] Gabungkan semua bagian (`parts`) jawaban Gemini — sebelumnya hanya bagian
+      pertama yang diambil sehingga balasan tampak terpotong.
 - [ ] **Rotasi API key sebelum serah terima.** Key yang dipakai sekarang pernah
       dikirim lewat chat, jadi harus dianggap bocor. Buat key baru di
       https://aistudio.google.com/apikey, lalu ganti Secret `GEMINI_API_KEY`

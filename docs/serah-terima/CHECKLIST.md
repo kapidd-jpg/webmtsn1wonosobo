@@ -151,7 +151,7 @@ npx vercel --prod --yes
 | `BLOB_ACCESS` | `public` |
 | `GEMINI_API_KEY` | API key asisten AI STELA (Secret) |
 | `GEMINI_MODEL` | Opsional; default `gemini-3.6-flash` |
-| `GEMINI_MAX_OUTPUT_TOKENS` | Opsional; default `1024` |
+| `GEMINI_MAX_OUTPUT_TOKENS` | Opsional; default `2048` |
 | `GEMINI_THINKING_BUDGET` | Opsional; default `0` (thinking dimatikan) |
 | `SESSION_SECURE_COOKIE` | `true` |
 | `LOG_CHANNEL` | `stderr` |
