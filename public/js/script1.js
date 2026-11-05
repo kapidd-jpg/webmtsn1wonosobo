@@ -777,13 +777,61 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     }
 
-    function isoPengumumanDariTanggal(tanggal, bulan) {
+    function isoPengumumanDariTanggal(tanggal, bulan, createdAt) {
         const day = parseInt(String(tanggal || '').replace(/\D/g, ''), 10);
         const index = BULAN_SINGKAT.findIndex(function (nama) {
             return nama.toUpperCase() === String(bulan || '').trim().toUpperCase();
         });
         if (!day || index < 0) return '';
-        return new Date().getFullYear() + '-' + String(index + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+
+        let year = new Date().getFullYear();
+        if (createdAt) {
+            const created = new Date(createdAt);
+            if (!isNaN(created.getTime())) year = created.getFullYear();
+        }
+
+        return year + '-' + String(index + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+    }
+
+    /**
+     * Detail tanggal pengumuman. Mendukung data baru (YYYY-MM-DD) dan
+     * data lama yang hanya menyimpan tanggal + bulan.
+     */
+    function detailTanggalPengumuman(value, bulan, createdAt) {
+        const iso = parseIsoDate(value);
+
+        if (iso) {
+            const namaBulan = BULAN_SINGKAT[iso.month - 1];
+            const tanggal = String(iso.day).padStart(2, '0');
+
+            return {
+                tanggal: tanggal,
+                bulan: namaBulan,
+                tahun: String(iso.year),
+                lengkap: tanggal + ' ' + namaBulan + ' ' + iso.year
+            };
+        }
+
+        const day = parseInt(String(value || '').replace(/\D/g, ''), 10);
+        const index = BULAN_SINGKAT.findIndex(function (nama) {
+            return nama.toUpperCase() === String(bulan || '').trim().toUpperCase();
+        });
+
+        let year = '';
+        if (createdAt) {
+            const created = new Date(createdAt);
+            if (!isNaN(created.getTime())) year = String(created.getFullYear());
+        }
+
+        const namaBulan = index >= 0 ? BULAN_SINGKAT[index] : String(bulan || '').trim();
+        const tanggal = day ? String(day).padStart(2, '0') : '-';
+
+        return {
+            tanggal: tanggal,
+            bulan: namaBulan,
+            tahun: year,
+            lengkap: [tanggal, namaBulan, year].filter(Boolean).join(' ')
+        };
     }
 
     function formatTanggalUjian(value) {
@@ -878,11 +926,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         list.innerHTML = tampil.map(function (item) {
+            const tanggal = detailTanggalPengumuman(item.tanggal, item.bulan, item.created_at);
+
             return (
                 '<article class="announcement-card">' +
                     '<div class="announcement-date">' +
-                        '<strong>' + escapeHtml(item.tanggal) + '</strong>' +
-                        '<span>' + escapeHtml(item.bulan) + '</span>' +
+                        '<strong>' + escapeHtml(tanggal.tanggal) + '</strong>' +
+                        '<span>' + escapeHtml(
+                            tanggal.bulan + (tanggal.tahun ? ' ' + tanggal.tahun : '')
+                        ) + '</span>' +
                     '</div>' +
                     '<div>' +
                         '<span class="announcement-label">' + escapeHtml(item.kategori) + '</span>' +
@@ -1478,11 +1530,13 @@ const EXTRA_BANNERS = {
         }
 
         pengumumanAdminList.innerHTML = announcementsData.map(function (item) {
+            const tanggal = detailTanggalPengumuman(item.tanggal, item.bulan, item.created_at);
+
             return (
                 '<li class="admin-list-item" data-id="' + item.id + '">' +
                     '<div class="admin-list-item-info">' +
                         '<strong>' + escapeHtml(item.judul) + '</strong>' +
-                        '<span>' + escapeHtml(item.tanggal) + ' ' + escapeHtml(item.bulan) + ' · ' + escapeHtml(item.kategori) + '</span>' +
+                        '<span>' + escapeHtml(tanggal.lengkap) + ' · ' + escapeHtml(item.kategori) + '</span>' +
                     '</div>' +
                     '<div class="admin-list-item-actions">' +
                         '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
@@ -1498,9 +1552,11 @@ const EXTRA_BANNERS = {
             e.preventDefault();
 
             const id = pengumumanForm.id.value;
-            const tanggalParts = tanggalPengumumanDariIso(pengumumanForm.tanggal_picker.value) || {};
+            const tanggalIso = String(pengumumanForm.tanggal_picker.value || '').trim();
+            const tanggalParts = tanggalPengumumanDariIso(tanggalIso) || {};
             const payload = {
-                tanggal: tanggalParts.tanggal || '',
+                // Simpan tanggal lengkap (YYYY-MM-DD) supaya tahunnya tidak hilang.
+                tanggal: parseIsoDate(tanggalIso) ? tanggalIso : '',
                 bulan: tanggalParts.bulan || '',
                 kategori: pengumumanForm.kategori.value.trim().toUpperCase(),
                 judul: pengumumanForm.judul.value.trim(),
@@ -1572,7 +1628,9 @@ const EXTRA_BANNERS = {
                 if (!item || !pengumumanForm) return;
 
                 pengumumanForm.id.value = item.id;
-                pengumumanForm.tanggal_picker.value = isoPengumumanDariTanggal(item.tanggal, item.bulan);
+                pengumumanForm.tanggal_picker.value = parseIsoDate(item.tanggal)
+                    ? String(item.tanggal).trim()
+                    : isoPengumumanDariTanggal(item.tanggal, item.bulan, item.created_at);
                 pengumumanForm.kategori.value = item.kategori;
                 pengumumanForm.judul.value = item.judul;
                 pengumumanForm.deskripsi.value = item.deskripsi;

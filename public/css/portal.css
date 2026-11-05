@@ -1772,8 +1772,10 @@ textarea:focus-visible {
 
 .announcement-date {
     flex-shrink: 0;
-    width: 56px;
+    min-width: 56px;
+    width: auto;
     height: 56px;
+    padding: 0 10px;
     border-radius: var(--radius-sm);
     background: var(--primary-soft);
     display: flex;
