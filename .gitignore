@@ -20,4 +20,7 @@ yarn-error.log
 .env.*
 !.env.example
 
+# Catatan akun berisi kredensial, jangan di-commit
+docs/serah-terima/AKUN.md
+
 .vercel

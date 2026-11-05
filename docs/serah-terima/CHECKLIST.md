@@ -11,7 +11,8 @@ waktu tunggu perpindahan akun.
 ## Fase A: Bersihkan akun dan data
 
 - [ ] Login sebagai admin, lalu ganti password akun `admin001`. Password awal
-      diberikan terpisah dan tidak dicatat di dokumen ini.
+      diberikan terpisah dan tidak dicatat di dokumen ini. Catat password baru
+      di file akun yang tidak di-commit.
 - [ ] Buat akun admin baru untuk client, lalu nonaktifkan atau ganti nama akun
       `admin001`.
 - [ ] Ganti atau hapus akun demo berikut. Password-nya mengikuti data seeder

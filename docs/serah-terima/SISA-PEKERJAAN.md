@@ -29,7 +29,8 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
   - [ ] `arif.rahman@guru.local`
   - [ ] `dewi.kusuma@guru.local`
 - [ ] Rotasi password TiDB karena password lama pernah muncul di chat.
-- [ ] Simpan semua kredensial di password manager client.
+- [ ] Simpan semua kredensial di password manager client. Catatan akun untuk
+      pengembangan disimpan di file terpisah yang tidak di-commit ke GitHub.
 
 ## B. Data dan backup
 
