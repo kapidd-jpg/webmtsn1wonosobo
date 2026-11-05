@@ -979,6 +979,35 @@
 
                 </div>
 
+                @if (in_array(auth()->user()->role, ['guru', 'guru_bk'], true))
+                <div class="guru-stats-grid" id="guruStats">
+
+                    @if (auth()->user()->role === 'guru_bk')
+                        <article class="profile-stat-card">
+                            <span class="profile-stat-label">PENGAJUAN MASUK</span>
+                            <strong class="profile-stat-value" data-stat="pengajuanMasuk">-</strong>
+                            <span class="profile-stat-note" data-stat-note="pengajuanMasuk">Memuat data...</span>
+                        </article>
+
+                        <article class="profile-stat-card">
+                            <span class="profile-stat-label">TOTAL KASUS SELESAI</span>
+                            <strong class="profile-stat-value" data-stat="kasusSelesai">-</strong>
+                            <span class="profile-stat-note">Sudah ditangani</span>
+                        </article>
+                    @endif
+
+                    @if (auth()->user()->role === 'guru')
+                        <article class="profile-stat-card">
+                            <span class="profile-stat-label">TOTAL SISWA AKTIF EKSKUL</span>
+                            <strong class="profile-stat-value" data-stat="siswaAktifEkskul">-</strong>
+                            <span class="profile-stat-note" data-stat-note="siswaAktifEkskul">Memuat data...</span>
+                        </article>
+                    @endif
+
+                </div>
+                @endif
+
+                @if (auth()->user()->canManageContent() || auth()->user()->canManageKonseling() || auth()->user()->role === 'admin')
                 <div class="admin-tabs">
 
                     @if (auth()->user()->canManageContent())
@@ -1051,18 +1080,34 @@
                     @endif
 
                 </div>
+                @endif
 
                 @if (auth()->user()->role === 'guru')
-                    <div class="bento-grid">
-                        <article class="bento-card bento-agenda">
-                            <div class="bento-head">
-                                <h2>Akses Guru</h2>
-                            </div>
-                            <p class="agenda-note">
-                                Akun guru hanya dapat melihat informasi portal.
-                                Pengelolaan konten dilakukan oleh admin.
-                            </p>
-                        </article>
+                    <!-- DAFTAR SISWA (guru kesiswaan) -->
+                    <div class="content-card guru-siswa-card">
+                        <span class="card-label">DATA SISWA</span>
+                        <h2>Daftar Siswa dan Kelas</h2>
+                        <p>Informasi siswa, kelas, wali kelas, dan ekstrakurikuler yang diikuti.</p>
+
+                        <div class="schedule-table-wrap">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama</th>
+                                        <th>NIS</th>
+                                        <th>Kelas</th>
+                                        <th>Wali Kelas</th>
+                                        <th>Ekstrakurikuler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="guruSiswaList">
+                                    <tr>
+                                        <td colspan="6" class="konseling-empty">Memuat data siswa...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 @endif
 

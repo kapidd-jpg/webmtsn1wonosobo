@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ExtracurricularController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\StelaController;
 use App\Http\Controllers\Api\CounselingController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\KesiswaanController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\StudentController;
@@ -47,6 +48,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/me', [StudentController::class, 'me']);
     Route::get('/api/jadwal', [ScheduleController::class, 'index']);
     Route::get('/api/ujian', [ExamController::class, 'index']);
+});
+
+// Ringkasan dashboard guru kesiswaan & guru BK
+Route::middleware(['auth', 'role:guru,guru_bk,admin'])->group(function () {
+    Route::get('/api/dashboard-guru', [DashboardController::class, 'stats']);
+});
+
+// Data siswa untuk guru kesiswaan (hanya baca)
+Route::middleware(['auth', 'role:guru'])->group(function () {
+    Route::get('/api/siswa-kesiswaan', [StudentController::class, 'indexForGuru']);
 });
 
 // Kelola konten portal — khusus admin

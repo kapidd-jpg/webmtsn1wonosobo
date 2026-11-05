@@ -18,6 +18,19 @@ class StudentController extends Controller
             ->get();
     }
 
+    /**
+     * Daftar siswa untuk guru kesiswaan. Hanya memuat data yang
+     * dibutuhkan untuk ditampilkan, tanpa email atau kredensial.
+     */
+    public function indexForGuru()
+    {
+        return User::where('role', 'siswa')
+            ->with('extracurriculars:id,judul')
+            ->orderBy('kelas')
+            ->orderBy('name')
+            ->get(['id', 'name', 'nis_nip', 'kelas', 'wali_kelas']);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([

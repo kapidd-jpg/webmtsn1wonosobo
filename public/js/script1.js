@@ -1207,6 +1207,84 @@ const EXTRA_BANNERS = {
         renderSiswaAdmin();
     }
 
+    // --- RINGKASAN DASHBOARD GURU (kesiswaan & BK) ---
+
+    const guruStats = document.getElementById('guruStats');
+
+    function setGuruStat(name, value) {
+        if (!guruStats) return;
+
+        const valueEl = guruStats.querySelector('[data-stat="' + name + '"]');
+        if (valueEl) {
+            valueEl.textContent = Number(value || 0).toLocaleString('id-ID');
+        }
+    }
+
+    function setGuruStatNote(name, text) {
+        if (!guruStats) return;
+
+        const noteEl = guruStats.querySelector('[data-stat-note="' + name + '"]');
+        if (noteEl) noteEl.textContent = text;
+    }
+
+    async function loadGuruStats() {
+        if (!guruStats) return;
+
+        try {
+            const stats = await apiRequest('/api/dashboard-guru');
+
+            setGuruStat('pengajuanMasuk', stats.pengajuan_masuk);
+            setGuruStat('kasusSelesai', stats.kasus_selesai);
+            setGuruStat('siswaAktifEkskul', stats.siswa_aktif_ekskul);
+
+            setGuruStatNote('pengajuanMasuk', stats.belum_ditangani + ' pengajuan belum ditangani');
+            setGuruStatNote('siswaAktifEkskul', 'dari ' + stats.total_siswa + ' siswa terdaftar');
+        } catch (err) {
+            // Statistik hanya pelengkap; biarkan nilai awal bila gagal dimuat.
+        }
+    }
+
+    // --- DAFTAR SISWA untuk guru kesiswaan ---
+
+    const guruSiswaList = document.getElementById('guruSiswaList');
+
+    function renderGuruSiswa(rows) {
+        if (!guruSiswaList) return;
+
+        if (!rows.length) {
+            guruSiswaList.innerHTML = '<tr><td colspan="6" class="konseling-empty">Belum ada data siswa.</td></tr>';
+            return;
+        }
+
+        guruSiswaList.innerHTML = rows.map(function (item, index) {
+            const ekskul = (item.extracurriculars || [])
+                .map(function (x) { return x.judul; })
+                .join(', ');
+
+            return (
+                '<tr>' +
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td>' + escapeHtml(item.name) + '</td>' +
+                    '<td>' + escapeHtml(item.nis_nip || '-') + '</td>' +
+                    '<td>' + escapeHtml(item.kelas || '-') + '</td>' +
+                    '<td>' + escapeHtml(item.wali_kelas || '-') + '</td>' +
+                    '<td>' + escapeHtml(ekskul || '-') + '</td>' +
+                '</tr>'
+            );
+        }).join('');
+    }
+
+    async function loadGuruSiswa() {
+        if (!guruSiswaList) return;
+
+        try {
+            const rows = await apiRequest('/api/siswa-kesiswaan');
+            renderGuruSiswa(Array.isArray(rows) ? rows : []);
+        } catch (err) {
+            guruSiswaList.innerHTML = '<tr><td colspan="6" class="konseling-empty">Gagal memuat data siswa.</td></tr>';
+        }
+    }
+
         // --- PROFIL SEKOLAH admin ---
 
     const schoolProfileForm = document.getElementById('schoolProfileForm');
@@ -2182,9 +2260,11 @@ const EXTRA_BANNERS = {
                 });
 
                 await loadKonseling();
+                loadGuruStats();
             } catch (err) {
                 alert(err.message);
                 await loadKonseling();
+                loadGuruStats();
             }
         });
     }
@@ -2564,6 +2644,14 @@ const EXTRA_BANNERS = {
 
     if (konselingAdminList) {
         loadKonseling();
+    }
+
+    if (guruStats) {
+        loadGuruStats();
+    }
+
+    if (guruSiswaList) {
+        loadGuruSiswa();
     }
 
     if (siswaAdminList) {
