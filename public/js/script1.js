@@ -259,6 +259,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Buka modal login saat diarahkan lewat #login (mis. sesi habis/419).
+    if (window.location.hash === '#login') {
+        openModal(loginModal);
+    }
+
     /* -----------------------------------------------------
        3b. MODAL DETAIL EKSTRAKURIKULER
     ----------------------------------------------------- */
@@ -333,6 +338,29 @@ document.addEventListener('DOMContentLoaded', function () {
             } catch (err) {
                 showFormNote(counselingForm, err.message, 'error');
             }
+        });
+    }
+
+    // Form login dikirim sebagai submit biasa. Segarkan token CSRF lebih
+    // dulu supaya halaman yang sudah lama terbuka tidak berakhir 419.
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        let loginSubmitting = false;
+
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            if (loginSubmitting) return;
+            loginSubmitting = true;
+
+            // Cegah klik ganda yang bisa memicu dua POST dengan token berbeda.
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+            if (submitButton) submitButton.disabled = true;
+
+            await refreshCsrfToken();
+
+            // submit() melewati event listener ini, jadi tidak berulang.
+            loginForm.submit();
         });
     }
 
@@ -613,9 +641,63 @@ document.addEventListener('DOMContentLoaded', function () {
     let konselingData = [];
     let siswaData = [];
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    let csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    let csrfRefreshPromise = null;
 
-    async function apiRequest(url, options = {}) {
+    function applyCsrfToken(token) {
+        if (!token) return;
+
+        csrfToken = token;
+
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) meta.content = token;
+
+        // Form biasa (login & logout) memakai input _token, bukan header.
+        document.querySelectorAll('input[name="_token"]').forEach(function (input) {
+            input.value = token;
+        });
+    }
+
+    // Ambil token CSRF baru dari server. Dipakai saat token lama sudah
+    // kedaluwarsa karena halaman dibiarkan terbuka terlalu lama.
+    function refreshCsrfToken() {
+        if (!csrfRefreshPromise) {
+            csrfRefreshPromise = fetch('/csrf-token', {
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store',
+                credentials: 'same-origin'
+            })
+                .then(function (response) {
+                    return response.ok ? response.json() : null;
+                })
+                .then(function (body) {
+                    if (body && body.token) {
+                        applyCsrfToken(body.token);
+                        return body.token;
+                    }
+                    return null;
+                })
+                .catch(function () {
+                    return null;
+                })
+                .finally(function () {
+                    csrfRefreshPromise = null;
+                });
+        }
+
+        return csrfRefreshPromise;
+    }
+
+    // Segarkan token secara berkala dan saat tab kembali aktif. Selain
+    // mencegah 419, ini juga memperpanjang umur sesi selama portal terbuka.
+    refreshCsrfToken();
+    setInterval(refreshCsrfToken, 10 * 60 * 1000);
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') refreshCsrfToken();
+    });
+    window.addEventListener('focus', refreshCsrfToken);
+
+    async function apiRequest(url, options = {}, alreadyRetried = false) {
         const isFormData = options.body instanceof FormData;
 
         const headers = Object.assign(
@@ -628,6 +710,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const response = await fetch(url, Object.assign({}, options, { headers }));
+
+        // Token kedaluwarsa: ambil token baru lalu ulangi permintaan sekali.
+        if (response.status === 419 && !alreadyRetried) {
+            const freshToken = await refreshCsrfToken();
+
+            if (freshToken) {
+                return apiRequest(url, options, true);
+            }
+        }
+
+        if (response.status === 401) {
+            throw new Error('Sesi login Anda sudah berakhir. Muat ulang halaman lalu masuk kembali.');
+        }
 
         if (!response.ok) {
             const errorBody = await response.json().catch(function () { return {}; });

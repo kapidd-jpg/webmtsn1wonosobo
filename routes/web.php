@@ -15,7 +15,21 @@ use App\Http\Controllers\Api\SchoolProfileController;
 
 Route::get('/', [PortalController::class, 'index'])->name('portal.index');
 
+// Halaman login berupa modal di portal. Route GET ini dipakai sebagai
+// tujuan redirect saat pengguna yang belum login membuka halaman terkunci.
+Route::get('/login', function () {
+    return redirect()->route('portal.index')->withFragment('login');
+})->name('login.show');
+
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+// Token CSRF segar untuk halaman yang sudah lama terbuka. Dipanggil oleh
+// script1.js secara berkala agar formulir tidak terkena 419 Page Expired.
+Route::get('/csrf-token', function () {
+    return response()
+        ->json(['token' => csrf_token()])
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
+})->name('csrf.token');
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');

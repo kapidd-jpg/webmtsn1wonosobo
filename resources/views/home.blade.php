@@ -1797,7 +1797,7 @@
     ====================================================== -->
 
     <div
-    class="modal {{ $errors->has('nis_nip') ? 'open' : '' }}"
+    class="modal {{ $errors->has('nis_nip') || session('session_expired') ? 'open' : '' }}"
     id="loginModal">
 
         <div class="modal-box">
@@ -1825,6 +1825,12 @@
             <p>
                 Masuk untuk mengakses layanan siswa.
             </p>
+
+            @if (session('session_expired'))
+                <div class="form-note show error">
+                    Sesi Anda sudah berakhir. Silakan masuk kembali.
+                </div>
+            @endif
     
 
                     <form id="loginForm" method="POST" action="{{ route('login') }}">
