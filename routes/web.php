@@ -23,7 +23,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
 // Data publik — siapa saja boleh baca
 Route::get('/api/pengumuman', [AnnouncementController::class, 'index']);
 Route::get('/api/ekstrakurikuler', [ExtracurricularController::class, 'index']);
-Route::post('/api/stela', [StelaController::class, 'reply']);
+Route::post('/api/stela', [StelaController::class, 'reply'])->middleware('throttle:20,1');
 Route::post('/api/konseling', [CounselingController::class, 'store']);
 Route::get('/api/kesiswaan', [KesiswaanController::class, 'index']);
 Route::get('/api/profil-sekolah', [SchoolProfileController::class, 'show']);

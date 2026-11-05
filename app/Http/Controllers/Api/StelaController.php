@@ -66,7 +66,6 @@ class StelaController extends Controller
 
         DATA JADWAL PELAJARAN:
         {$schedules}
-        ...}
 
         DATA EKSTRAKURIKULER:
         {$extras}
@@ -148,14 +147,22 @@ class StelaController extends Controller
             'parts' => [['text' => $userMessage]],
         ];
 
+        $model = config('services.gemini.model', 'gemini-3.6-flash');
+        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 512);
+
         try {
-            $response = Http::timeout(15)->post(
-                'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' . $apiKey,
+            $response = Http::timeout(20)->post(
+                'https://generativelanguage.googleapis.com/v1beta/models/'
+                    . rawurlencode($model)
+                    . ':generateContent?key=' . $apiKey,
                 [
                     'system_instruction' => [
                         'parts' => [['text' => $this->systemPrompt($context)]],
                     ],
                     'contents' => $contents,
+                    'generationConfig' => [
+                        'maxOutputTokens' => $maxOutputTokens > 0 ? $maxOutputTokens : 512,
+                    ],
                 ]
             );
 

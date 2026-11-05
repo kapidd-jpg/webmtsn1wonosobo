@@ -76,13 +76,30 @@ dikerjakan** agar portal bisa diserahkan penuh ke client.
 
 ---
 
+## F. API AI (STELA / Google Gemini)
+
+- [ ] Buat API key di **Google AI Studio atas nama sekolah**:
+      https://aistudio.google.com/apikey
+- [ ] Simpan `GEMINI_API_KEY` sebagai **Secret** di Vercel (Production & Preview)
+      dan di `.env` lokal untuk pengembangan.
+- [ ] Uji STELA di production dengan 2–3 pertanyaan.
+- [ ] Catat di dokumen serah terima: pemilik key, cara rotasi, dan siapa yang
+      menanggung biaya kuota.
+- [x] Perbaiki teks sampah `...}` pada konteks prompt.
+- [x] Tambah rate limit 20 permintaan/menit per IP untuk `/api/stela`.
+- [x] Model dan batas panjang jawaban bisa diatur lewat `GEMINI_MODEL` dan
+      `GEMINI_MAX_OUTPUT_TOKENS`.
+
+---
+
 ## Urutan pengerjaan yang disarankan
 
 1. **A** — keamanan akun (±10 menit, butuh password admin baru).
 2. **B** — data asli dan backup (±1 jam, butuh konten dari sekolah).
 3. **C** — transfer kepemilikan akun (butuh akses dashboard client).
 4. **D** — konfigurasi domain dan pengujian tambahan.
-5. **E** — tanda tangan dokumen.
+5. **F** — API AI STELA (butuh API key dari Google AI Studio).
+6. **E** — tanda tangan dokumen.
 
 Item di bagian **D** dan **E** tidak menghalangi serah terima teknis, tetapi
 wajib diselesaikan agar client benar-benar mandiri.
