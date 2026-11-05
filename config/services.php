@@ -34,7 +34,9 @@ return [
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-3.6-flash'),
-        'max_output_tokens' => (int) env('GEMINI_MAX_OUTPUT_TOKENS', 512),
+        'max_output_tokens' => (int) env('GEMINI_MAX_OUTPUT_TOKENS', 1024),
+        // 0 = matikan "thinking" agar jawaban tidak terpotong oleh token berpikir.
+        'thinking_budget' => (int) env('GEMINI_THINKING_BUDGET', 0),
     ],
 
     /*

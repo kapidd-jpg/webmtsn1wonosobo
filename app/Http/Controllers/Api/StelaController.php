@@ -148,7 +148,18 @@ class StelaController extends Controller
         ];
 
         $model = config('services.gemini.model', 'gemini-3.6-flash');
-        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 512);
+        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 1024);
+        $thinkingBudget = (int) config('services.gemini.thinking_budget', 0);
+
+        $generationConfig = [
+            'maxOutputTokens' => $maxOutputTokens > 0 ? $maxOutputTokens : 1024,
+        ];
+
+        // Tanpa ini, model "berpikir" memakai jatah token jawaban sehingga
+        // balasan STELA terpotong di tengah kalimat.
+        if ($thinkingBudget >= 0) {
+            $generationConfig['thinkingConfig'] = ['thinkingBudget' => $thinkingBudget];
+        }
 
         try {
             $response = Http::timeout(20)->post(
@@ -160,9 +171,7 @@ class StelaController extends Controller
                         'parts' => [['text' => $this->systemPrompt($context)]],
                     ],
                     'contents' => $contents,
-                    'generationConfig' => [
-                        'maxOutputTokens' => $maxOutputTokens > 0 ? $maxOutputTokens : 512,
-                    ],
+                    'generationConfig' => $generationConfig,
                 ]
             );
 
