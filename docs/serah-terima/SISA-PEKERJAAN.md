@@ -1,132 +1,139 @@
 # Sisa Pekerjaan Sebelum Serah Terima
 
-Terakhir diperbarui: 4 November 2026
+Terakhir diperbarui: 5 November 2026
 
-Dokumen ini merangkum apa yang **sudah beres** dan apa yang **masih harus
-dikerjakan** agar portal bisa diserahkan penuh ke client.
+Dokumen ini merangkum pekerjaan yang sudah selesai dan yang masih harus
+dikerjakan sebelum portal diserahkan sepenuhnya ke client.
 
----
+## Sudah selesai
 
-## Sudah beres
+- Deploy production di Vercel: https://webmtsn1wonosobo.vercel.app
+- Migrasi TiDB: kolom `sudah_ditangani` ditambahkan, tabel
+  `learning_materials` dihapus, data lama tetap utuh.
+- Upload gambar tersimpan permanen di Vercel Blob. Sudah diuji unggah, tampil,
+  dan hapus.
+- `APP_DEBUG=false`, `APP_URL` sudah diatur, session aman, log production
+  bersih.
+- `.env.example` sudah memuat variabel TiDB, TLS, Blob, dan Gemini.
+- Dokumen dan checklist serah terima sudah dibuat.
+- STELA aktif di production dengan model `gemini-3.6-flash`, dibatasi 20
+  permintaan per menit, dan jawaban tidak terpotong lagi.
 
-- [x] Deploy production di Vercel (`https://webmtsn1wonosobo.vercel.app`).
-- [x] Migrasi TiDB: kolom `sudah_ditangani` ditambahkan, tabel
-      `learning_materials` dihapus, data lama tetap utuh.
-- [x] Upload gambar persisten di Vercel Blob (diuji: unggah, tampil, hapus).
-- [x] `APP_DEBUG=false`, `APP_URL`, session aman, log production bersih.
-- [x] `.env.example` lengkap dengan variabel TiDB/TLS dan Blob.
-- [x] Dokumen dan checklist serah terima.
-- [x] Asisten AI STELA aktif di production (Google Gemini `gemini-3.6-flash`),
-      rate limit 20 permintaan/menit, jawaban tidak terpotong.
+## A. Keamanan akun
 
----
-
-## A. Keamanan akun — wajib, cepat
-
-- [ ] Ganti password admin `admin001` (password awal `admin123`).
-      Akun ini dipakai saat pengujian production.
-- [ ] Hapus atau ganti password akun demo:
-  - [ ] `ahmad.setiawan@siswa.local` / `siswa123`
-  - [ ] `arif.rahman@guru.local` / `guru123`
-  - [ ] `dewi.kusuma@guru.local` / `gurubk123`
-- [ ] Rotasi ulang password TiDB (password lama pernah muncul di chat).
+- [ ] Ganti password admin `admin001`. Password awalnya diberikan terpisah dan
+      akun ini dipakai saat pengujian production.
+- [ ] Hapus atau ganti password akun demo berikut. Password-nya mengikuti data
+      seeder dan harus dianggap tidak aman.
+  - [ ] `ahmad.setiawan@siswa.local`
+  - [ ] `arif.rahman@guru.local`
+  - [ ] `dewi.kusuma@guru.local`
+- [ ] Rotasi password TiDB karena password lama pernah muncul di chat.
 - [ ] Simpan semua kredensial di password manager client.
 
-## B. Data dan backup — wajib
+## B. Data dan backup
 
-- [ ] Ganti data seeder dengan data asli sekolah:
+- [ ] Ganti data contoh dengan data asli sekolah:
   - [ ] Pengumuman
   - [ ] Jadwal pelajaran
   - [ ] Ekstrakurikuler
   - [ ] Konten kesiswaan
   - [ ] Profil sekolah
-- [ ] Pindahkan dump SQL dari folder temp laptop ke Google Drive client.
-      Lokasi saat ini: `C:\Users\Khafidz\AppData\Local\Temp\opencode\`
-      (`backup-counseling.sql`, `backup-learning-materials.sql`).
-- [ ] Cek backup otomatis di TiDB Cloud; jika tidak ada, jadwalkan dump mingguan.
-- [ ] Pastikan baris konseling di production adalah data asli, bukan sisa uji.
+- [ ] Pindahkan dump SQL dari folder sementara laptop ke Google Drive client.
+      Lokasi saat ini:
+      `C:\Users\Khafidz\AppData\Local\Temp\opencode\` berisi
+      `backup-counseling.sql` dan `backup-learning-materials.sql`.
+- [ ] Cek backup otomatis di TiDB Cloud. Jika belum ada, jadwalkan dump
+      mingguan.
+- [ ] Pastikan baris konseling di production adalah data asli, bukan sisa
+      pengujian.
 
-## C. Kepemilikan akun — inti serah terima
+## C. Kepemilikan akun
 
-- [ ] Transfer repo GitHub ke akun/organisasi sekolah.
-- [ ] Transfer project Vercel ke team sekolah (termasuk billing).
-- [ ] Pastikan Vercel Blob store ikut pindah. Jika tidak, buat store baru di
-      team client dan set `BLOB_READ_WRITE_TOKEN` ulang. **Jangan hapus store
-      lama** sebelum gambar lama dimigrasi.
-- [ ] Undang/pindahkan TiDB Cloud ke akun sekolah (invite member atau migrasi
-      cluster).
-- [ ] Daftarkan domain atas nama sekolah.
-- [ ] Hapus akses developer setelah transfer selesai (kecuali ada kontrak
-      maintenance).
+- [ ] Transfer repositori GitHub ke akun atau organisasi sekolah.
+- [ ] Transfer project Vercel ke team sekolah, termasuk billing.
+- [ ] Pastikan Blob store ikut pindah. Jika tidak, buat store baru di team
+      client dan atur ulang `BLOB_READ_WRITE_TOKEN`. Jangan hapus store lama
+      sebelum gambar lama dipindahkan.
+- [ ] Pindahkan TiDB Cloud ke akun sekolah, baik dengan mengundang sebagai
+      member maupun memindahkan data ke cluster baru.
+- [ ] Daftarkan domain atas nama sekolah. Untuk `.sch.id`, siapkan surat
+      permohonan berkop sekolah dan SK pendirian. Ini satu-satunya komponen
+      yang perlu dibeli, dengan biaya sekitar Rp150.000 sampai Rp250.000 per
+      tahun.
+- [ ] Hapus akses developer setelah transfer selesai, kecuali ada kontrak
+      maintenance.
 
 ## D. Konfigurasi yang belum final
 
 - [ ] Ubah `APP_URL` ke domain final setelah domain aktif.
-- [ ] Atur SMTP asli — **opsional**, karena saat ini belum ada fitur email
-      aktif (tidak ada reset password via email).
-- [ ] Aktifkan notifikasi email Vercel untuk deploy gagal ke alamat client.
-- [ ] Uji upload file lebih dari 2 MB. Validasi banner mengizinkan 4 MB,
-      tetapi batas PHP di Vercel perlu dipastikan (default PHP 2 MB).
-- [ ] Uji rollback deployment sekali (Vercel → Promote to Production).
+- [ ] Atur SMTP asli bila fitur email dibutuhkan. Saat ini belum ada fitur
+      email aktif, jadi sifatnya opsional.
+- [ ] Aktifkan notifikasi email Vercel untuk deploy yang gagal.
+- [ ] Uji upload file berukuran besar. Validasi banner mengizinkan 4 MB,
+      sedangkan Vercel membatasi ukuran request sekitar 4,5 MB. Sebaiknya
+      turunkan batas unggah ke 3 MB atau gunakan upload langsung ke Blob.
+- [ ] Uji rollback deployment sekali di Vercel.
 
 ## E. Dokumen dan kesepakatan
 
-- [ ] Isi bagian kosong pada `DOKUMEN-SERAH-TERIMA.md`: tanggal, nama, domain,
+- [ ] Isi bagian kosong di `DOKUMEN-SERAH-TERIMA.md`: tanggal, nama, domain,
       kontak, dan biaya.
 - [ ] Tanda tangan dua rangkap.
-- [ ] Sepakati masa garansi (30 hari untuk bug) dan jalur dukungan.
+- [ ] Sepakati masa garansi 30 hari untuk bug dan jalur dukungan.
 
----
+## F. STELA dan API key
 
-## F. API AI (STELA / Google Gemini)
-
-- [x] API key aktif dan terpasang sebagai **Secret** di Vercel (Production &
-      Preview).
-- [x] Uji STELA di production dengan 3 pertanyaan — semua jawaban lengkap.
-- [x] Perbaiki teks sampah `...}` pada konteks prompt.
-- [x] Tambah rate limit 20 permintaan/menit per IP untuk `/api/stela`.
-- [x] Model dan batas panjang jawaban bisa diatur lewat `GEMINI_MODEL`,
-      `GEMINI_MAX_OUTPUT_TOKENS`, dan `GEMINI_THINKING_BUDGET`.
-- [x] Matikan *thinking* (`GEMINI_THINKING_BUDGET=0`) agar jawaban tidak
-      terpotong di tengah kalimat.
-- [x] Gabungkan semua bagian (`parts`) jawaban Gemini — sebelumnya hanya bagian
-      pertama yang diambil sehingga balasan tampak terpotong.
-- [ ] **Rotasi API key sebelum serah terima.** Key yang dipakai sekarang pernah
+- [x] API key aktif dan tersimpan sebagai Secret di Vercel untuk Production
+      dan Preview.
+- [x] STELA sudah diuji di production dengan beberapa pertanyaan dan semua
+      jawaban lengkap.
+- [x] Teks sampah pada konteks prompt sudah dihapus.
+- [x] Rate limit 20 permintaan per menit per IP sudah aktif.
+- [x] Model, batas panjang jawaban, dan pengaturan thinking bisa diatur lewat
+      `GEMINI_MODEL`, `GEMINI_MAX_OUTPUT_TOKENS`, dan
+      `GEMINI_THINKING_BUDGET`.
+- [x] Thinking dimatikan agar jawaban tidak terpotong.
+- [x] Semua bagian jawaban Gemini digabungkan. Sebelumnya hanya bagian pertama
+      yang diambil, sehingga balasan tampak terpotong.
+- [ ] Rotasi API key sebelum serah terima. Key yang dipakai sekarang pernah
       dikirim lewat chat, jadi harus dianggap bocor. Buat key baru di
-      https://aistudio.google.com/apikey, lalu ganti Secret `GEMINI_API_KEY`
-      di Vercel (Production & Preview) dan redeploy.
-- [ ] Pastikan key dibuat/dimiliki **akun Google sekolah**, bukan akun pribadi
-      developer.
-- [ ] Catat di dokumen serah terima: pemilik key, cara rotasi, dan siapa yang
+      https://aistudio.google.com/apikey, ganti Secret `GEMINI_API_KEY` di
+      Vercel, lalu redeploy.
+- [ ] Pastikan key baru dibuat dan dimiliki akun Google sekolah, bukan akun
+      pribadi developer.
+- [ ] Catat di dokumen serah terima: pemilik key, cara rotasi, dan pihak yang
       menanggung biaya kuota.
-- [ ] Pantau kuota Gemini; aktifkan billing di akun sekolah bila pemakaian
-      naik.
-
----
+- [ ] Pantau kuota Gemini dan aktifkan billing bila pemakaian meningkat.
 
 ## Urutan pengerjaan yang disarankan
 
-1. **A** — keamanan akun (±10 menit, butuh password admin baru).
-2. **B** — data asli dan backup (±1 jam, butuh konten dari sekolah).
-3. **C** — transfer kepemilikan akun (butuh akses dashboard client).
-4. **D** — konfigurasi domain dan pengujian tambahan.
-5. **F** — API AI STELA (butuh API key dari Google AI Studio).
-6. **E** — tanda tangan dokumen.
+1. Bagian A, keamanan akun, sekitar 10 menit dan membutuhkan password admin
+   baru.
+2. Bagian B, data asli dan backup, sekitar 1 jam dan membutuhkan konten dari
+   sekolah.
+3. Bagian C, perpindahan kepemilikan akun, membutuhkan akses dashboard client.
+4. Bagian D, konfigurasi domain dan pengujian tambahan.
+5. Bagian F, rotasi API key STELA.
+6. Bagian E, tanda tangan dokumen.
 
-Item di bagian **D** dan **E** tidak menghalangi serah terima teknis, tetapi
-wajib diselesaikan agar client benar-benar mandiri.
-
----
+Bagian D dan E tidak menghalangi serah terima teknis, tetapi perlu diselesaikan
+agar client benar-benar mandiri.
 
 ## Catatan teknis
 
-- **Jangan ubah `APP_KEY`** saat transfer. Jika berubah, semua sesi logout dan
+- Repositori GitHub bersifat publik. Jangan menulis password, API key, atau isi
+  file `.env` di file mana pun di dalamnya.
+- Jangan mengubah `APP_KEY` saat transfer. Jika berubah, semua sesi logout dan
   data terenkripsi tidak terbaca.
-- **Jangan kirim file `.env`** bila menyerahkan source code. Cukup kirim repo
-  GitHub tanpa file rahasia.
-- **Blob store lama** harus tetap aktif selama masih ada gambar yang menunjuk
-  ke URL store tersebut.
-- **Paket Vercel Hobby** diperuntukkan bagi penggunaan non-komersial. Untuk
-  portal resmi sekolah, pertimbangkan paket Pro.
-- **Kuota gratis TiDB dan Vercel Blob** perlu dipantau; unggahan foto sekolah
-  menambah pemakaian storage dan transfer.
+- Jangan mengirim file `.env` bila menyerahkan source code. Cukup serahkan
+  repositori GitHub tanpa file rahasia.
+- Blob store lama harus tetap aktif selama masih ada gambar yang menunjuk ke
+  URL store tersebut.
+- Paket Vercel Hobby ditujukan untuk penggunaan non-komersial. Untuk portal
+  resmi sekolah, pertimbangkan paket Pro.
+- Kuota gratis TiDB dan Vercel Blob perlu dipantau. Unggahan foto sekolah
+  menambah pemakaian penyimpanan dan transfer.
+- Database TiDB berada di region Singapore. Data konseling siswa bersifat
+  sensitif, jadi keputusan menyimpan data di luar negeri sebaiknya
+  dikonfirmasi ke pihak sekolah.

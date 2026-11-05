@@ -1,27 +1,27 @@
 # Serah Terima Portal MTsN 1 Wonosobo
 
-Folder ini berisi tiga dokumen:
+Folder ini berisi dokumen untuk proses serah terima aplikasi ke pihak sekolah.
 
-1. **`CHECKLIST.md`** — panduan internal langkah demi langkah sebelum aplikasi
-   diserahkan ke client (bersih-bersih akun, backup, transfer kepemilikan,
-   verifikasi, dan batas dukungan).
-2. **`DOKUMEN-SERAH-TERIMA.md`** — dokumen resmi untuk client. Isi bagian
-   kosong (nama, tanggal, domain, kontak), lalu cetak dan tanda tangani dua
-   rangkap.
-3. **`SISA-PEKERJAAN.md`** — daftar sisa pekerjaan yang belum selesai beserta
-   urutan prioritasnya.
+1. `CHECKLIST.md` berisi panduan internal, mulai dari membersihkan akun,
+   menyiapkan backup, memindahkan kepemilikan akun, sampai memverifikasi
+   aplikasi setelah transfer.
+2. `DOKUMEN-SERAH-TERIMA.md` adalah dokumen resmi untuk client. Bagian yang
+   kosong diisi dengan data final, lalu dicetak dan ditandatangani dua rangkap.
+3. `SISA-PEKERJAAN.md` berisi daftar pekerjaan yang belum selesai beserta
+   urutan pengerjaannya.
 
 ## Urutan pemakaian
 
-1. Jalankan `CHECKLIST.md` sampai Fase E selesai.
+1. Kerjakan `CHECKLIST.md` sampai tahap verifikasi selesai.
 2. Isi `DOKUMEN-SERAH-TERIMA.md` dengan data final.
-3. Tanda tangan bersama client.
+3. Tandatangani dokumen bersama client.
 4. Simpan salinan di Google Drive sekolah.
 
-## Prinsip penting
+## Hal yang perlu dijaga
 
-- Jangan pernah menaruh password di dokumen ini atau di repo.
-- Jangan hapus Blob store lama sebelum gambar lama selesai dimigrasi.
-- Jangan mengubah `APP_KEY` saat transfer.
-- Pastikan client memiliki akun Vercel, GitHub, TiDB, dan domain atas nama
-  sekolah — bukan atas nama developer.
+- Jangan menaruh password atau API key di dokumen maupun repositori. Repositori
+  GitHub bersifat publik.
+- Jangan menghapus Blob store lama sebelum semua gambar dipindahkan.
+- Jangan mengubah `APP_KEY` saat proses transfer.
+- Pastikan akun Vercel, GitHub, TiDB, dan domain terdaftar atas nama sekolah,
+  bukan atas nama developer.
