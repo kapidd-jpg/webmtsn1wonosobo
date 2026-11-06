@@ -7,6 +7,9 @@ vendor
 .env
 .env.*
 !.env.example
+
+# Berisi data pribadi anggota, jangan ikut terunggah
+README.txt
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
