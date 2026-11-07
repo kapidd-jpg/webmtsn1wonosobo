@@ -83,7 +83,7 @@ class StudentController extends Controller
             'role'       => 'required|in:siswa,guru,guru_bk,admin',
             'kelas'      => 'nullable|string|max:50',
             'wali_kelas' => 'nullable|string|max:100',
-            'password'   => ['required', 'string', Password::min(6)],
+            'password'   => ['required', 'string', Password::min(8)],
         ]);
 
         $waliKelas = null;

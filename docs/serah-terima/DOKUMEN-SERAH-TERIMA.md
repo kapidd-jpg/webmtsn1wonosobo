@@ -19,8 +19,10 @@ portal sekolah beserta layanan pendukungnya.
 | Source code | GitHub, https://github.com/<akun-client>/webmtsn1wonosobo |
 | Domain | ____________________ |
 
-Fitur utama: pengumuman, jadwal pelajaran, ekstrakurikuler, konten kesiswaan,
-profil sekolah, konseling dari siswa ke guru BK, dashboard per peran, dan
+Fitur utama: pengumuman, jadwal pelajaran, ekstrakurikuler, enam ruang
+kesiswaan (Data Siswa, Kegiatan, Ekstrakurikuler, Layanan Beasiswa dan PIP,
+Kemitraan, dan Giat Lain), profil sekolah, konseling dari siswa ke guru BK,
+dashboard per peran, ubah password mandiri, reset password oleh admin, dan
 asisten AI STELA.
 
 ## 2. Akses dan akun
@@ -43,12 +45,17 @@ chat, atau email.
    - Pengumuman, untuk menambah, mengubah, dan menghapus pengumuman.
    - Jadwal, untuk mengatur jadwal per kelas dan hari.
    - Ekstrakurikuler, untuk menambah kegiatan dan mengunggah banner.
-   - Kesiswaan, untuk menambah konten kesiswaan beserta gambar.
+   - Kesiswaan, untuk mengelola enam ruang layanan siswa beserta ikon, isi
+     halaman detail, tautan, dan gambar.
+   - Akun & Password, untuk melihat daftar akun dan mereset password pengguna.
    - Profil Sekolah, untuk mengubah identitas dan sambutan sekolah.
    - Konseling, untuk melihat pesan siswa dan menandainya sebagai sudah
      ditangani.
 3. Gambar yang diunggah tersimpan di penyimpanan cloud dan tetap ada meskipun
    aplikasi diperbarui.
+4. Setiap pengguna dapat mengganti password sendiri melalui tombol
+   **Ubah Password** di dashboard. Password baru minimal 8 karakter. Jika lupa
+   password, minta admin melakukan reset dari tab **Akun & Password**.
 
 ## 4. Operasional
 

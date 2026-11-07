@@ -1305,6 +1305,42 @@ textarea:focus-visible {
     flex: 0 0 auto;
 }
 
+.admin-list-thumb-icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    padding: 4px;
+    background: var(--bg-alt);
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.6;
+    background: var(--bg-alt);
+    color: var(--primary);
+    vertical-align: baseline;
+}
+
+.role-badge.role-admin {
+    background: #ECE4F7;
+    color: var(--purple-tag);
+}
+
+.role-badge.role-guru_bk {
+    background: #E4EFF7;
+    color: var(--blue-tag);
+}
+
+.role-badge.role-guru {
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+}
+
 .admin-list-item:has(.admin-list-thumb) .admin-list-item-info {
     flex: 1;
     min-width: 0;
@@ -1567,6 +1603,284 @@ textarea:focus-visible {
     object-position: center;
     border-radius: var(--radius-sm);
     margin-bottom: 18px;
+}
+
+/* =========================================================
+   RUANG KESISWAAN — grid kartu + halaman detail
+   Enam "ruang" layanan siswa dengan ikon flat berwarna.
+   ========================================================= */
+
+.ruang-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.ruang-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.ruang-card:hover,
+.ruang-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+}
+
+.ruang-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.ruang-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 26px 20px 22px;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.95), transparent 62%),
+        linear-gradient(135deg, var(--bg-alt) 0%, #FFFFFF 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.ruang-card-icon img {
+    width: 118px;
+    height: 118px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.ruang-card:hover .ruang-card-icon img,
+.ruang-card:focus-visible .ruang-card-icon img {
+    transform: scale(1.06);
+}
+
+.ruang-card-media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+}
+
+.ruang-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
+}
+
+.ruang-card:hover .ruang-card-media img,
+.ruang-card:focus-visible .ruang-card-media img {
+    transform: scale(1.04);
+}
+
+.ruang-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    flex: 1;
+    padding: 22px 24px 24px;
+}
+
+.ruang-number {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent-dark);
+}
+
+.ruang-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.ruang-card p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    max-width: 42ch;
+    flex: 1;
+}
+
+.ruang-enter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.ruang-enter span {
+    transition: transform 0.15s ease;
+}
+
+.ruang-card:hover .ruang-enter span,
+.ruang-card:focus-visible .ruang-enter span {
+    transform: translateX(4px);
+}
+
+/* ---- Halaman detail ruang ---- */
+
+.ruang-detail-hero {
+    position: relative;
+    background: linear-gradient(135deg, #0A332A 0%, var(--primary) 100%);
+    padding: 54px 0 46px;
+    margin-bottom: 40px;
+    overflow: hidden;
+}
+
+.ruang-detail-hero::after {
+    content: "";
+    position: absolute;
+    top: -120px;
+    right: -80px;
+    width: 360px;
+    height: 360px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.ruang-detail-hero[data-ruang="kegiatan"] {
+    background: linear-gradient(135deg, #123A57 0%, #1D5B8A 100%);
+}
+
+.ruang-detail-hero[data-ruang="ekstrakurikuler"] {
+    background: linear-gradient(135deg, #3F2F00 0%, var(--accent) 100%);
+}
+
+.ruang-detail-hero[data-ruang="beasiswa-pip"] {
+    background: linear-gradient(135deg, #2C1D46 0%, var(--purple-tag) 100%);
+}
+
+.ruang-detail-hero[data-ruang="kemitraan"] {
+    background: linear-gradient(135deg, #0A332A 0%, #1D5B8A 100%);
+}
+
+.ruang-detail-head {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.ruang-detail-icon {
+    flex: 0 0 auto;
+    width: 108px;
+    height: 108px;
+    border-radius: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(6px);
+}
+
+.ruang-detail-icon img {
+    width: 78px;
+    height: 78px;
+    object-fit: contain;
+}
+
+.ruang-detail-head .section-label {
+    color: var(--accent-soft);
+    margin-bottom: 6px;
+}
+
+.ruang-detail-head h1 {
+    color: #fff;
+    font-size: 36px;
+    font-weight: 600;
+    margin: 0 0 10px;
+}
+
+.ruang-detail-head p {
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 640px;
+    font-size: 15px;
+}
+
+.ruang-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 28px;
+    align-items: start;
+}
+
+.ruang-detail-body > p {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.75;
+    margin-bottom: 18px;
+}
+
+.ruang-detail-body > p:last-child {
+    margin-bottom: 0;
+}
+
+.ruang-detail-banner {
+    margin-bottom: 26px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.ruang-detail-banner img {
+    width: 100%;
+    max-height: 380px;
+    object-fit: cover;
+}
+
+.ruang-detail-side {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+}
+
+.ruang-detail-side-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 26px 24px;
+}
+
+.ruang-detail-note {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+}
+
+.ruang-locked {
+    margin-top: 26px;
+    padding: 18px 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid #E4D2A8;
+    background: var(--accent-soft);
+}
+
+.ruang-locked strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--accent-dark);
+}
+
+.ruang-locked p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-soft);
 }
 
 /* =========================================================
@@ -2231,6 +2545,17 @@ textarea:focus-visible {
     margin-bottom: 28px;
 }
 
+.dashboard-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dashboard-head-actions form {
+    display: flex;
+}
+
 .dashboard-greeting {
     font-size: 30px;
     font-weight: 600;
@@ -2396,6 +2721,9 @@ textarea:focus-visible {
     .hero { grid-template-columns: 1fr; padding-top: 48px; }
     .quick-grid { grid-template-columns: repeat(2, 1fr); }
     .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    .ruang-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ruang-detail-layout { grid-template-columns: 1fr; }
+    .ruang-detail-side { position: static; }
     .extra-grid { grid-template-columns: repeat(2, 1fr); }
     .two-column { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr; }
@@ -2444,6 +2772,15 @@ textarea:focus-visible {
     .section-heading p { max-width: none; }
 
     .quick-grid, .feature-grid, .extra-grid { grid-template-columns: 1fr; }
+    .ruang-grid { grid-template-columns: 1fr; gap: 18px; }
+    .ruang-card-icon { padding: 22px 18px 18px; }
+    .ruang-card-icon img { width: 96px; height: 96px; }
+    .ruang-detail-hero { padding: 40px 0 34px; margin-bottom: 28px; }
+    .ruang-detail-head { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .ruang-detail-icon { width: 82px; height: 82px; border-radius: 20px; }
+    .ruang-detail-icon img { width: 60px; height: 60px; }
+    .ruang-detail-head h1 { font-size: 26px; }
+    .ruang-detail-head p { font-size: 14px; }
     .exam-summary { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .exam-summary-card { padding: 16px 18px; }
     .exam-summary-card strong { font-size: 26px; }
@@ -2485,6 +2822,10 @@ textarea:focus-visible {
     .admin-tab { flex-shrink: 0; }
     .admin-list-item { flex-direction: column; }
     .admin-list-item-actions { align-self: flex-end; }
+    .dashboard-head-actions { width: 100%; }
+    .dashboard-head-actions .btn,
+    .dashboard-head-actions form { width: 100%; }
+    .dashboard-head-actions form .btn { width: 100%; }
 
     /* STELA AI ASSISTANT */
     .stela-fab { right: 16px; bottom: 16px; width: 54px; height: 54px; font-size: 22px; }

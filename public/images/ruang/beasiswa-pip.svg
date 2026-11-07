@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+    <title id="title">Layanan Beasiswa dan PIP</title>
+    <path d="M60 18L14 39l46 21 46-21-46-21z" fill="#6B4A9E"/>
+    <path d="M33 49v18c0 9.4 12 17 27 17s27-7.6 27-17V49" fill="#795900"/>
+    <path d="M33 49l27 12 27-12v18c0 9.4-12 17-27 17S33 76.4 33 67V49z" fill="#F1E4C6"/>
+    <path d="M88 44v22" stroke="#6B4A9E" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="88" cy="71" r="6" fill="#6B4A9E"/>
+    <circle cx="92" cy="89" r="17" fill="#006B3F"/>
+    <circle cx="92" cy="89" r="12" fill="#A7D7C1"/>
+    <path d="M86 83h8.5a4 4 0 010 8H89a3.5 3.5 0 000 7h8" stroke="#006B3F" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M91 80v18" stroke="#006B3F" stroke-width="3" stroke-linecap="round"/>
+</svg>

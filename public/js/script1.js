@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const navLinks = document.querySelectorAll('.nav-link');
     const targetTriggers = document.querySelectorAll('[data-target]');
+    const userRole = document.body.dataset.userRole || 'guest';
 
     // halaman yang sudah dilewati, dipakai untuk memberi tahu tombol
     // "Kembali" mau balik ke mana (dan untuk mendeteksi arah popstate)
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<span class="page-back-arrow" aria-hidden="true">←</span>' +
                 '<span class="page-back-label">' + BACK_TEXT + '</span>';
 
-            const heroBox = page.querySelector('.page-hero .container');
+            const heroBox = page.querySelector('.page-hero .container, .ruang-detail-hero .container');
             if (heroBox) {
                 heroBox.classList.add('page-hero-top');
                 heroBox.insertBefore(btn, heroBox.firstChild);
@@ -134,7 +135,8 @@ document.addEventListener('DOMContentLoaded', function () {
         nextPage.classList.add('active');
 
         navLinks.forEach(function (link) {
-            link.classList.toggle('active', link.dataset.target === pageName);
+            const isRuangChild = pageName === 'ruang' && link.dataset.target === 'kesiswaan';
+            link.classList.toggle('active', link.dataset.target === pageName || isRuangChild);
         });
 
         scrollPortalTop();
@@ -191,7 +193,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // buka halaman sesuai hash URL saat pertama load (misal portal.com#akademik)
     const initialHash = window.location.hash.replace('#', '');
-    if (initialHash && document.querySelector('.page[data-page="' + initialHash + '"]')) {
+    if (initialHash === 'ruang') {
+        // Detail ruang butuh data dari daftar kesiswaan. Kalau halaman
+        // di-refresh langsung di #ruang, kembalikan ke daftar ruang.
+        goToPage('kesiswaan', 'replace');
+    } else if (initialHash && document.querySelector('.page[data-page="' + initialHash + '"]')) {
         goToPage(initialHash, 'replace');
     }
 
@@ -726,7 +732,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!response.ok) {
             const errorBody = await response.json().catch(function () { return {}; });
-            throw new Error(errorBody.message || 'Terjadi kesalahan pada server.');
+            const firstValidationError = errorBody.errors
+                ? Object.values(errorBody.errors)[0]
+                : null;
+            const validationMessage = Array.isArray(firstValidationError)
+                ? firstValidationError[0]
+                : firstValidationError;
+
+            throw new Error(validationMessage || errorBody.message || 'Terjadi kesalahan pada server.');
         }
 
         if (response.status === 204) return null;
@@ -757,6 +770,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const div = document.createElement('div');
         div.textContent = String(value == null ? '' : value);
         return div.innerHTML;
+    }
+
+    function escapeAttr(value) {
+        return escapeHtml(value).replace(/"/g, '&quot;');
     }
 
     const BULAN_SINGKAT = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -1159,21 +1176,183 @@ const EXTRA_BANNERS = {
 
         grid.innerHTML = kesiswaanData.map(function (item, index) {
             const nomor = String(index + 1).padStart(2, '0');
-            const gambarHtml = item.gambar_url
-                ? '<img src="' + item.gambar_url + '" alt="' + escapeHtml(item.judul) + '" class="feature-card-image">'
-                : '';
+            const iconUrl = ruangIconUrl(item);
+            const mediaHtml = item.gambar_url
+                ? '<div class="ruang-card-media">' +
+                    '<img src="' + escapeAttr(item.gambar_url) + '" alt="' + escapeAttr(item.judul) + '" loading="lazy">' +
+                  '</div>'
+                : '<div class="ruang-card-icon">' +
+                    '<img src="' + escapeAttr(iconUrl) + '" alt="" aria-hidden="true" loading="lazy">' +
+                  '</div>';
 
             return (
-                '<article class="feature-card">' +
-                    gambarHtml +
-                    '<div class="feature-number">' + nomor + '</div>' +
-                    '<h3>' + escapeHtml(item.judul) + '</h3>' +
-                    '<p>' + escapeHtml(item.deskripsi) + '</p>' +
+                '<article class="ruang-card" data-ruang-id="' + escapeAttr(item.id) + '" tabindex="0" role="button" aria-label="Masuk ruang ' + escapeAttr(item.judul) + '">' +
+                    mediaHtml +
+                    '<div class="ruang-card-body">' +
+                        '<span class="ruang-number">RUANG ' + nomor + '</span>' +
+                        '<h3>' + escapeHtml(item.judul) + '</h3>' +
+                        '<p>' + escapeHtml(item.deskripsi) + '</p>' +
+                        '<span class="ruang-enter">Masuk ruang <span aria-hidden="true">→</span></span>' +
+                    '</div>' +
                 '</article>'
             );
         }).join('');
 
-        initScrollReveal('.feature-card');
+        initScrollReveal('.ruang-card');
+    }
+
+    function ruangIconUrl(item) {
+        if (item && item.ikon_url) return item.ikon_url;
+        return assetUrl('images/ruang/' + ((item && item.ikon) || 'default') + '.svg');
+    }
+
+    function assetUrl(path) {
+        return window.location.origin + '/' + String(path).replace(/^\/+/, '');
+    }
+
+    function ruangParagraphs(text) {
+        return String(text || '')
+            .split(/\n{2,}/)
+            .map(function (paragraph) {
+                const trimmed = paragraph.trim();
+                if (!trimmed) return '';
+                return '<p>' + escapeHtml(trimmed).replace(/\n/g, '<br>') + '</p>';
+            })
+            .join('');
+    }
+
+    function openRuang(id) {
+        const item = kesiswaanData.find(function (ruang) {
+            return String(ruang.id) === String(id);
+        });
+
+        if (!item) return;
+
+        renderRuangDetail(item);
+        goToPage('ruang', 'push');
+    }
+
+    function renderRuangDetail(item) {
+        const hero = document.getElementById('ruangDetailHero');
+        const icon = document.getElementById('ruangDetailIcon');
+        const title = document.getElementById('ruangDetailTitle');
+        const desc = document.getElementById('ruangDetailDesc');
+        const body = document.getElementById('ruangDetailBody');
+        const actions = document.getElementById('ruangDetailActions');
+
+        if (hero) hero.dataset.ruang = item.ikon || 'default';
+        if (icon) {
+            icon.src = ruangIconUrl(item);
+            icon.alt = '';
+        }
+        if (title) title.textContent = item.judul;
+        if (desc) desc.textContent = item.deskripsi;
+
+        if (body) {
+            let html = '';
+
+            if (item.gambar_url) {
+                html += '<div class="ruang-detail-banner">' +
+                    '<img src="' + escapeAttr(item.gambar_url) + '" alt="' + escapeAttr(item.judul) + '">' +
+                '</div>';
+            }
+
+            html += ruangParagraphs(item.isi || item.deskripsi);
+
+            if (item.slug === 'data-siswa' && userRole === 'guest') {
+                html += '<div class="ruang-locked">' +
+                    '<strong>Data siswa dilindungi.</strong>' +
+                    '<p>Masuk sebagai guru, guru BK, atau admin untuk membuka daftar siswa. Siswa dapat melihat profilnya sendiri setelah login.</p>' +
+                '</div>';
+            }
+
+            body.innerHTML = html;
+        }
+
+        if (!actions) return;
+
+        let target = item.tautan || '';
+        let label = item.tautan_label || '';
+
+        if (item.slug === 'data-siswa') {
+            if (userRole === 'guest') {
+                target = 'login';
+                label = label || 'Masuk untuk Melihat Data';
+            } else if (userRole === 'siswa') {
+                target = 'profil';
+                label = label || 'Lihat Profil Saya';
+            } else {
+                target = 'guru-dashboard';
+                label = label || 'Buka Data Siswa';
+            }
+        }
+
+        if (!target) {
+            actions.innerHTML = '<p class="ruang-detail-note">Informasi pada ruang ini dapat dibaca langsung. Konten akan diperbarui oleh bagian kesiswaan.</p>';
+            return;
+        }
+
+        if (/^https?:\/\//i.test(target)) {
+            actions.innerHTML =
+                '<a class="btn btn-primary full" href="' + escapeAttr(target) + '" target="_blank" rel="noopener">' +
+                    escapeHtml(label || 'Buka Tautan') +
+                '</a>';
+            return;
+        }
+
+        const fallbackLabels = {
+            home: 'Kembali ke Beranda',
+            kesiswaan: 'Lihat Semua Ruang',
+            ekstra: 'Lihat Ekstrakurikuler',
+            galeri: 'Lihat Galeri Kegiatan',
+            pengumuman: 'Lihat Pengumuman',
+            konseling: 'Buka Konseling',
+            profil: 'Buka Profil Saya',
+            'guru-dashboard': 'Buka Dashboard',
+            login: 'Masuk ke Portal'
+        };
+
+        actions.innerHTML =
+            '<button type="button" class="btn btn-primary full" data-ruang-cta="' + escapeAttr(target) + '">' +
+                escapeHtml(label || fallbackLabels[target] || 'Buka') +
+            '</button>';
+    }
+
+    const kesiswaanGrid = document.getElementById('kesiswaanGrid');
+
+    if (kesiswaanGrid) {
+        kesiswaanGrid.addEventListener('click', function (e) {
+            const card = e.target.closest('[data-ruang-id]');
+            if (card) openRuang(card.dataset.ruangId);
+        });
+
+        kesiswaanGrid.addEventListener('keydown', function (e) {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+
+            const card = e.target.closest('[data-ruang-id]');
+            if (!card) return;
+
+            e.preventDefault();
+            openRuang(card.dataset.ruangId);
+        });
+    }
+
+    const ruangDetailActions = document.getElementById('ruangDetailActions');
+
+    if (ruangDetailActions) {
+        ruangDetailActions.addEventListener('click', function (e) {
+            const btn = e.target.closest('[data-ruang-cta]');
+            if (!btn) return;
+
+            const target = btn.dataset.ruangCta;
+
+            if (target === 'login' || (target === 'guru-dashboard' && userRole === 'guest')) {
+                openModal(loginModal);
+                return;
+            }
+
+            goToPage(target, 'push');
+        });
     }
 
         async function loadExams() {
@@ -1469,8 +1648,8 @@ const EXTRA_BANNERS = {
                 return;
             }
 
-            if (payload.password.length < 6) {
-                showFormNote(createUserForm, 'Password minimal 6 karakter.', 'error');
+            if (payload.password.length < 8) {
+                showFormNote(createUserForm, 'Password minimal 8 karakter.', 'error');
                 return;
             }
 
@@ -1483,12 +1662,216 @@ const EXTRA_BANNERS = {
                 showFormNote(createUserForm, 'Akun berhasil dibuat.', 'success');
                 createUserForm.reset();
                 updateCreateUserFormByRole();
+                loadAccounts();
 
                 if (payload.role === 'siswa') {
                     await loadSiswa();
                 }
             } catch (err) {
                 showFormNote(createUserForm, err.message, 'error');
+            }
+        });
+    }
+
+    /* -----------------------------------------------------
+       6b. KELOLA AKUN & RESET PASSWORD (admin)
+    ----------------------------------------------------- */
+
+    const accountAdminList = document.getElementById('accountAdminList');
+    const accountSearch = document.getElementById('accountSearch');
+    const resetPasswordModal = document.getElementById('resetPasswordModal');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    const resetPasswordName = document.getElementById('resetPasswordName');
+
+    const ROLE_LABELS = {
+        admin: 'Admin',
+        guru_bk: 'Guru BK',
+        guru: 'Guru',
+        siswa: 'Siswa'
+    };
+
+    let accountData = [];
+
+    async function loadAccounts() {
+        if (!accountAdminList) return;
+
+        try {
+            accountData = await apiRequest('/api/akun');
+        } catch (err) {
+            accountAdminList.innerHTML =
+                '<li class="admin-empty">' + escapeHtml(err.message) + '</li>';
+            return;
+        }
+
+        renderAccounts();
+    }
+
+    function renderAccounts() {
+        if (!accountAdminList) return;
+
+        const keyword = (accountSearch ? accountSearch.value : '').trim().toLowerCase();
+
+        const rows = accountData.filter(function (user) {
+            if (!keyword) return true;
+
+            return String(user.name).toLowerCase().indexOf(keyword) !== -1 ||
+                String(user.nis_nip || '').toLowerCase().indexOf(keyword) !== -1;
+        });
+
+        if (rows.length === 0) {
+            accountAdminList.innerHTML = '<li class="admin-empty">Tidak ada akun yang cocok.</li>';
+            return;
+        }
+
+        accountAdminList.innerHTML = rows.map(function (user) {
+            const roleLabel = ROLE_LABELS[user.role] || user.role;
+            const kelas = user.kelas ? ' · Kelas ' + escapeHtml(user.kelas) : '';
+
+            return (
+                '<li class="admin-list-item" data-id="' + escapeAttr(user.id) + '">' +
+                    '<div class="admin-list-item-info">' +
+                        '<strong>' + escapeHtml(user.name) + '</strong>' +
+                        '<span>' + escapeHtml(user.nis_nip || '-') +
+                            ' · <span class="role-badge role-' + escapeAttr(user.role) + '">' +
+                                escapeHtml(roleLabel) +
+                            '</span>' + kelas +
+                        '</span>' +
+                    '</div>' +
+                    '<div class="admin-list-item-actions">' +
+                        '<button type="button" class="edit-btn" data-action="reset">Reset Password</button>' +
+                    '</div>' +
+                '</li>'
+            );
+        }).join('');
+    }
+
+    if (accountSearch) {
+        accountSearch.addEventListener('input', renderAccounts);
+    }
+
+    if (accountAdminList) {
+        accountAdminList.addEventListener('click', function (e) {
+            const btn = e.target.closest('button[data-action="reset"]');
+            if (!btn) return;
+
+            const li = btn.closest('.admin-list-item');
+            const id = li ? li.dataset.id : null;
+            const user = accountData.find(function (row) {
+                return String(row.id) === String(id);
+            });
+
+            if (!user || !resetPasswordForm) return;
+
+            resetPasswordForm.reset();
+            resetPasswordForm.user_id.value = user.id;
+
+            const note = resetPasswordForm.querySelector('.form-note');
+            if (note) note.className = 'form-note';
+
+            if (resetPasswordName) {
+                resetPasswordName.textContent =
+                    'Akun: ' + user.name + ' (' + (ROLE_LABELS[user.role] || user.role) + ')';
+            }
+
+            openModal(resetPasswordModal);
+        });
+    }
+
+    if (resetPasswordForm) {
+        resetPasswordForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const id = resetPasswordForm.user_id.value;
+            const password = resetPasswordForm.password.value;
+
+            if (password.length < 8) {
+                showFormNote(resetPasswordForm, 'Password minimal 8 karakter.', 'error');
+                return;
+            }
+
+            if (password !== resetPasswordForm.password_confirmation.value) {
+                showFormNote(resetPasswordForm, 'Konfirmasi password baru tidak sama.', 'error');
+                return;
+            }
+
+            try {
+                const result = await apiRequest('/api/akun/' + id + '/password', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        password: password,
+                        password_confirmation: resetPasswordForm.password_confirmation.value
+                    })
+                });
+
+                resetPasswordForm.reset();
+                resetPasswordForm.user_id.value = id;
+                showFormNote(resetPasswordForm, result.message || 'Password berhasil direset.', 'success');
+            } catch (err) {
+                showFormNote(resetPasswordForm, err.message, 'error');
+            }
+        });
+    }
+
+    /* -----------------------------------------------------
+       6c. UBAH PASSWORD SENDIRI (semua pengguna login)
+    ----------------------------------------------------- */
+
+    const passwordModal = document.getElementById('passwordModal');
+    const passwordForm = document.getElementById('passwordForm');
+
+    document.querySelectorAll('[data-open-password]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (passwordForm) {
+                passwordForm.reset();
+                const note = passwordForm.querySelector('.form-note');
+                if (note) note.className = 'form-note';
+            }
+            openModal(passwordModal);
+        });
+    });
+
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const current = passwordForm.current_password.value;
+            const password = passwordForm.password.value;
+            const confirmation = passwordForm.password_confirmation.value;
+
+            if (!current) {
+                showFormNote(passwordForm, 'Masukkan password lama terlebih dahulu.', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                showFormNote(passwordForm, 'Password baru minimal 8 karakter.', 'error');
+                return;
+            }
+
+            if (password !== confirmation) {
+                showFormNote(passwordForm, 'Konfirmasi password baru tidak sama.', 'error');
+                return;
+            }
+
+            try {
+                const result = await apiRequest('/api/akun/password', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        current_password: current,
+                        password: password,
+                        password_confirmation: confirmation
+                    })
+                });
+
+                passwordForm.reset();
+                showFormNote(
+                    passwordForm,
+                    (result.message || 'Password berhasil diperbarui.') +
+                        ' Perangkat lain otomatis keluar.',
+                    'success'
+                );
+            } catch (err) {
+                showFormNote(passwordForm, err.message, 'error');
             }
         });
     }
@@ -1511,6 +1894,10 @@ const EXTRA_BANNERS = {
             adminPanels.forEach(function (panel) {
                 panel.classList.toggle('active', panel.dataset.adminPanel === target);
             });
+
+            if (target === 'buat-akun') {
+                loadAccounts();
+            }
         });
     });
 
@@ -2048,11 +2435,16 @@ const EXTRA_BANNERS = {
         }
 
         kesiswaanAdminList.innerHTML = kesiswaanData.map(function (item) {
+            const thumb = item.gambar_url || ruangIconUrl(item);
+
             return (
                 '<li class="admin-list-item" data-id="' + item.id + '">' +
+                    '<img class="admin-list-thumb admin-list-thumb-icon" src="' + escapeAttr(thumb) + '" alt="" loading="lazy">' +
                     '<div class="admin-list-item-info">' +
                         '<strong>' + escapeHtml(item.judul) + '</strong>' +
-                        '<span>Urutan: ' + escapeHtml(item.urutan) + '</span>' +
+                        '<span>Urutan: ' + escapeHtml(item.urutan) +
+                            (item.slug ? ' · /' + escapeHtml(item.slug) : '') +
+                        '</span>' +
                     '</div>' +
                     '<div class="admin-list-item-actions">' +
                         '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
@@ -2081,6 +2473,18 @@ const EXTRA_BANNERS = {
             formData.append('deskripsi', deskripsi);
             if (kesiswaanForm.urutan.value) {
                 formData.append('urutan', kesiswaanForm.urutan.value);
+            }
+            if (kesiswaanForm.ikon) {
+                formData.append('ikon', kesiswaanForm.ikon.value);
+            }
+            if (kesiswaanForm.isi) {
+                formData.append('isi', kesiswaanForm.isi.value.trim());
+            }
+            if (kesiswaanForm.tautan) {
+                formData.append('tautan', kesiswaanForm.tautan.value.trim());
+            }
+            if (kesiswaanForm.tautan_label) {
+                formData.append('tautan_label', kesiswaanForm.tautan_label.value.trim());
             }
             if (kesiswaanForm.gambar.files[0]) {
                 formData.append('gambar', kesiswaanForm.gambar.files[0]);
@@ -2158,6 +2562,10 @@ const EXTRA_BANNERS = {
                 kesiswaanForm.judul.value = item.judul;
                 kesiswaanForm.deskripsi.value = item.deskripsi;
                 kesiswaanForm.urutan.value = item.urutan;
+                if (kesiswaanForm.ikon) kesiswaanForm.ikon.value = item.ikon || '';
+                if (kesiswaanForm.isi) kesiswaanForm.isi.value = item.isi || '';
+                if (kesiswaanForm.tautan) kesiswaanForm.tautan.value = item.tautan || '';
+                if (kesiswaanForm.tautan_label) kesiswaanForm.tautan_label.value = item.tautan_label || '';
 
                 const preview = document.getElementById('kesiswaanImagePreview');
                 if (preview) {
@@ -2753,6 +3161,10 @@ const EXTRA_BANNERS = {
 
     if (siswaAdminList) {
         loadSiswa();
+    }
+
+    if (accountAdminList) {
+        loadAccounts();
     }
 
     if (schoolProfileForm) {

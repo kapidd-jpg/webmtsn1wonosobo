@@ -91,6 +91,10 @@ class WaliKelasListTest extends TestCase
             ->getJson('/api/wali-kelas')
             ->assertForbidden();
 
+        // Ganti pengguna dalam sesi yang sama (middleware auth.session
+        // mengunci sesi ke pengguna pertama).
+        $this->flushSession();
+
         $this->actingAs($this->makeUser('siswa'))
             ->getJson('/api/wali-kelas')
             ->assertForbidden();

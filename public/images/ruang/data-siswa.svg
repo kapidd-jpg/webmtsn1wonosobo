@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+    <title id="title">Data Siswa</title>
+    <rect x="16" y="30" width="88" height="60" rx="14" fill="#006B3F"/>
+    <rect x="16" y="30" width="88" height="19" rx="9.5" fill="#00512F"/>
+    <circle cx="31" cy="39.5" r="3" fill="#F1E4C6"/>
+    <circle cx="40" cy="39.5" r="3" fill="#A7D7C1"/>
+    <rect x="28" y="58" width="28" height="26" rx="8" fill="#E9EDFF"/>
+    <circle cx="42" cy="67" r="5" fill="#006B3F"/>
+    <path d="M33 80c1.6-5 4.8-7.5 9-7.5s7.4 2.5 9 7.5H33z" fill="#006B3F"/>
+    <rect x="64" y="58" width="28" height="5" rx="2.5" fill="#E9EDFF"/>
+    <rect x="64" y="69" width="20" height="5" rx="2.5" fill="#A7D7C1"/>
+    <rect x="64" y="80" width="24" height="5" rx="2.5" fill="#A7D7C1"/>
+</svg>

@@ -9,5 +9,15 @@ class KesiswaanItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['judul', 'deskripsi', 'urutan', 'gambar'];
+    protected $fillable = [
+        'judul',
+        'slug',
+        'deskripsi',
+        'isi',
+        'ikon',
+        'tautan',
+        'tautan_label',
+        'urutan',
+        'gambar',
+    ];
 }

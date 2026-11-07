@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PortalController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\ExtracurricularController;
 use App\Http\Controllers\Api\ScheduleController;
@@ -48,6 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/me', [StudentController::class, 'me']);
     Route::get('/api/jadwal', [ScheduleController::class, 'index']);
     Route::get('/api/ujian', [ExamController::class, 'index']);
+
+    // Ubah password akun sendiri
+    Route::put('/api/akun/password', [AccountController::class, 'updatePassword'])
+        ->middleware('throttle:6,1');
 });
 
 // Ringkasan dashboard guru kesiswaan & guru BK
@@ -86,6 +91,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/api/siswa', [StudentController::class, 'index']);
     Route::put('/api/siswa/{user}', [StudentController::class, 'update']);
+
+    // Kelola akun & reset password — khusus admin
+    Route::get('/api/akun', [AccountController::class, 'index']);
+    Route::put('/api/akun/{user}/password', [AccountController::class, 'resetPassword'])
+        ->middleware('throttle:20,1');
 
     Route::put('/api/profil-sekolah', [SchoolProfileController::class, 'update']);
 });

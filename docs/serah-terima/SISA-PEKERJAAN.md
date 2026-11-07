@@ -1,6 +1,6 @@
 # Sisa Pekerjaan Sebelum Serah Terima
 
-Terakhir diperbarui: 5 November 2026
+Terakhir diperbarui: 7 November 2026
 
 Dokumen ini merangkum pekerjaan yang sudah selesai dan yang masih harus
 dikerjakan sebelum portal diserahkan sepenuhnya ke client.
@@ -18,11 +18,17 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
 - Dokumen dan checklist serah terima sudah dibuat.
 - STELA aktif di production dengan model `gemini-3.6-flash`, dibatasi 20
   permintaan per menit, dan jawaban tidak terpotong lagi.
+- Pengguna dapat mengganti password sendiri dari dashboard. Admin dapat
+  mereset password pengguna lain dari tab **Akun & Password**.
+- Kesiswaan memakai enam ruang dengan ikon: Data Siswa, Kegiatan,
+  Ekstrakurikuler, Layanan Beasiswa dan PIP, Kemitraan, serta Giat Lain. Setiap
+  ruang punya halaman detail.
 
 ## A. Keamanan akun
 
-- [ ] Ganti password admin `admin001`. Password awalnya diberikan terpisah dan
-      akun ini dipakai saat pengujian production.
+- [ ] Ganti password admin `admin001` lewat tombol **Ubah Password** di
+      dashboard. Password awalnya diberikan terpisah dan akun ini dipakai saat
+      pengujian production.
 - [ ] Hapus atau ganti password akun demo berikut. Password-nya mengikuti data
       seeder dan harus dianggap tidak aman.
   - [ ] `ahmad.setiawan@siswa.local`
@@ -31,6 +37,9 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
 - [ ] Rotasi password TiDB karena password lama pernah muncul di chat.
 - [ ] Simpan semua kredensial di password manager client. Catatan akun untuk
       pengembangan disimpan di file terpisah yang tidak di-commit ke GitHub.
+- [ ] Pastikan setiap pengguna memakai password minimal 8 karakter. Jika ada
+      yang lupa password, admin mereset dari tab **Akun & Password**, lalu minta
+      pengguna menggantinya sendiri.
 
 ## B. Data dan backup
 
@@ -40,6 +49,11 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
   - [ ] Ekstrakurikuler
   - [ ] Konten kesiswaan
   - [ ] Profil sekolah
+- [ ] Terapkan migrasi ruang kesiswaan di production, lalu jalankan seeder:
+      `php artisan migrate --force` dan
+      `php artisan db:seed --class=KesiswaanSeeder --force`.
+- [ ] Hapus item kesiswaan lama yang tidak termasuk enam ruang agar portal tidak
+      menampilkan sepuluh kartu.
 - [ ] Pindahkan dump SQL dari folder sementara laptop ke Google Drive client.
       Lokasi saat ini:
       `C:\Users\Khafidz\AppData\Local\Temp\opencode\` berisi

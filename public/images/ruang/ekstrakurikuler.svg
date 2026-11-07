@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+    <title id="title">Ekstrakurikuler</title>
+    <path d="M42 20h36v16c0 12.2-8.1 22-18 22s-18-9.8-18-22V20z" fill="#795900"/>
+    <path d="M42 27H30c-3.3 0-6 2.7-6 6 0 9.4 7.6 17 17 17h3" stroke="#795900" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M78 27h12c3.3 0 6 2.7 6 6 0 9.4-7.6 17-17 17h-3" stroke="#795900" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M60 30l3.2 6.5 7.2 1-5.2 5.1 1.2 7.2L60 46.4l-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1L60 30z" fill="#F1E4C6"/>
+    <rect x="54" y="56" width="12" height="17" rx="4" fill="#006B3F"/>
+    <rect x="40" y="72" width="40" height="12" rx="6" fill="#006B3F"/>
+    <rect x="46" y="84" width="28" height="8" rx="4" fill="#00512F"/>
+    <circle cx="28" cy="24" r="4" fill="#F1E4C6"/>
+    <circle cx="95" cy="39" r="3" fill="#A7D7C1"/>
+    <circle cx="89" cy="20" r="2.5" fill="#F1E4C6"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+    <title id="title">Kegiatan</title>
+    <rect x="18" y="26" width="84" height="72" rx="14" fill="#1D5B8A"/>
+    <path d="M18 40c0-7.7 6.3-14 14-14h56c7.7 0 14 6.3 14 14v9H18v-9z" fill="#154869"/>
+    <rect x="34" y="18" width="7" height="17" rx="3.5" fill="#006B3F"/>
+    <rect x="79" y="18" width="7" height="17" rx="3.5" fill="#006B3F"/>
+    <rect x="31" y="57" width="17" height="17" rx="5" fill="#E9EDFF"/>
+    <rect x="52" y="57" width="17" height="17" rx="5" fill="#E9EDFF"/>
+    <rect x="73" y="57" width="17" height="17" rx="5" fill="#F1E4C6"/>
+    <path d="M36 65.5l3 3 5.5-6" stroke="#006B3F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M57 65.5l3 3 5.5-6" stroke="#006B3F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="81.5" cy="65.5" r="4" fill="#795900"/>
+    <rect x="31" y="80" width="44" height="6" rx="3" fill="#A7C7E7"/>
+    <rect x="31" y="90" width="28" height="6" rx="3" fill="#A7C7E7"/>
+</svg>

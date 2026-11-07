@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{{ asset('css/portal.css') }}">
 </head>
 
-<body>
+<body data-user-role="{{ auth()->check() ? auth()->user()->role : 'guest' }}">
 
     <!-- =====================================================
          NAVBAR
@@ -619,8 +619,9 @@
                     </h1>
 
                     <p>
-                        Informasi kegiatan, organisasi,
-                        dan layanan siswa.
+                        Enam ruang layanan siswa: data siswa,
+                        kegiatan, ekstrakurikuler, beasiswa dan PIP,
+                        kemitraan, serta giat lain.
                     </p>
 
                 </div>
@@ -630,7 +631,72 @@
 
             <div class="container page-content">
 
-                <div class="feature-grid" id="kesiswaanGrid"></div>
+                <div class="ruang-grid" id="kesiswaanGrid"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             DETAIL RUANG KESISWAAN
+        ================================================== -->
+
+        <section
+            class="page"
+            data-page="ruang">
+
+            <div class="ruang-detail-hero" id="ruangDetailHero">
+
+                <div class="container">
+
+                    <div class="ruang-detail-head">
+
+                        <div class="ruang-detail-icon">
+                            <img id="ruangDetailIcon" src="" alt="">
+                        </div>
+
+                        <div>
+                            <span class="section-label">
+                                RUANG KESISWAAN
+                            </span>
+
+                            <h1 id="ruangDetailTitle">
+                                Ruang Kesiswaan
+                            </h1>
+
+                            <p id="ruangDetailDesc"></p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="container page-content">
+
+                <div class="ruang-detail-layout">
+
+                    <article class="content-card ruang-detail-body" id="ruangDetailBody"></article>
+
+                    <aside class="ruang-detail-side">
+
+                        <div class="ruang-detail-side-card">
+
+                            <span class="card-label">
+                                AKSES RUANG
+                            </span>
+
+                            <div id="ruangDetailActions"></div>
+
+                        </div>
+
+                    </aside>
+
+                </div>
 
             </div>
 
@@ -818,14 +884,25 @@
                         </p>
                     </div>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
+                    <div class="dashboard-head-actions">
+
                         <button
-                            type="submit"
-                            class="btn btn-secondary">
-                            Keluar Akun
+                            type="button"
+                            class="btn btn-secondary"
+                            data-open-password>
+                            Ubah Password
                         </button>
-                    </form>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="btn btn-secondary">
+                                Keluar Akun
+                            </button>
+                        </form>
+
+                    </div>
 
                 </div>
 
@@ -976,14 +1053,25 @@
                         </p>
                     </div>
 
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
+                    <div class="dashboard-head-actions">
+
                         <button
-                            type="submit"
-                            class="btn btn-secondary">
-                            Keluar Akun
+                            type="button"
+                            class="btn btn-secondary"
+                            data-open-password>
+                            Ubah Password
                         </button>
-                    </form>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="btn btn-secondary">
+                                Keluar Akun
+                            </button>
+                        </form>
+
+                    </div>
 
                 </div>
 
@@ -1083,7 +1171,7 @@
                             type="button"
                             class="admin-tab"
                             data-admin-tab="buat-akun">
-                            Buat Akun
+                            Akun & Password
                         </button>
                     @endif
 
@@ -1405,6 +1493,38 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label>Ikon Ruang</label>
+                                    <select name="ikon">
+                                        <option value="">Ikon bawaan (rumah)</option>
+                                        <option value="data-siswa">Data Siswa</option>
+                                        <option value="kegiatan">Kegiatan</option>
+                                        <option value="ekstrakurikuler">Ekstrakurikuler</option>
+                                        <option value="beasiswa-pip">Beasiswa dan PIP</option>
+                                        <option value="kemitraan">Kemitraan</option>
+                                        <option value="giat-lain">Giat Lain</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Isi Ruang (halaman detail)</label>
+                                    <textarea name="isi" rows="6" placeholder="Tulis penjelasan lengkap ruang di sini. Pisahkan paragraf dengan satu baris kosong."></textarea>
+                                </div>
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Tautan Tombol (opsional)</label>
+                                        <input type="text" name="tautan" placeholder="Contoh: ekstra, galeri, atau https://...">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Label Tombol (opsional)</label>
+                                        <input type="text" name="tautan_label" placeholder="Contoh: Lihat Ekstrakurikuler">
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
                                     <label>Foto (opsional)</label>
                                     <input type="file" name="gambar" accept="image/*">
                                     <img id="kesiswaanImagePreview" src="" alt="" style="display:none; margin-top:10px; max-width:160px; border-radius:8px;">
@@ -1701,59 +1821,87 @@
 
 
                 @if (auth()->user()->role === 'admin')
-                <!-- PANEL: BUAT AKUN (khusus admin) -->
+                <!-- PANEL: AKUN & PASSWORD (khusus admin) -->
                 <div class="admin-panel" data-admin-panel="buat-akun">
 
-                    <div class="content-card">
+                    <div class="two-column">
 
-                        <span class="card-label">AKUN BARU</span>
-                        <h2>Buat Akun Siswa / Guru / Guru BK</h2>
+                        <div class="content-card">
 
-                        <form id="createUserForm" style="margin-top: 20px;">
+                            <span class="card-label">AKUN BARU</span>
+                            <h2>Buat Akun Pengguna</h2>
 
-                            <div class="admin-form-row">
+                            <form id="createUserForm" style="margin-top: 20px;">
 
-                                <div class="form-group">
-                                    <label>Nama Lengkap</label>
-                                    <input type="text" name="name" placeholder="Contoh: Budi Santoso" required>
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label>Nama Lengkap</label>
+                                        <input type="text" name="name" placeholder="Contoh: Budi Santoso" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Role</label>
+                                        <select name="role" id="createUserRole" required>
+                                            <option value="siswa">Siswa</option>
+                                            <option value="guru">Guru</option>
+                                            <option value="guru_bk">Guru BK</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="admin-form-row">
+
+                                    <div class="form-group">
+                                        <label id="createUserNisNipLabel">NIS</label>
+                                        <input type="text" name="nis_nip" placeholder="Contoh: 20240002" required>
+                                    </div>
+
+                                    <div class="form-group" id="createUserKelasGroup">
+                                        <label>Kelas</label>
+                                        <input type="text" name="kelas" placeholder="Contoh: IX B">
+                                    </div>
+
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Role</label>
-                                    <select name="role" id="createUserRole" required>
-                                        <option value="siswa">Siswa</option>
-                                        <option value="guru">Guru</option>
-                                        <option value="guru_bk">Guru BK</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
+                                    <label>Password Awal</label>
+                                    <input type="password" name="password" placeholder="Minimal 8 karakter" required minlength="8">
                                 </div>
 
-                            </div>
-
-                            <div class="admin-form-row">
-
-                                <div class="form-group">
-                                    <label id="createUserNisNipLabel">NIS</label>
-                                    <input type="text" name="nis_nip" placeholder="Contoh: 20240002" required>
+                                <div class="admin-form-actions">
+                                    <button type="submit" class="btn btn-primary">Buat Akun</button>
                                 </div>
 
-                                <div class="form-group" id="createUserKelasGroup">
-                                    <label>Kelas</label>
-                                    <input type="text" name="kelas" placeholder="Contoh: IX B">
-                                </div>
+                            </form>
 
-                            </div>
+                        </div>
+
+
+                        <div class="content-card">
+
+                            <span class="card-label">DAFTAR AKUN</span>
+                            <h2>Kelola Akun & Password</h2>
+                            <p>
+                                Reset password jika pengguna lupa password.
+                                Pengguna juga dapat mengganti password sendiri
+                                dari dashboard masing-masing.
+                            </p>
 
                             <div class="form-group">
-                                <label>Password Awal</label>
-                                <input type="password" name="password" placeholder="Minimal 6 karakter" required minlength="6">
+                                <input
+                                    type="search"
+                                    id="accountSearch"
+                                    placeholder="Cari nama atau NIS/NIP...">
                             </div>
 
-                            <div class="admin-form-actions">
-                                <button type="submit" class="btn btn-primary">Buat Akun</button>
-                            </div>
+                            <ul class="admin-list" id="accountAdminList">
+                                <li class="admin-empty">Memuat akun...</li>
+                            </ul>
 
-                        </form>
+                        </div>
 
                     </div>
 
@@ -1959,6 +2107,159 @@
         </div>
 
     </div>
+
+
+
+    <!-- =====================================================
+         MODAL UBAH PASSWORD
+    ====================================================== -->
+
+    @auth
+    <div
+        class="modal"
+        id="passwordModal">
+
+        <div class="modal-box">
+
+            <button
+                type="button"
+                class="modal-close"
+                aria-label="Tutup">
+                ×
+            </button>
+
+            <span class="section-label">
+                KEAMANAN AKUN
+            </span>
+
+            <h2>
+                Ubah Password
+            </h2>
+
+            <p>
+                Gunakan password lama untuk memastikan perubahan
+                dilakukan oleh pemilik akun.
+            </p>
+
+            <form id="passwordForm">
+
+                <div class="form-group">
+                    <label>Password Lama</label>
+                    <input
+                        type="password"
+                        name="current_password"
+                        placeholder="Masukkan password lama"
+                        autocomplete="current-password"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Minimal 8 karakter"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label>Konfirmasi Password Baru</label>
+                    <input
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Ulangi password baru"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary full">
+                    Simpan Password
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+    @endauth
+
+
+
+    <!-- =====================================================
+         MODAL RESET PASSWORD (ADMIN)
+    ====================================================== -->
+
+    @auth
+    @if (auth()->user()->role === 'admin')
+    <div
+        class="modal"
+        id="resetPasswordModal">
+
+        <div class="modal-box">
+
+            <button
+                type="button"
+                class="modal-close"
+                aria-label="Tutup">
+                ×
+            </button>
+
+            <span class="section-label">
+                RESET PASSWORD
+            </span>
+
+            <h2>
+                Reset Password Pengguna
+            </h2>
+
+            <p id="resetPasswordName">
+                Tentukan password baru untuk akun ini.
+            </p>
+
+            <form id="resetPasswordForm">
+
+                <input type="hidden" name="user_id">
+
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Minimal 8 karakter"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label>Konfirmasi Password Baru</label>
+                    <input
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Ulangi password baru"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required>
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary full">
+                    Reset Password
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+    @endif
+    @endauth
 
 
 

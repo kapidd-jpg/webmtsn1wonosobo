@@ -23,4 +23,7 @@ yarn-error.log
 # Catatan akun berisi kredensial, jangan di-commit
 docs/serah-terima/AKUN.md
 
+# README.txt berisi data pribadi anggota, hanya untuk unggahan Google Drive
+/README.txt
+
 .vercel

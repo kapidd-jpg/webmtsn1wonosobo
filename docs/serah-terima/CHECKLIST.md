@@ -10,9 +10,10 @@ waktu tunggu perpindahan akun.
 
 ## Fase A: Bersihkan akun dan data
 
-- [ ] Login sebagai admin, lalu ganti password akun `admin001`. Password awal
-      diberikan terpisah dan tidak dicatat di dokumen ini. Catat password baru
-      di file akun yang tidak di-commit.
+- [ ] Login sebagai admin, lalu ganti password akun `admin001` lewat tombol
+      **Ubah Password** di dashboard. Password awal diberikan terpisah dan tidak
+      dicatat di dokumen ini. Catat password baru di file akun yang tidak
+      di-commit. Password baru minimal 8 karakter.
 - [ ] Buat akun admin baru untuk client, lalu nonaktifkan atau ganti nama akun
       `admin001`.
 - [ ] Ganti atau hapus akun demo berikut. Password-nya mengikuti data seeder
@@ -23,6 +24,9 @@ waktu tunggu perpindahan akun.
 - [ ] Hapus data contoh yang tidak dipakai (pengumuman, jadwal,
       ekstrakurikuler, kesiswaan, konseling), atau ganti dengan data asli
       sekolah.
+- [ ] Pastikan ruang kesiswaan berjumlah enam: Data Siswa, Kegiatan,
+      Ekstrakurikuler, Layanan Beasiswa dan PIP, Kemitraan, serta Giat Lain.
+      Hapus item kesiswaan lama yang tidak termasuk enam ruang tersebut.
 - [ ] Perbarui profil sekolah: nama, alamat, kontak, dan sambutan kepala
       sekolah.
 - [ ] Pastikan tidak ada data pribadi siswa yang belum diverifikasi.
@@ -81,6 +85,13 @@ Lakukan dari akun client.
 - [ ] Deploy percobaan dari repositori client: ubah satu baris dokumen, push,
       lalu pastikan status Ready.
 - [ ] Login admin berhasil.
+- [ ] Uji tombol **Ubah Password** dari dashboard siswa, guru, guru BK, dan
+      admin. Pastikan password lama salah ditolak dan password baru minimal
+      8 karakter.
+- [ ] Uji reset password dari tab **Akun & Password** sebagai admin, lalu login
+      memakai password hasil reset.
+- [ ] Buka halaman Kesiswaan, pastikan enam ruang tampil dengan ikon dan setiap
+      kartu membuka halaman detailnya.
 - [ ] Tambah pengumuman, jadwal, ekstrakurikuler, dan kesiswaan, lalu pastikan
       tampil di portal.
 - [ ] Unggah banner ekstrakurikuler, pastikan gambar muncul dan URL bisa
@@ -104,6 +115,20 @@ Lakukan dari akun client.
       kecuali ada kontrak maintenance.
 
 ## Lampiran A: Perintah operasional
+
+### Terapkan perubahan skema dan data ruang kesiswaan
+
+Vercel tidak menjalankan migrasi otomatis. Setelah deploy yang memuat fitur
+ruang kesiswaan, jalankan perintah berikut terhadap database production:
+
+```powershell
+php artisan migrate --force
+php artisan db:seed --class=KesiswaanSeeder --force
+```
+
+Seeder memakai `firstOrCreate` berdasarkan slug, jadi aman dijalankan ulang.
+Setelah itu buka portal dan hapus item kesiswaan lama yang bukan bagian dari
+enam ruang melalui dashboard admin.
 
 ### Backup database
 

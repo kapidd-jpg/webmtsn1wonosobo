@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title">
+    <title id="title">Kemitraan</title>
+    <path d="M12 58h22l12 10" stroke="#006B3F" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M108 58H86L74 68" stroke="#1D5B8A" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M44 50c5-4.5 10.5-4.5 15.5.5l12 12c3.4 3.4 3.4 8.6 0 12-3.3 3.3-8.4 3.4-11.8.3l-8.2-7.4" stroke="#795900" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M76 50c-5-4.5-10.5-4.5-15.5.5" stroke="#795900" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M60 26c-4.5-7-15-4.5-15 3 0 6.5 9.5 12.5 15 16 5.5-3.5 15-9.5 15-16 0-7.5-10.5-10-15-3z" fill="#E9EDFF"/>
+    <path d="M60 30c-2.7-4.2-9-2.7-9 1.8 0 3.9 5.7 7.5 9 9.6 3.3-2.1 9-5.7 9-9.6 0-4.5-6.3-6-9-1.8z" fill="#6B4A9E"/>
+</svg>
