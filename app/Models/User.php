@@ -82,6 +82,20 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    /**
+     * Guru kesiswaan boleh mengubah isi ruang kesiswaan, tetapi tidak
+     * boleh menghapus ruang (tetap khusus admin).
+     */
+    public function canManageKesiswaan(): bool
+    {
+        return in_array($this->role, ['guru', 'admin'], true);
+    }
+
+    public function canManageAnnouncements(): bool
+    {
+        return in_array($this->role, ['guru', 'admin'], true);
+    }
+
     public function canManageKonseling(): bool
     {
         return in_array($this->role, ['guru_bk', 'admin'], true);

@@ -66,11 +66,20 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/api/wali-kelas', [StudentController::class, 'waliKelasList']);
 });
 
-// Kelola konten portal — khusus admin
-Route::middleware(['auth', 'role:admin'])->group(function () {
+// Kelola pengumuman & ruang kesiswaan — guru kesiswaan + admin
+Route::middleware(['auth', 'role:guru,admin'])->group(function () {
     Route::post('/api/pengumuman', [AnnouncementController::class, 'store']);
     Route::put('/api/pengumuman/{announcement}', [AnnouncementController::class, 'update']);
     Route::delete('/api/pengumuman/{announcement}', [AnnouncementController::class, 'destroy']);
+
+    Route::post('/api/kesiswaan', [KesiswaanController::class, 'store']);
+    Route::put('/api/kesiswaan/{kesiswaanItem}', [KesiswaanController::class, 'update']);
+});
+
+// Kelola konten lain — khusus admin
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Hapus ruang tetap khusus admin agar struktur enam ruang tidak rusak.
+    Route::delete('/api/kesiswaan/{kesiswaanItem}', [KesiswaanController::class, 'destroy']);
 
     Route::post('/api/ekstrakurikuler', [ExtracurricularController::class, 'store']);
     Route::put('/api/ekstrakurikuler/{extracurricular}', [ExtracurricularController::class, 'update']);
@@ -80,10 +89,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/api/jadwal', [ScheduleController::class, 'store']);
     Route::put('/api/jadwal/{schedule}', [ScheduleController::class, 'update']);
     Route::delete('/api/jadwal/{schedule}', [ScheduleController::class, 'destroy']);
-
-    Route::post('/api/kesiswaan', [KesiswaanController::class, 'store']);
-    Route::put('/api/kesiswaan/{kesiswaanItem}', [KesiswaanController::class, 'update']);
-    Route::delete('/api/kesiswaan/{kesiswaanItem}', [KesiswaanController::class, 'destroy']);
 
     Route::post('/api/ujian', [ExamController::class, 'store']);
     Route::put('/api/ujian/{exam}', [ExamController::class, 'update']);

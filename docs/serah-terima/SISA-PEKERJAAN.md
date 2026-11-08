@@ -23,6 +23,9 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
 - Kesiswaan memakai enam ruang dengan ikon: Data Siswa, Kegiatan,
   Ekstrakurikuler, Layanan Beasiswa dan PIP, Kemitraan, serta Giat Lain. Setiap
   ruang punya halaman detail.
+- Guru kesiswaan dapat mengubah isi ruang Kesiswaan dan mengelola pengumuman
+  dari dashboard. Hapus ruang, jadwal, ekstrakurikuler, ujian, kelola siswa,
+  profil sekolah, dan akun tetap khusus admin.
 
 ## A. Keamanan akun
 

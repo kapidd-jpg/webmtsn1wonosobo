@@ -92,8 +92,14 @@ Lakukan dari akun client.
       memakai password hasil reset.
 - [ ] Buka halaman Kesiswaan, pastikan enam ruang tampil dengan ikon dan setiap
       kartu membuka halaman detailnya.
-- [ ] Tambah pengumuman, jadwal, ekstrakurikuler, dan kesiswaan, lalu pastikan
-      tampil di portal.
+- [ ] Tambah pengumuman, jadwal, ekstrakurikuler, dan kesiswaan sebagai admin,
+      lalu pastikan tampil di portal.
+- [ ] Login sebagai guru kesiswaan: pastikan menu Kesiswaan terlihat dan
+      dashboard hanya menampilkan tab **Pengumuman** dan **Kesiswaan**.
+- [ ] Sebagai guru kesiswaan, ubah isi satu ruang dan tambah pengumuman.
+      Pastikan berhasil, tetapi tombol Hapus ruang tidak muncul.
+- [ ] Sebagai guru kesiswaan, pastikan tab Jadwal, Ekstrakurikuler, Ujian,
+      Kelola Siswa, Profil Sekolah, dan Akun & Password tidak terlihat.
 - [ ] Unggah banner ekstrakurikuler, pastikan gambar muncul dan URL bisa
       dibuka.
 - [ ] Unggah gambar kesiswaan, pastikan gambar muncul dan URL bisa dibuka.

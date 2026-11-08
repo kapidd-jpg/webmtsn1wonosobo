@@ -79,7 +79,7 @@
                     Ekstra
                 </button>
 
-                @unless (auth()->check() && in_array(auth()->user()->role, ['guru', 'guru_bk'], true))
+                @unless (auth()->check() && auth()->user()->role === 'guru_bk')
                     <button
                         type="button"
                         class="nav-link"
@@ -1103,17 +1103,72 @@
                 </div>
                 @endif
 
-                @if (auth()->user()->canManageContent() || auth()->user()->canManageKonseling() || auth()->user()->role === 'admin')
+                @if (auth()->user()->role === 'guru')
+                    <!-- RINGKASAN WALI KELAS & SISWA (guru kesiswaan) -->
+                    <div class="content-card guru-wali-card">
+                        <span class="card-label">DAFTAR WALI KELAS</span>
+                        <h2>Wali Kelas per Kelas</h2>
+                        <p>Ringkasan wali kelas untuk setiap kelas yang memiliki siswa.</p>
+
+                        <div class="schedule-table-wrap">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kelas</th>
+                                        <th>Wali Kelas</th>
+                                        <th>Jumlah Siswa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="waliKelasList">
+                                    <tr>
+                                        <td colspan="4" class="konseling-empty">Memuat data wali kelas...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="content-card guru-siswa-card">
+                        <span class="card-label">DATA SISWA</span>
+                        <h2>Daftar Siswa dan Kelas</h2>
+                        <p>Informasi siswa, kelas, wali kelas, dan ekstrakurikuler yang diikuti.</p>
+
+                        <div class="schedule-table-wrap">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Nama</th>
+                                        <th>NIS</th>
+                                        <th>Kelas</th>
+                                        <th>Wali Kelas</th>
+                                        <th>Ekstrakurikuler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="guruSiswaList">
+                                    <tr>
+                                        <td colspan="6" class="konseling-empty">Memuat data siswa...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
+                @if (auth()->user()->canManageAnnouncements() || auth()->user()->canManageKesiswaan() || auth()->user()->canManageContent() || auth()->user()->canManageKonseling())
                 <div class="admin-tabs">
 
-                    @if (auth()->user()->canManageContent())
+                    @if (auth()->user()->canManageAnnouncements())
                         <button
                             type="button"
                             class="admin-tab {{ auth()->user()->role !== 'guru_bk' ? 'active' : '' }}"
                             data-admin-tab="pengumuman">
                             Pengumuman
                         </button>
+                    @endif
 
+                    @if (auth()->user()->canManageContent())
                         <button
                             type="button"
                             class="admin-tab"
@@ -1127,14 +1182,18 @@
                             data-admin-tab="ekstra">
                             Ekstrakurikuler
                         </button>
+                    @endif
 
+                    @if (auth()->user()->canManageKesiswaan())
                         <button
                             type="button"
                             class="admin-tab"
                             data-admin-tab="kesiswaan">
                             Kesiswaan
                         </button>
+                    @endif
 
+                    @if (auth()->user()->canManageContent())
                         <button
                             type="button"
                             class="admin-tab"
@@ -1178,62 +1237,8 @@
                 </div>
                 @endif
 
-                @if (auth()->user()->role === 'guru')
-                    <!-- DAFTAR WALI KELAS (guru kesiswaan) -->
-                    <div class="content-card guru-wali-card">
-                        <span class="card-label">DAFTAR WALI KELAS</span>
-                        <h2>Wali Kelas per Kelas</h2>
-                        <p>Ringkasan wali kelas untuk setiap kelas yang memiliki siswa.</p>
 
-                        <div class="schedule-table-wrap">
-                            <table class="schedule-table">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Kelas</th>
-                                        <th>Wali Kelas</th>
-                                        <th>Jumlah Siswa</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="waliKelasList">
-                                    <tr>
-                                        <td colspan="4" class="konseling-empty">Memuat data wali kelas...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- DAFTAR SISWA (guru kesiswaan) -->
-                    <div class="content-card guru-siswa-card">
-                        <span class="card-label">DATA SISWA</span>
-                        <h2>Daftar Siswa dan Kelas</h2>
-                        <p>Informasi siswa, kelas, wali kelas, dan ekstrakurikuler yang diikuti.</p>
-
-                        <div class="schedule-table-wrap">
-                            <table class="schedule-table">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>NIS</th>
-                                        <th>Kelas</th>
-                                        <th>Wali Kelas</th>
-                                        <th>Ekstrakurikuler</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="guruSiswaList">
-                                    <tr>
-                                        <td colspan="6" class="konseling-empty">Memuat data siswa...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @endif
-
-
-                @if (auth()->user()->canManageContent())
+                @if (auth()->user()->canManageAnnouncements())
                 <!-- PANEL: PENGUMUMAN -->
                 <div class="admin-panel {{ auth()->user()->role !== 'guru_bk' ? 'active' : '' }}" data-admin-panel="pengumuman">
 
@@ -1289,8 +1294,10 @@
                     </div>
 
                 </div>
+                @endif
 
 
+                @if (auth()->user()->canManageContent())
                 <!-- PANEL: JADWAL -->
                 <div class="admin-panel" data-admin-panel="jadwal">
 
@@ -1459,8 +1466,10 @@
                     </div>
 
                 </div>
+                @endif
 
 
+                @if (auth()->user()->canManageKesiswaan())
                 <!-- PANEL: KESISWAAN -->
                 <div class="admin-panel" data-admin-panel="kesiswaan">
 
@@ -1549,8 +1558,10 @@
                     </div>
 
                 </div>
+                @endif
 
 
+                @if (auth()->user()->canManageContent())
                 <!-- PANEL: UJIAN -->
                 <div class="admin-panel" data-admin-panel="ujian">
 
@@ -1975,7 +1986,7 @@
                     Informasi
                 </h4>
 
-                @unless (auth()->check() && in_array(auth()->user()->role, ['guru', 'guru_bk'], true))
+                @unless (auth()->check() && auth()->user()->role === 'guru_bk')
                     <button data-target="kesiswaan">
                         Kesiswaan
                     </button>

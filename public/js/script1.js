@@ -2448,7 +2448,9 @@ const EXTRA_BANNERS = {
                     '</div>' +
                     '<div class="admin-list-item-actions">' +
                         '<button type="button" class="edit-btn" data-action="edit">Edit</button>' +
-                        '<button type="button" class="delete-btn" data-action="delete">Hapus</button>' +
+                        (userRole === 'admin'
+                            ? '<button type="button" class="delete-btn" data-action="delete">Hapus</button>'
+                            : '') +
                     '</div>' +
                 '</li>'
             );
