@@ -16,8 +16,9 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
   bersih.
 - `.env.example` sudah memuat variabel TiDB, TLS, Blob, dan Gemini.
 - Dokumen dan checklist serah terima sudah dibuat.
-- STELA aktif di production dengan model `gemini-3.6-flash`, dibatasi 20
-  permintaan per menit, dan jawaban tidak terpotong lagi.
+- STELA aktif di production dengan model `gemini-3.5-flash-lite` dan model
+  cadangan (`gemini-3.1-flash-lite`, `gemini-2.5-flash-lite`), dibatasi 20
+  permintaan per menit, serta otomatis mencoba ulang saat Gemini kena 503/429.
 - Pengguna dapat mengganti password sendiri dari dashboard. Admin dapat
   mereset password pengguna lain dari tab **Akun & Password**.
 - Kesiswaan memakai enam ruang dengan ikon: Data Siswa, Kegiatan,
@@ -108,10 +109,10 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
       jawaban lengkap.
 - [x] Teks sampah pada konteks prompt sudah dihapus.
 - [x] Rate limit 20 permintaan per menit per IP sudah aktif.
-- [x] Model, batas panjang jawaban, dan pengaturan thinking bisa diatur lewat
-      `GEMINI_MODEL`, `GEMINI_MAX_OUTPUT_TOKENS`, dan
-      `GEMINI_THINKING_BUDGET`.
-- [x] Thinking dimatikan agar jawaban tidak terpotong.
+- [x] Model, model cadangan, batas panjang jawaban, dan pengaturan thinking bisa
+      diatur lewat `GEMINI_MODEL`, `GEMINI_FALLBACK_MODELS`,
+      `GEMINI_MAX_OUTPUT_TOKENS`, dan `GEMINI_THINKING_LEVEL`.
+- [x] STELA mencoba ulang dan pindah model saat Gemini balas 503/429.
 - [x] Semua bagian jawaban Gemini digabungkan. Sebelumnya hanya bagian pertama
       yang diambil, sehingga balasan tampak terpotong.
 - [ ] Rotasi API key sebelum serah terima. Key yang dipakai sekarang pernah

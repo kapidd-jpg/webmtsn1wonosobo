@@ -112,7 +112,7 @@ penyimpanan lokal saat dijalankan tanpa token.
 | Database produksi | TiDB Cloud (kompatibel MySQL, region Singapore) |
 | Hosting | Vercel dengan `vercel-php` |
 | Penyimpanan gambar | Vercel Blob (akses publik) |
-| Asisten AI | Google Gemini, model `gemini-3.6-flash` |
+| Asisten AI | Google Gemini, model `gemini-3.5-flash-lite` (plus model cadangan) |
 | Autentikasi | Session Laravel dengan middleware peran |
 
 Catatan: aset CSS dan JavaScript dimuat langsung dari `public/`, sehingga
@@ -217,9 +217,10 @@ Seluruh variabel dasar tersedia di `.env.example`. Nilai rahasia hanya diisi di
 | `BLOB_READ_WRITE_TOKEN` | Token Vercel Blob untuk menyimpan gambar |
 | `BLOB_ACCESS` | Akses blob, gunakan `public` |
 | `GEMINI_API_KEY` | API key STELA dari Google AI Studio |
-| `GEMINI_MODEL` | Opsional, default `gemini-3.6-flash` |
+| `GEMINI_MODEL` | Opsional, default `gemini-3.5-flash-lite` |
+| `GEMINI_FALLBACK_MODELS` | Opsional, daftar model cadangan dipisah koma saat model utama kena 503/429 |
 | `GEMINI_MAX_OUTPUT_TOKENS` | Opsional, default `2048` |
-| `GEMINI_THINKING_BUDGET` | Opsional, default `0` agar jawaban tidak terpotong |
+| `GEMINI_THINKING_LEVEL` | Opsional untuk model 3.x (`minimal`, `low`, `medium`, `high`); kosongkan untuk default |
 | `SESSION_SECURE_COOKIE` | `true` di production |
 
 ## Deploy ke Vercel

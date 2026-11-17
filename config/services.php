@@ -33,10 +33,16 @@ return [
 
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL', 'gemini-3.6-flash'),
+        // Flash-lite lebih ringan dan jauh lebih jarang kena 503 "high demand".
+        'model' => env('GEMINI_MODEL', 'gemini-3.5-flash-lite'),
+        'fallback_models' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('GEMINI_FALLBACK_MODELS', 'gemini-3.1-flash-lite,gemini-2.5-flash-lite'))
+        ))),
         'max_output_tokens' => (int) env('GEMINI_MAX_OUTPUT_TOKENS', 2048),
-        // 0 = matikan "thinking" agar jawaban tidak terpotong oleh token berpikir.
-        'thinking_budget' => (int) env('GEMINI_THINKING_BUDGET', 0),
+        // Opsional. Model 3.x memakai thinking_level (minimal/low/...), bukan thinkingBudget.
+        // Kosongkan untuk memakai default model.
+        'thinking_level' => env('GEMINI_THINKING_LEVEL'),
     ],
 
     /*

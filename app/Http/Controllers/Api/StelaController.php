@@ -147,63 +147,136 @@ class StelaController extends Controller
             'parts' => [['text' => $userMessage]],
         ];
 
-        $model = config('services.gemini.model', 'gemini-3.6-flash');
-        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 2048);
-        $thinkingBudget = (int) config('services.gemini.thinking_budget', 0);
+        // Model utama dua kali, lalu model cadangan. Gemini sering balas 503
+        // "high demand" secara sesaat, jadi satu percobaan saja tidak cukup.
+        $models = collect([
+            config('services.gemini.model', 'gemini-3.5-flash-lite'),
+            ...config('services.gemini.fallback_models', []),
+        ])->filter()->unique()->values()->all();
 
+        $maxOutputTokens = (int) config('services.gemini.max_output_tokens', 2048);
         $generationConfig = [
             'maxOutputTokens' => $maxOutputTokens > 0 ? $maxOutputTokens : 2048,
         ];
 
-        // Tanpa ini, model "berpikir" memakai jatah token jawaban sehingga
-        // balasan STELA terpotong di tengah kalimat.
-        if ($thinkingBudget >= 0) {
-            $generationConfig['thinkingConfig'] = ['thinkingBudget' => $thinkingBudget];
+        $thinkingLevel = config('services.gemini.thinking_level');
+        if ($thinkingLevel) {
+            $generationConfig['thinkingConfig'] = ['thinkingLevel' => $thinkingLevel];
         }
 
-        try {
-            $response = Http::timeout(20)->post(
-                'https://generativelanguage.googleapis.com/v1beta/models/'
-                    . rawurlencode($model)
-                    . ':generateContent?key=' . $apiKey,
-                [
-                    'system_instruction' => [
-                        'parts' => [['text' => $this->systemPrompt($context)]],
-                    ],
-                    'contents' => $contents,
-                    'generationConfig' => $generationConfig,
-                ]
-            );
+        $payload = [
+            'system_instruction' => [
+                'parts' => [['text' => $this->systemPrompt($context)]],
+            ],
+            'contents' => $contents,
+            'generationConfig' => $generationConfig,
+        ];
 
-            if (! $response->successful()) {
-                Log::error('Gemini API error', ['body' => $response->body()]);
-                return 'Maaf, STELA sedang mengalami gangguan. Coba lagi sebentar lagi, ya.';
+        // Function Vercel punya batas waktu, jadi seluruh percobaan dibatasi
+        // oleh deadline bersama (bukan timeout tiap request saja).
+        $deadline = microtime(true) + 9.0;
+        $lastStatus = null;
+        $lastBody = '';
+        $sawCongestion = false;
+        $sawQuota = false;
+
+        foreach ($models as $index => $model) {
+            $maxAttempts = $index === 0 ? 2 : 1;
+
+            for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+                $remaining = $deadline - microtime(true);
+                if ($remaining < 1.5) {
+                    break 2;
+                }
+
+                $attemptStarted = microtime(true);
+
+                try {
+                    $response = Http::timeout((int) max(2, min(8, ceil($remaining))))->post(
+                        'https://generativelanguage.googleapis.com/v1beta/models/'
+                            . rawurlencode($model)
+                            . ':generateContent?key=' . $apiKey,
+                        $payload
+                    );
+
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        $candidate = $data['candidates'][0] ?? [];
+                        $finishReason = $candidate['finishReason'] ?? null;
+
+                        // Gemini bisa memecah jawaban menjadi beberapa "part";
+                        // kalau hanya part pertama yang diambil, balasan tampak terpotong.
+                        $text = collect($candidate['content']['parts'] ?? [])
+                            ->pluck('text')
+                            ->filter()
+                            ->implode('');
+
+                        if ($finishReason === 'MAX_TOKENS') {
+                            Log::warning('STELA: jawaban Gemini mencapai batas token', [
+                                'model' => $model,
+                                'max_output_tokens' => $maxOutputTokens,
+                                'chars' => mb_strlen($text),
+                            ]);
+                        }
+
+                        return $text !== '' ? $text : 'Maaf, aku belum punya jawaban untuk itu.';
+                    }
+
+                    $lastStatus = $response->status();
+                    $lastBody = mb_substr($response->body(), 0, 300);
+
+                    // 503/429 dan 5xx bersifat sementara: coba lagi sebentar,
+                    // lalu lanjut ke model cadangan bila masih gagal.
+                    if (in_array($lastStatus, [408, 429, 500, 502, 503, 504], true)) {
+                        $sawCongestion = $sawCongestion || $lastStatus === 503;
+                        $sawQuota = $sawQuota || $lastStatus === 429;
+
+                        Log::warning('STELA: Gemini belum bisa melayani', [
+                            'model' => $model,
+                            'attempt' => $attempt,
+                            'status' => $lastStatus,
+                            'body' => $lastBody,
+                        ]);
+
+                        $fastFailure = (microtime(true) - $attemptStarted) < 2.0;
+                        if ($attempt < $maxAttempts && $fastFailure) {
+                            usleep(350000);
+                            continue;
+                        }
+
+                        continue 2;
+                    }
+
+                    Log::error('Gemini API error', [
+                        'model' => $model,
+                        'status' => $lastStatus,
+                        'body' => $lastBody,
+                    ]);
+
+                    return 'Maaf, STELA sedang mengalami gangguan. Coba lagi sebentar lagi, ya.';
+                } catch (\Exception $e) {
+                    Log::error('Gemini request failed', [
+                        'model' => $model,
+                        'error' => $e->getMessage(),
+                    ]);
+                    $lastStatus = null;
+                }
             }
-
-            $data = $response->json();
-            $candidate = $data['candidates'][0] ?? [];
-            $finishReason = $candidate['finishReason'] ?? null;
-
-            // Gemini bisa memecah jawaban menjadi beberapa "part"; kalau hanya
-            // part pertama yang diambil, balasan tampak terpotong di tengah.
-            $text = collect($candidate['content']['parts'] ?? [])
-                ->pluck('text')
-                ->filter()
-                ->implode('');
-
-            if ($finishReason === 'MAX_TOKENS') {
-                Log::warning('STELA: jawaban Gemini mencapai batas token', [
-                    'model' => $model,
-                    'max_output_tokens' => $maxOutputTokens,
-                    'thinking_budget' => $thinkingBudget,
-                    'chars' => mb_strlen($text),
-                ]);
-            }
-
-            return $text !== '' ? $text : 'Maaf, aku belum punya jawaban untuk itu.';
-        } catch (\Exception $e) {
-            Log::error('Gemini request failed', ['error' => $e->getMessage()]);
-            return 'Maaf, STELA sedang tidak dapat diakses. Coba lagi sebentar lagi, ya.';
         }
+
+        Log::error('STELA: semua model Gemini gagal', [
+            'status' => $lastStatus,
+            'body' => $lastBody,
+        ]);
+
+        if ($sawQuota) {
+            return 'Maaf, kuota STELA sedang penuh. Coba lagi nanti, ya.';
+        }
+
+        if ($sawCongestion) {
+            return 'Maaf, STELA lagi agak sibuk. Coba lagi sebentar, ya.';
+        }
+
+        return 'Maaf, STELA sedang tidak dapat diakses. Coba lagi sebentar lagi, ya.';
     }
 }

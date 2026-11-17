@@ -198,8 +198,9 @@ npx vercel --prod --yes
 | `BLOB_READ_WRITE_TOKEN` | Diisi otomatis oleh Vercel Blob |
 | `BLOB_ACCESS` | `public` |
 | `GEMINI_API_KEY` | API key STELA, disimpan sebagai Secret |
-| `GEMINI_MODEL` | Opsional, default `gemini-3.6-flash` |
+| `GEMINI_MODEL` | Opsional, default `gemini-3.5-flash-lite` |
+| `GEMINI_FALLBACK_MODELS` | Opsional, model cadangan saat 503/429, default `gemini-3.1-flash-lite,gemini-2.5-flash-lite` |
 | `GEMINI_MAX_OUTPUT_TOKENS` | Opsional, default `2048` |
-| `GEMINI_THINKING_BUDGET` | Opsional, default `0` |
+| `GEMINI_THINKING_LEVEL` | Opsional untuk model 3.x, kosongkan untuk default |
 | `SESSION_SECURE_COOKIE` | `true` |
 | `LOG_CHANNEL` | `stderr` |

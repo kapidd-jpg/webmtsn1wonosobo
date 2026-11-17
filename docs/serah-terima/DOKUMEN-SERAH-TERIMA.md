@@ -155,8 +155,9 @@ password manager sekolah.
 | `BLOB_READ_WRITE_TOKEN` | Token penyimpanan gambar |
 | `BLOB_ACCESS` | `public` |
 | `GEMINI_API_KEY` | API key untuk STELA |
-| `GEMINI_MODEL` | Model AI, default `gemini-3.6-flash` |
+| `GEMINI_MODEL` | Model AI, default `gemini-3.5-flash-lite` |
+| `GEMINI_FALLBACK_MODELS` | Model cadangan saat 503/429, dipisah koma |
 | `GEMINI_MAX_OUTPUT_TOKENS` | Batas panjang jawaban, default `2048` |
-| `GEMINI_THINKING_BUDGET` | Default `0` |
+| `GEMINI_THINKING_LEVEL` | Opsional untuk model 3.x, kosongkan untuk default |
 | `SESSION_SECURE_COOKIE` | `true` |
 | `LOG_CHANNEL` | `stderr` |
