@@ -150,7 +150,7 @@ class StelaController extends Controller
         // Model utama dua kali, lalu model cadangan. Gemini sering balas 503
         // "high demand" secara sesaat, jadi satu percobaan saja tidak cukup.
         $models = collect([
-            config('services.gemini.model', 'gemini-2.5-flash-lite'),
+            config('services.gemini.model', 'gemini-3.1-flash-lite'),
             ...config('services.gemini.fallback_models', []),
         ])->filter()->unique()->values()->all();
 
@@ -225,6 +225,16 @@ class StelaController extends Controller
 
                     $lastStatus = $response->status();
                     $lastBody = mb_substr($response->body(), 0, 300);
+
+                    // Model sudah dihapus/diganti (404): jangan berhenti di sini,
+                    // langsung coba model cadangan berikutnya.
+                    if ($lastStatus === 404) {
+                        Log::warning('STELA: model Gemini tidak tersedia', [
+                            'model' => $model,
+                            'body' => $lastBody,
+                        ]);
+                        continue 2;
+                    }
 
                     // 503/429 dan 5xx bersifat sementara: coba lagi sebentar,
                     // lalu lanjut ke model cadangan bila masih gagal.
