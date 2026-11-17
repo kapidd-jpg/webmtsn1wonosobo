@@ -174,7 +174,7 @@ class StelaController extends Controller
 
         // Function Vercel punya batas waktu, jadi seluruh percobaan dibatasi
         // oleh deadline bersama (bukan timeout tiap request saja).
-        $deadline = microtime(true) + 14.0;
+        $deadline = microtime(true) + 20.0;
         $lastStatus = null;
         $lastBody = '';
         $sawCongestion = false;
@@ -193,7 +193,7 @@ class StelaController extends Controller
                 $attemptStarted = microtime(true);
 
                 try {
-                    $response = Http::timeout((int) max(2, min(6, ceil($remaining))))->post(
+                    $response = Http::timeout((int) max(2, min(9, ceil($remaining))))->post(
                         'https://generativelanguage.googleapis.com/v1beta/models/'
                             . rawurlencode($model)
                             . ':generateContent?key=' . $apiKey,
