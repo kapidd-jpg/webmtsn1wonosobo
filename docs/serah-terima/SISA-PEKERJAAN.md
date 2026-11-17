@@ -16,8 +16,8 @@ dikerjakan sebelum portal diserahkan sepenuhnya ke client.
   bersih.
 - `.env.example` sudah memuat variabel TiDB, TLS, Blob, dan Gemini.
 - Dokumen dan checklist serah terima sudah dibuat.
-- STELA aktif di production dengan model `gemini-3.5-flash-lite` dan model
-  cadangan (`gemini-3.1-flash-lite`, `gemini-2.5-flash-lite`), dibatasi 20
+- STELA aktif di production dengan model `gemini-2.5-flash-lite` dan model
+  cadangan (`gemini-3.1-flash-lite`, `gemini-3.5-flash-lite`), dibatasi 20
   permintaan per menit, serta otomatis mencoba ulang saat Gemini kena 503/429.
 - Pengguna dapat mengganti password sendiri dari dashboard. Admin dapat
   mereset password pengguna lain dari tab **Akun & Password**.

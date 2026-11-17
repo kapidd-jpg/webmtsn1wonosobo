@@ -150,7 +150,7 @@ class StelaController extends Controller
         // Model utama dua kali, lalu model cadangan. Gemini sering balas 503
         // "high demand" secara sesaat, jadi satu percobaan saja tidak cukup.
         $models = collect([
-            config('services.gemini.model', 'gemini-3.5-flash-lite'),
+            config('services.gemini.model', 'gemini-2.5-flash-lite'),
             ...config('services.gemini.fallback_models', []),
         ])->filter()->unique()->values()->all();
 
@@ -174,11 +174,12 @@ class StelaController extends Controller
 
         // Function Vercel punya batas waktu, jadi seluruh percobaan dibatasi
         // oleh deadline bersama (bukan timeout tiap request saja).
-        $deadline = microtime(true) + 9.0;
+        $deadline = microtime(true) + 14.0;
         $lastStatus = null;
         $lastBody = '';
         $sawCongestion = false;
         $sawQuota = false;
+        $sawTimeout = false;
 
         foreach ($models as $index => $model) {
             $maxAttempts = $index === 0 ? 2 : 1;
@@ -192,7 +193,7 @@ class StelaController extends Controller
                 $attemptStarted = microtime(true);
 
                 try {
-                    $response = Http::timeout((int) max(2, min(8, ceil($remaining))))->post(
+                    $response = Http::timeout((int) max(2, min(6, ceil($remaining))))->post(
                         'https://generativelanguage.googleapis.com/v1beta/models/'
                             . rawurlencode($model)
                             . ':generateContent?key=' . $apiKey,
@@ -255,11 +256,23 @@ class StelaController extends Controller
 
                     return 'Maaf, STELA sedang mengalami gangguan. Coba lagi sebentar lagi, ya.';
                 } catch (\Exception $e) {
+                    // Pesan exception Guzzle memuat URL lengkap, termasuk ?key=...
+                    // Jangan pernah menuliskan API key ke log.
+                    $safeError = preg_replace('/(key=)[^&\s]+/i', '$1***', $e->getMessage());
+
                     Log::error('Gemini request failed', [
                         'model' => $model,
-                        'error' => $e->getMessage(),
+                        'error' => $safeError,
                     ]);
+
+                    $sawTimeout = $sawTimeout || $e instanceof \Illuminate\Http\Client\ConnectionException
+                        || str_contains($e->getMessage(), 'timed out')
+                        || str_contains($e->getMessage(), 'cURL error 28');
+
+                    // Request gagal di tingkat koneksi: jangan buang waktu
+                    // mencoba model yang sama, langsung ke model cadangan.
                     $lastStatus = null;
+                    continue 2;
                 }
             }
         }
@@ -275,6 +288,10 @@ class StelaController extends Controller
 
         if ($sawCongestion) {
             return 'Maaf, STELA lagi agak sibuk. Coba lagi sebentar, ya.';
+        }
+
+        if ($sawTimeout) {
+            return 'Maaf, STELA sedang lambat merespons. Coba lagi sebentar, ya.';
         }
 
         return 'Maaf, STELA sedang tidak dapat diakses. Coba lagi sebentar lagi, ya.';
